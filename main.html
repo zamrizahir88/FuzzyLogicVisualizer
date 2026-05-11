@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuzzyLogic Visualizer — Zamm Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161d;
+  --surface2: #1a1e28;
+  --surface3: #212633;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #7c6dfa;
+  --accent2: #a594ff;
+  --accent-dim: rgba(124,109,250,0.15);
+  --accent-glow: rgba(124,109,250,0.25);
+  --text: #e8eaf0;
+  --text2: #8b90a0;
+  --text3: #555a6b;
+  --success: #3ecf8e;
+  --warn: #f5a623;
+  --danger: #f06292;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+
+/* ── NAVBAR ── */
+.navbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  flex-shrink: 0;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-right: 8px;
+}
+.nav-logo-icon {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.nav-logo-icon::before {
+  content: '';
+  position: absolute;
+  width: 100%; height: 2px;
+  background: rgba(255,255,255,0.3);
+  top: 50%; transform: translateY(-50%);
+}
+.nav-logo-icon svg { position: relative; z-index: 1; }
+.nav-logo-text { font-family: var(--display); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+.nav-logo-text span { color: var(--accent2); }
+.nav-badge {
+  font-size: 10px; font-family: var(--mono);
+  background: var(--accent-dim); color: var(--accent2);
+  border: 1px solid rgba(124,109,250,0.3);
+  padding: 2px 7px; border-radius: 20px;
+  letter-spacing: .04em;
+}
+.nav-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+.nav-project-name {
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 6px;
+  outline: none; width: 200px;
+  transition: border-color .2s;
+}
+.nav-project-name:focus { border-color: var(--accent); color: var(--text); }
+.nav-fis { display: flex; align-items: center; gap: 6px; }
+.fis-btn {
+  font-size: 11px; font-family: var(--mono);
+  padding: 5px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--text2); transition: all .15s;
+}
+.fis-btn.active {
+  background: var(--accent-dim); color: var(--accent2);
+  border-color: rgba(124,109,250,0.4);
+}
+.fis-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+.nav-spacer { flex: 1; }
+.nav-actions { display: flex; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-family: var(--sans); font-weight: 500;
+  padding: 6px 14px; border-radius: 7px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text2); transition: all .15s; white-space: nowrap;
+}
+.btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+.btn svg { width: 14px; height: 14px; }
+.btn-primary {
+  background: var(--accent); border-color: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+.btn-success { background: rgba(62,207,142,0.12); border-color: rgba(62,207,142,0.3); color: var(--success); }
+.btn-success:hover { background: rgba(62,207,142,0.2); color: var(--success); }
+.btn-warn { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.3); color: var(--warn); }
+.btn-warn:hover { background: rgba(245,166,35,0.2); }
+
+/* ── MAIN LAYOUT ── */
+.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 56px - 36px); }
+
+/* ── LEFT PANEL ── */
+.panel-left {
+  width: 320px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+.panel-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.section-label {
+  font-size: 10px; font-family: var(--mono); font-weight: 500;
+  letter-spacing: .08em; color: var(--text3); text-transform: uppercase;
+}
+.icon-btn {
+  width: 22px; height: 22px; border-radius: 5px;
+  border: 1px solid var(--border2); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2); transition: all .15s;
+}
+.icon-btn:hover { background: var(--surface3); color: var(--text); }
+.icon-btn svg { width: 12px; height: 12px; }
+
+/* Variable list */
+.var-list { display: flex; flex-direction: column; gap: 4px; }
+.var-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 7px;
+  cursor: pointer; border: 1px solid transparent;
+  transition: all .15s; position: relative;
+}
+.var-item:hover { background: var(--surface2); }
+.var-item.active {
+  background: var(--accent-dim); border-color: rgba(124,109,250,0.3);
+}
+.var-type-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-input { background: var(--accent2); }
+.dot-output { background: var(--success); }
+.var-name { font-size: 12px; font-weight: 500; flex: 1; }
+.var-mf-count {
+  font-size: 10px; font-family: var(--mono); color: var(--text3);
+  background: var(--surface3); padding: 1px 6px; border-radius: 4px;
+}
+.var-del {
+  opacity: 0; width: 16px; height: 16px; border-radius: 4px;
+  border: none; background: transparent; color: var(--danger);
+  cursor: pointer; font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .15s;
+}
+.var-item:hover .var-del { opacity: 1; }
+
+/* MF Editor */
+.mf-editor { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.mf-var-header {
+  padding: 10px 12px; background: var(--surface2); border-radius: 8px;
+  border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+}
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-label { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: .05em; }
+.field-input {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 5px 8px; outline: none; width: 100%;
+  transition: border-color .15s;
+}
+.field-input:focus { border-color: var(--accent); }
+.field-select {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 5px 8px; outline: none; width: 100%; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555a6b'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+
+/* MF row card */
+.mf-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 9px; overflow: hidden;
+  transition: border-color .15s;
+}
+.mf-card:hover { border-color: var(--border2); }
+.mf-card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+}
+.mf-color-dot {
+  width: 10px; height: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.mf-label-input {
+  flex: 1; background: transparent; border: none;
+  color: var(--text); font-family: var(--sans); font-size: 12px; font-weight: 500;
+  outline: none;
+}
+.mf-shape-select {
+  font-size: 10px; font-family: var(--mono);
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text2); padding: 3px 6px;
+  outline: none; cursor: pointer;
+  appearance: none; min-width: 80px;
+}
+.mf-del-btn {
+  background: transparent; border: none; color: var(--text3);
+  cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px;
+  transition: color .15s;
+}
+.mf-del-btn:hover { color: var(--danger); }
+.mf-params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 10px; }
+.mf-param { display: flex; flex-direction: column; gap: 3px; }
+.mf-param-label { font-size: 9px; font-family: var(--mono); color: var(--text3); letter-spacing: .05em; text-align: center; }
+.mf-param-input {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text); font-family: var(--mono); font-size: 11px;
+  padding: 4px 6px; outline: none; width: 100%; text-align: center;
+  transition: border-color .15s;
+}
+.mf-param-input:focus { border-color: var(--accent); }
+.add-mf-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px; border-radius: 8px;
+  border: 1px dashed var(--border2); background: transparent;
+  color: var(--text3); font-size: 12px; cursor: pointer;
+  transition: all .15s;
+}
+.add-mf-btn:hover { border-color: var(--accent); color: var(--accent2); background: var(--accent-dim); }
+
+.empty-state {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: var(--text3); text-align: center; padding: 20px;
+}
+.empty-state svg { opacity: .3; }
+.empty-state p { font-size: 12px; line-height: 1.6; }
+
+/* ── RIGHT PANEL ── */
+.panel-right {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.chart-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.chart-title { font-family: var(--display); font-size: 13px; font-weight: 600; flex: 1; }
+.chart-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeIn .3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.chart-card-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.chart-var-badge {
+  font-size: 10px; font-family: var(--mono);
+  padding: 2px 8px; border-radius: 20px;
+}
+.badge-input { background: rgba(124,109,250,0.15); color: var(--accent2); }
+.badge-output { background: rgba(62,207,142,0.12); color: var(--success); }
+.chart-var-name { font-family: var(--display); font-size: 14px; font-weight: 600; }
+.chart-var-range { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-left: auto; }
+.chart-canvas-wrap { padding: 16px 16px 8px; position: relative; }
+.chart-canvas-wrap canvas { width: 100% !important; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px 14px; }
+.legend-pill {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-family: var(--mono);
+  padding: 3px 10px; border-radius: 20px;
+  border: 1px solid;
+}
+.chart-export-row {
+  display: flex; gap: 6px; padding: 0 16px 12px;
+}
+
+.no-vars {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  color: var(--text3);
+}
+.no-vars-icon {
+  width: 64px; height: 64px; border-radius: 20px;
+  background: var(--surface2); display: flex; align-items: center; justify-content: center;
+}
+.no-vars h3 { font-family: var(--display); font-size: 18px; color: var(--text2); }
+.no-vars p { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.7; }
+
+/* ── RULE EDITOR ── */
+.panel-rules {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.rules-toggle {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 20px; cursor: pointer;
+  font-size: 11px; font-family: var(--mono); color: var(--text2);
+  border: none; background: transparent; width: 100%;
+  border-top: 1px solid var(--border);
+  letter-spacing: .04em;
+}
+.rules-toggle:hover { color: var(--text); }
+.rules-toggle svg { transition: transform .2s; }
+.rules-toggle.open svg { transform: rotate(180deg); }
+.rules-body { display: none; padding: 12px 20px; }
+.rules-body.open { display: block; }
+.rule-builder {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 10px 12px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px;
+  margin-bottom: 10px;
+}
+.rule-label { font-size: 11px; font-family: var(--mono); color: var(--accent2); font-weight: 500; }
+.rule-select {
+  font-size: 11px; font-family: var(--mono);
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text); padding: 4px 8px;
+  outline: none; cursor: pointer;
+}
+.rules-list { display: flex; flex-direction: column; gap: 4px; max-height: 100px; overflow-y: auto; }
+.rule-chip {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-family: var(--mono); color: var(--text2);
+  padding: 5px 10px; background: var(--surface2); border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.rule-chip span { flex: 1; }
+.rule-chip button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 0; }
+.rule-chip button:hover { color: var(--danger); }
+
+/* ── FOOTER ── */
+.footer {
+  height: 36px; display: flex; align-items: center; justify-content: center;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 10px; font-family: var(--mono); color: var(--text3);
+  letter-spacing: .06em; flex-shrink: 0;
+}
+.footer span { color: var(--accent2); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 48px; right: 20px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 16px;
+  font-size: 12px; font-family: var(--mono); color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; transform: translateY(8px);
+  transition: all .25s; pointer-events: none; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+
+/* ── DEFUZZ ROW ── */
+.defuzz-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+  background: var(--surface); font-size: 11px; font-family: var(--mono); color: var(--text3);
+  flex-shrink: 0;
+}
+.defuzz-select {
+  font-size: 11px; font-family: var(--mono);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text2); padding: 3px 8px;
+  outline: none; cursor: pointer;
+}
+
+/* color picker hidden input */
+input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">Fuzzy<span>Logic</span> Visualizer</span>
+  </div>
+  <span class="nav-badge">v1.0</span>
+  <div class="nav-sep"></div>
+  <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name…">
+  <div class="nav-sep"></div>
+  <div class="nav-fis">
+    <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
+    <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
+    <button class="fis-btn" id="fisBtn1" onclick="setFIS('sugeno',1)">Sugeno</button>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-actions">
+    <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Load Project
+      <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
+    </label>
+    <button class="btn btn-success" onclick="saveProject()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Save Project
+    </button>
+  </div>
+</nav>
+
+<div class="defuzz-row" id="defuzzRow">
+  <span>Defuzzification method:</span>
+  <select class="defuzz-select" id="defuzzMethod">
+    <option value="centroid">Centroid (COG)</option>
+    <option value="bisector">Bisector</option>
+    <option value="mom">Mean of Maximum</option>
+    <option value="lom">Largest of Maximum</option>
+    <option value="som">Smallest of Maximum</option>
+  </select>
+  <span style="margin-left:auto;color:var(--text3);">AND method:</span>
+  <select class="defuzz-select" id="andMethod">
+    <option value="min">min</option>
+    <option value="prod">prod</option>
+  </select>
+  <span>OR method:</span>
+  <select class="defuzz-select" id="orMethod">
+    <option value="max">max</option>
+    <option value="probor">probor</option>
+  </select>
+</div>
+
+<div class="main">
+
+  <div class="panel-left">
+
+    <div class="panel-section">
+      <div class="section-header">
+        <span class="section-label">Input Variables</span>
+        <button class="icon-btn" onclick="addVariable('input')" title="Add input variable">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+      <div class="var-list" id="inputVarList"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="section-header">
+        <span class="section-label">Output Variables</span>
+        <button class="icon-btn" onclick="addVariable('output')" title="Add output variable">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+      <div class="var-list" id="outputVarList"></div>
+    </div>
+
+    <div class="mf-editor" id="mfEditor">
+      <div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="10" fill="#1a1e28"/>
+          <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+        <p>Select a variable from above<br>to edit its membership functions</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div class="chart-toolbar">
+      <span class="chart-title">Membership Function Graphs</span>
+      <button class="btn" onclick="exportAllPNG()" title="Export all charts as PNG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Export All PNG
+      </button>
+      <button class="btn" onclick="exportAllSVG()" title="Export all as SVG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Export All SVG
+      </button>
+      <button class="btn" onclick="viewESPCode()" title="Generate ESP32 / C++ Code">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        C++ Code
+      </button>
+      <button class="btn" onclick="exportPythonCode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Python Code
+      </button>
+    </div>
+    <div class="chart-area" id="chartArea">
+      <div class="no-vars">
+        <div class="no-vars-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <h3>No Variables Yet</h3>
+        <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p>
+      </div>
+    </div>
+
+    <div class="panel-rules">
+      <button class="rules-toggle" id="rulesToggle" onclick="toggleRules()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+        RULE EDITOR
+        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
+      </button>
+      <div class="rules-body" id="rulesBody">
+        <div class="rule-builder" id="ruleBuilder">
+          <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
+        </div>
+        <div class="rules-list" id="rulesList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  FuzzyLogic Visualizer v1.0 &nbsp;|&nbsp; Designed &amp; Engineered by <span>&nbsp;Zamm Studio</span>&nbsp;© 2026
+</footer>
+
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
+
+<script>
+const COLORS = ['#7c6dfa','#3ecf8e','#f5a623','#f06292','#5bc4f5','#c084fc','#fb923c','#34d399','#f472b6','#60a5fa'];
+let state = { fisType:'mamdani', defuzz:'centroid', andMethod:'min', orMethod:'max', variables:[], rules:[] };
+let activeVarId = null;
+let chartInstances = {};
+let colorIdx = 0;
+let mfIdCounter = 1;
+let varIdCounter = 1;
+
+function uid(prefix='') { return prefix + (Date.now().toString(36) + Math.random().toString(36).slice(2)); }
+function nextColor() { return COLORS[colorIdx++ % COLORS.length]; }
+
+// ── FIS TYPE ──
+function setFIS(type, idx) {
+  state.fisType = type;
+  [0,1].forEach(i => document.getElementById('fisBtn'+i).classList.toggle('active', i===idx));
+  document.getElementById('defuzzRow').style.display = type==='mamdani' ? 'flex' : 'none';
+}
+
+// ── VARIABLE MANAGEMENT ──
+function addVariable(type) {
+  const name = type==='input' ? `Input ${state.variables.filter(v=>v.type==='input').length+1}` : `Output ${state.variables.filter(v=>v.type==='output').length+1}`;
+  const v = { id: uid('v'), type, name, min:0, max:100, unit:'', mfs:[] };
+  state.variables.push(v);
+  renderVarLists();
+  selectVar(v.id);
+  updateRuleBuilder();
+  showToast(`Variable "${name}" added`);
+}
+
+function deleteVariable(id, e) {
+  e.stopPropagation();
+  state.variables = state.variables.filter(v=>v.id!==id);
+  // Clean up rules using this variable
+  state.rules = state.rules.filter(r => r.conditions[id] === undefined && r.conclusion.varId !== id);
+  if(activeVarId===id) { activeVarId=null; }
+  renderVarLists();
+  renderMFEditor();
+  renderCharts();
+  updateRuleBuilder();
+  renderRules();
+}
+
+function selectVar(id) {
+  activeVarId = id;
+  renderVarLists();
+  renderMFEditor();
+}
+
+function renderVarLists() {
+  ['input','output'].forEach(type => {
+    const el = document.getElementById(type+'VarList');
+    const vars = state.variables.filter(v=>v.type===type);
+    el.innerHTML = vars.length ? vars.map(v=>`
+      <div class="var-item ${v.id===activeVarId?'active':''}" onclick="selectVar('${v.id}')">
+        <div class="var-type-dot dot-${type}"></div>
+        <span class="var-name">${esc(v.name)}</span>
+        <span class="var-mf-count">${v.mfs.length} MF</span>
+        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete">×</button>
+      </div>`).join('') : `<div style="font-size:11px;color:var(--text3);padding:4px 0;">No ${type} variables</div>`;
+  });
+}
+
+// ── MF EDITOR ──
+function renderMFEditor() {
+  const editor = document.getElementById('mfEditor');
+  const v = state.variables.find(x=>x.id===activeVarId);
+  if(!v) {
+    editor.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#1a1e28"/><path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      <p>Select a variable from above<br>to edit its membership functions</p></div>`;
+    return;
+  }
+  editor.innerHTML = `
+    <div class="mf-var-header">
+      <div class="field-group">
+        <span class="field-label">VAR NAME</span>
+        <input class="field-input" value="${esc(v.name)}" oninput="updateVarProp('${v.id}','name',this.value)">
+      </div>
+      <div class="field-group">
+        <div style="display:flex;gap:4px;">
+          <div class="field-group" style="flex:1">
+            <span class="field-label">MIN</span>
+            <input class="field-input" type="number" value="${v.min}" oninput="updateVarProp('${v.id}','min',+this.value)">
+          </div>
+          <div class="field-group" style="flex:1">
+            <span class="field-label">MAX</span>
+            <input class="field-input" type="number" value="${v.max}" oninput="updateVarProp('${v.id}','max',+this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <span class="field-label">UNIT</span>
+        <input class="field-input" value="${esc(v.unit)}" placeholder="°C, kg…" oninput="updateVarProp('${v.id}','unit',this.value)">
+      </div>
+    </div>
+    ${v.mfs.map(mf=>mfCardHTML(v,mf)).join('')}
+    <button class="add-mf-btn" onclick="addMF('${v.id}')">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+      Add Membership Function
+    </button>`;
+}
+
+function mfCardHTML(v, mf) {
+  const shapes = ['triangular','trapezoidal','gaussian','bell','sigmoidal','singleton'];
+  const shapeOpts = shapes.map(s=>`<option value="${s}" ${mf.shape===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('');
+  const params = getMFParamDefs(mf.shape);
+  const paramHTML = params.map(p=>`
+    <div class="mf-param">
+      <span class="mf-param-label">${p.key.toUpperCase()}</span>
+      <input class="mf-param-input" type="number" step="any" value="${mf.params[p.key]??p.default}"
+        oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)">
+    </div>`).join('');
+  return `<div class="mf-card" id="mfcard_${mf.id}">
+    <div class="mf-card-header">
+      <div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)" title="Click to change color"></div>
+      <input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)">
+      <input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)">
+      <select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();renderCharts();">${shapeOpts}</select>
+      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">×</button>
+    </div>
+    <div class="mf-params">${paramHTML}</div>
+  </div>`;
+}
+
+function getMFParamDefs(shape) {
+  const defs = {
+    triangular: [{key:'a',default:0},{key:'b',default:50},{key:'c',default:100}],
+    trapezoidal:[{key:'a',default:0},{key:'b',default:25},{key:'c',default:75},{key:'d',default:100}],
+    gaussian:   [{key:'mean',default:50},{key:'sigma',default:15}],
+    bell:       [{key:'a',default:25},{key:'b',default:4},{key:'c',default:50}],
+    sigmoidal:  [{key:'a',default:0.2},{key:'c',default:50}],
+    singleton:  [{key:'x',default:50}]
+  };
+  return defs[shape] || defs.triangular;
+}
+
+function pickColor(vid, mfid, dot) {
+  document.getElementById('cp_'+mfid).click();
+}
+
+function updateMFColor(vid, mfid, color) {
+  updateMFProp(vid, mfid, 'color', color);
+  const dot = document.querySelector(`#mfcard_${mfid} .mf-color-dot`);
+  if(dot) dot.style.background = color;
+}
+
+function updateVarProp(id, prop, val) {
+  const v = state.variables.find(x=>x.id===id);
+  if(v) { v[prop]=val; renderCharts(); renderVarLists(); updateRuleBuilder(); renderRules(); }
+}
+
+function updateMFProp(vid, mfid, prop, val) {
+  const v = state.variables.find(x=>x.id===vid);
+  if(!v) return;
+  const mf = v.mfs.find(m=>m.id===mfid);
+  if(mf) { mf[prop]=val; renderCharts(); updateRuleBuilder(); renderRules(); }
+}
+
+function updateMFParam(vid, mfid, key, val) {
+  const v = state.variables.find(x=>x.id===vid);
+  if(!v) return;
+  const mf = v.mfs.find(m=>m.id===mfid);
+  if(mf) { mf.params[key]=val; renderCharts(); }
+}
+
+function addMF(vid) {
+  const v = state.variables.find(x=>x.id===vid);
+  if(!v) return;
+  const color = nextColor();
+  const n = v.mfs.length;
+  const span = v.max - v.min;
+  const b = v.min + span*(n+1)/(Math.max(v.mfs.length+2, 3));
+  const mf = {
+    id: uid('mf'), label: `MF ${n+1}`, shape:'triangular', color,
+    params:{ a: Math.max(v.min, b - span/4), b, c: Math.min(v.max, b + span/4) }
+  };
+  v.mfs.push(mf);
+  renderMFEditor();
+  renderCharts();
+  updateRuleBuilder();
+}
+
+function deleteMF(vid, mfid) {
+  const v = state.variables.find(x=>x.id===vid);
+  if(!v) return;
+  v.mfs = v.mfs.filter(m=>m.id!==mfid);
+  
+  // Cleanup rules mapped to this deleted MF
+  state.rules = state.rules.filter(r => {
+      let isAntMatch = false;
+      for (let k in r.conditions) { if (r.conditions[k] === mfid) isAntMatch = true; }
+      return !isAntMatch && r.conclusion.mfId !== mfid;
+  });
+
+  renderMFEditor();
+  renderCharts();
+  updateRuleBuilder();
+  renderRules();
+}
+
+// ── MF MATH ──
+function evalMF(mf, x) {
+  const p = mf.params;
+  switch(mf.shape) {
+    case 'triangular': {
+      if(x<=p.a||x>=p.c) return 0;
+      if(x<=p.b) return (p.b===p.a)?1:(x-p.a)/(p.b-p.a);
+      return (p.c===p.b)?1:(p.c-x)/(p.c-p.b);
+    }
+    case 'trapezoidal': {
+      if(x<=p.a||x>=p.d) return 0;
+      if(x>=p.b&&x<=p.c) return 1;
+      if(x<p.b) return (p.b===p.a)?1:(x-p.a)/(p.b-p.a);
+      return (p.d===p.c)?1:(p.d-x)/(p.d-p.c);
+    }
+    case 'gaussian': {
+      return Math.exp(-0.5*Math.pow((x-p.mean)/p.sigma,2));
+    }
+    case 'bell': {
+      return 1/(1+Math.pow(Math.abs((x-p.c)/p.a),2*p.b));
+    }
+    case 'sigmoidal': {
+      return 1/(1+Math.exp(-p.a*(x-p.c)));
+    }
+    case 'singleton': {
+      return Math.abs(x-p.x)<(0.5) ? 1 : 0;
+    }
+    default: return 0;
+  }
+}
+
+// ── CHART RENDERING ──
+function renderCharts() {
+  const area = document.getElementById('chartArea');
+  if(state.variables.length===0) {
+    area.innerHTML = `<div class="no-vars">
+      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
+      <h3>No Variables Yet</h3>
+      <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p></div>`;
+    Object.values(chartInstances).forEach(c=>c.destroy());
+    chartInstances={};
+    return;
+  }
+  const existingIds = new Set(state.variables.map(v=>v.id));
+  Object.keys(chartInstances).forEach(id=>{ if(!existingIds.has(id)){ chartInstances[id].destroy(); delete chartInstances[id]; } });
+
+  state.variables.forEach(v=>{
+    const cardId = 'chartcard_'+v.id;
+    let card = document.getElementById(cardId);
+    if(!card) {
+      card = document.createElement('div');
+      card.className='chart-card'; card.id=cardId;
+      area.appendChild(card);
+    }
+    const legendHTML = v.mfs.map(mf=>`
+      <span class="legend-pill" style="background:${hexAlpha(mf.color,0.12)};border-color:${hexAlpha(mf.color,0.4)};color:${mf.color};">
+        ${esc(mf.label)}
+      </span>`).join('');
+    card.innerHTML = `
+      <div class="chart-card-header">
+        <span class="chart-var-badge badge-${v.type}">${v.type.toUpperCase()}</span>
+        <span class="chart-var-name">${esc(v.name)}</span>
+        <span class="chart-var-range">[${v.min}, ${v.max}] ${esc(v.unit)}</span>
+      </div>
+      <div class="chart-canvas-wrap" style="height:220px;"><canvas id="canvas_${v.id}"></canvas></div>
+      <div class="chart-legend">${legendHTML}</div>
+      <div class="chart-export-row">
+        <button class="btn" onclick="exportChartPNG('${v.id}')" style="font-size:11px;padding:4px 10px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          PNG
+        </button>
+        <button class="btn" onclick="exportChartSVG('${v.id}')" style="font-size:11px;padding:4px 10px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          SVG
+        </button>
+      </div>`;
+
+    if(chartInstances[v.id]) { chartInstances[v.id].destroy(); }
+
+    const N = 500;
+    const labels = Array.from({length:N}, (_,i)=> +(v.min + (v.max-v.min)*i/(N-1)).toFixed(4));
+    const datasets = v.mfs.map(mf=>({
+      label: mf.label,
+      data: labels.map(x=>+evalMF(mf,x).toFixed(4)),
+      borderColor: mf.color,
+      backgroundColor: hexAlpha(mf.color, 0.18),
+      fill: true,
+      tension: mf.shape==='triangular'||mf.shape==='trapezoidal'||mf.shape==='singleton' ? 0 : 0.4,
+      borderWidth: 2.5,
+      pointRadius: 0, pointHoverRadius: 4,
+      pointHoverBackgroundColor: mf.color,
+    }));
+
+    const ctx = document.getElementById('canvas_'+v.id).getContext('2d');
+    chartInstances[v.id] = new Chart(ctx, {
+      type:'line', data:{ labels, datasets },
+      options:{
+        responsive: true, maintainAspectRatio: false,
+        interaction:{ mode:'index', intersect:false },
+        animation:{ duration:300 },
+        plugins:{
+          legend:{ display:false },
+          tooltip:{
+            backgroundColor:'#13161d', borderColor:'rgba(255,255,255,0.1)', borderWidth:1,
+            titleColor:'#8b90a0', bodyColor:'#e8eaf0',
+            titleFont:{ family:"'DM Mono',monospace", size:10 },
+            bodyFont:{ family:"'DM Mono',monospace", size:11 },
+            padding:10, cornerRadius:8,
+            callbacks:{
+              title: items=>`x = ${(+items[0].label).toFixed(2)} ${v.unit}`,
+              label: item=>`  ${item.dataset.label}: μ = ${item.raw.toFixed(4)}`
+            }
+          }
+        },
+        scales:{
+          x:{
+            type:'linear', min:v.min, max:v.max,
+            title:{ display:true, text: v.name+(v.unit?` (${v.unit})`:''), color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
+            ticks:{ color:'#555a6b', font:{family:"'DM Mono',monospace",size:10}, maxTicksLimit:10,
+              callback: val => (+val).toFixed(v.max-v.min>100?0:1) },
+            grid:{ color:'rgba(255,255,255,0.04)' },
+            border:{ color:'rgba(255,255,255,0.1)' }
+          },
+          y:{
+            min:0, max:1,
+            title:{ display:true, text:'μ(x)', color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
+            ticks:{ color:'#555a6b', font:{family:"'DM Mono',monospace",size:10}, stepSize:0.2 },
+            grid:{ color:'rgba(255,255,255,0.04)' },
+            border:{ color:'rgba(255,255,255,0.1)' }
+          }
+        }
+      }
+    });
+  });
+
+  // Remove chart cards for deleted variables
+  area.querySelectorAll('.chart-card').forEach(card=>{
+    const id = card.id.replace('chartcard_','');
+    if(!existingIds.has(id)) card.remove();
+  });
+}
+
+// ── EXPORT ──
+function exportChartPNG(vid) {
+  const c = chartInstances[vid];
+  if(!c) return;
+  const v = state.variables.find(x=>x.id===vid);
+  const link = document.createElement('a');
+  link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`;
+  link.href = c.canvas.toDataURL('image/png', 1.0);
+  link.click();
+  showToast(`Chart exported as PNG`);
+}
+
+function exportAllPNG() {
+  state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartPNG(v.id), i*200); });
+}
+
+function exportChartSVG(vid) {
+  const v = state.variables.find(x=>x.id===vid);
+  if(!v) return;
+  const W=700, H=340, PL=60, PR=30, PT=30, PB=60;
+  const cW=W-PL-PR, cH=H-PT-PB;
+  const xRange=v.max-v.min;
+  const toX=x=>(x-v.min)/xRange*cW+PL;
+  const toY=y=>(1-y)*cH+PT;
+  const N=300;
+  const xs=Array.from({length:N},(_,i)=>v.min+xRange*i/(N-1));
+
+  let paths='';
+  v.mfs.forEach(mf=>{
+    const pts=xs.map(x=>`${toX(x).toFixed(1)},${toY(evalMF(mf,x)).toFixed(1)}`).join(' ');
+    const fill=hexAlpha(mf.color,0.18);
+    const polyClose=`${toX(v.max).toFixed(1)},${toY(0).toFixed(1)} ${toX(v.min).toFixed(1)},${toY(0).toFixed(1)}`;
+    paths+=`<polygon points="${pts} ${polyClose}" fill="${fill}"/>
+<polyline points="${pts}" fill="none" stroke="${mf.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  });
+
+  const legendY=H-12;
+  let legX=PL;
+  const legendItems=v.mfs.map(mf=>{
+    const item=`<circle cx="${legX+6}" cy="${legendY}" r="5" fill="${mf.color}"/>
+<text x="${legX+14}" y="${legendY+4}" fill="${mf.color}" font-family="monospace" font-size="11">${mf.label}</text>`;
+    legX+=mf.label.length*7+28;
+    return item;
+  }).join('');
+
+  const ticks=6;
+  let xTicksHTML='', yTicksHTML='';
+  for(let i=0;i<=ticks;i++){
+    const val=v.min+xRange*i/ticks;
+    xTicksHTML+=`<text x="${toX(val).toFixed(1)}" y="${PT+cH+18}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="10">${val.toFixed(1)}</text>
+<line x1="${toX(val).toFixed(1)}" y1="${PT}" x2="${toX(val).toFixed(1)}" y2="${PT+cH}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>`;
+    const yv=i/ticks;
+    yTicksHTML+=`<text x="${PL-6}" y="${toY(yv).toFixed(1)}" text-anchor="end" dominant-baseline="central" fill="#555a6b" font-family="monospace" font-size="10">${yv.toFixed(1)}</text>
+<line x1="${PL}" y1="${toY(yv).toFixed(1)}" x2="${PL+cW}" y2="${toY(yv).toFixed(1)}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>`;
+  }
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#13161d;font-family:sans-serif;">
+<rect width="${W}" height="${H}" fill="#13161d" rx="12"/>
+<text x="${W/2}" y="18" text-anchor="middle" fill="#e8eaf0" font-family="'Syne',sans-serif" font-size="13" font-weight="600">${v.name} — Membership Functions</text>
+${xTicksHTML}${yTicksHTML}${paths}
+<text x="${W/2}" y="${PT+cH+36}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11">${v.name}${v.unit?` (${v.unit})`:''}</text>
+<text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11" transform="rotate(-90,14,${PT+cH/2})">μ(x)</text>
+<line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+<line x1="${PL}" y1="${PT+cH}" x2="${PL+cW}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+${legendItems}
+<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v1.0 — Zamm Studio © 2026</text>
+</svg>`;
+
+  const blob=new Blob([svg],{type:'image/svg+xml'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download=`${v.name.replace(/\s+/g,'_')}_MF.svg`;
+  link.click();
+  showToast(`SVG exported`);
+}
+
+function exportAllSVG() {
+  state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartSVG(v.id), i*200); });
+}
+
+// ── C++ (ESP32) CODE GENERATOR ──
+function viewESPCode() {
+  if (state.variables.length === 0) {
+      showToast("Please add variables and shapes first to generate C++ code.");
+      return;
+  }
+
+  let code = `// --- Generated by FuzzyLogic Visualizer ---\n// Designed for ESP32 / Arduino C++\n\n`;
+  code += `float trimf(float x, float a, float b, float c) {\n  if(x <= a || x >= c) return 0;\n  if(x == b) return 1;\n  if(x > a && x < b) return (x - a)/(b - a);\n  if(x > b && x < c) return (c - x)/(c - b);\n  return 0;\n}\n\n`;
+  code += `float trapmf(float x, float a, float b, float c, float d) {\n  if(x <= a || x >= d) return 0;\n  if(x >= b && x <= c) return 1;\n  if(x > a && x < b) return (x - a)/(b - a);\n  if(x > c && x < d) return (d - x)/(d - c);\n  return 0;\n}\n\n`;
+
+  // Generate variables
+  state.variables.forEach(v => {
+      code += `// MFs for ${v.name}\n`;
+      v.mfs.forEach(m => {
+          const safeName = v.name.replace(/[^a-zA-Z0-9]/g, '');
+          const safeLabel = m.label.replace(/[^a-zA-Z0-9]/g, '');
+          
+          if(m.shape === 'triangular') {
+              code += `float get_${safeName}_${safeLabel}(float val) { return trimf(val, ${m.params.a}, ${m.params.b}, ${m.params.c}); }\n`;
+          } else if(m.shape === 'trapezoidal') {
+              code += `float get_${safeName}_${safeLabel}(float val) { return trapmf(val, ${m.params.a}, ${m.params.b}, ${m.params.c}, ${m.params.d}); }\n`;
+          } else {
+              code += `// Note: shape '${m.shape}' not fully supported in this basic C++ generator.\n`;
+          }
+      });
+      code += `\n`;
+  });
+
+  // Output rules (AND implemented via minimum)
+  if (state.rules.length > 0) {
+      code += `// Rule Evaluation\nvoid evaluateRules() {\n`;
+      state.rules.forEach((r, idx) => {
+          let conds = [];
+          for(let vId in r.conditions) {
+              const v = state.variables.find(x => x.id === vId);
+              const m = v?.mfs.find(x => x.id === r.conditions[vId]);
+              if(v && m) {
+                  const safeName = v.name.replace(/[^a-zA-Z0-9]/g, '');
+                  const safeLabel = m.label.replace(/[^a-zA-Z0-9]/g, '');
+                  conds.push(`get_${safeName}_${safeLabel}(${safeName.toLowerCase()}_val)`);
+              }
+          }
+          
+          const outV = state.variables.find(x => x.id === r.conclusion.varId);
+          const outM = outV?.mfs.find(x => x.id === r.conclusion.mfId);
+          
+          if(conds.length > 0 && outV && outM) {
+              let minStr = conds[0];
+              if(conds.length > 1) {
+                  minStr = `min(${conds[0]}, ${conds[1]})`;
+                  for(let i=2; i<conds.length; i++) minStr = `min(${minStr}, ${conds[i]})`;
+              }
+              const safeOutName = outV.name.replace(/[^a-zA-Z0-9]/g, '');
+              const safeOutLabel = outM.label.replace(/[^a-zA-Z0-9]/g, '');
+              
+              code += `  // Rule ${idx+1}\n  float rule${idx+1} = ${minStr};\n  ${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()} = max(${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()}, rule${idx+1});\n\n`;
+          }
+      });
+      code += `}\n`;
+  }
+
+  // Open in a clean new tab
+  const newWindow = window.open("", "_blank");
+  newWindow.document.write(`<title>C++ Code Export</title><pre style="background: #0d0f14; color: #10b981; padding: 20px; font-family: monospace; font-size: 14px; height: 100vh; margin: 0; overflow-y: auto;">${code}</pre>`);
+}
+
+// ── PYTHON CODE EXPORT ──
+function exportPythonCode() {
+  const pname = document.getElementById('projectName').value || 'fuzzy_project';
+  let code=`# FuzzyLogic Visualizer — Python Code Export
+# Project: ${pname}
+# Generated by FuzzyLogic Visualizer v1.0 — Zamm Studio © 2026
+# FIS Type: ${state.fisType} | Defuzz: ${state.defuzz}
+
+import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
+import matplotlib.pyplot as plt
+
+plt.style.use('dark_background')
+
+`;
+  const inputs=state.variables.filter(v=>v.type==='input');
+  const outputs=state.variables.filter(v=>v.type==='output');
+
+  inputs.forEach(v=>{
+    const safeName=v.name.replace(/\s+/g,'_').toLowerCase();
+    code+=`# Input: ${v.name}\n${safeName} = ctrl.Antecedent(np.linspace(${v.min}, ${v.max}, 500), '${safeName}')\n`;
+    v.mfs.forEach(mf=>{
+      const safeLabel=mf.label.replace(/\s+/g,'_').toLowerCase();
+      code+=`${safeName}['${safeLabel}'] = fuzz.${pyMF(mf)}\n`;
+    });
+    code+=`\n`;
+  });
+
+  outputs.forEach(v=>{
+    const safeName=v.name.replace(/\s+/g,'_').toLowerCase();
+    code+=`# Output: ${v.name}\n${safeName} = ctrl.Consequent(np.linspace(${v.min}, ${v.max}, 500), '${safeName}')\n`;
+    v.mfs.forEach(mf=>{
+      const safeLabel=mf.label.replace(/\s+/g,'_').toLowerCase();
+      code+=`${safeName}['${safeLabel}'] = fuzz.${pyMF(mf)}\n`;
+    });
+    code+=`\n`;
+  });
+
+  if(state.rules.length>0) {
+    code+=`# Rules\n`;
+    state.rules.forEach((r,i)=>{
+      let condParts = [];
+      for(let vId in r.conditions) {
+          const av=state.variables.find(v=>v.id===vId);
+          const amf=av?.mfs.find(m=>m.id===r.conditions[vId]);
+          if(av&&amf){
+              const an=av.name.replace(/\s+/g,'_').toLowerCase();
+              const al=amf.label.replace(/\s+/g,'_').toLowerCase();
+              condParts.push(`${an}['${al}']`);
+          }
+      }
+      
+      const cv=state.variables.find(v=>v.id===r.conclusion.varId);
+      const cmf=cv?.mfs.find(m=>m.id===r.conclusion.mfId);
+      if(condParts.length > 0 && cv && cmf) {
+          let condExpr = condParts.join(' & '); // scikit-fuzzy uses & for AND
+          const cn=cv.name.replace(/\s+/g,'_').toLowerCase();
+          const cl=cmf.label.replace(/\s+/g,'_').toLowerCase();
+          code+=`rule${i+1} = ctrl.Rule(${condExpr}, ${cn}['${cl}'])\n`;
+      }
+    });
+    const ruleNames=state.rules.map((_,i)=>`rule${i+1}`).join(', ');
+    const outName=outputs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output';
+    code+=`\n# Control system\n${outName}_ctrl = ctrl.ControlSystem([${ruleNames}])\n${outName}_sim = ctrl.ControlSystemSimulation(${outName}_ctrl)\n\n`;
+  }
+
+  code+=`# Plot membership functions\n`;
+  [...inputs,...outputs].forEach(v=>{
+    const safeName=v.name.replace(/\s+/g,'_').toLowerCase();
+    code+=`${safeName}.view()\n`;
+  });
+  code+=`plt.show()\n`;
+
+  const blob=new Blob([code],{type:'text/plain'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download=`${pname.replace(/\s+/g,'_')}_fuzzy.py`;
+  link.click();
+  showToast(`Python code exported`);
+}
+
+function pyMF(mf) {
+  const p=mf.params;
+  const u=`np.linspace(0,1,500)`;
+  switch(mf.shape) {
+    case 'triangular': return `trimf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.a}, ${p.b}, ${p.c}])`;
+    case 'trapezoidal': return `trapmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.a}, ${p.b}, ${p.c}, ${p.d}])`;
+    case 'gaussian': return `gaussmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.mean}, ${p.sigma})`;
+    case 'bell': return `gbellmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.a}, ${p.b}, ${p.c})`;
+    case 'sigmoidal': return `sigmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.a}, ${p.c})`;
+    default: return `trimf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.x||50}-1, ${p.x||50}, ${p.x||50}+1])`;
+  }
+}
+
+// ── DYNAMIC MULTI-INPUT RULES ──
+function toggleRules() {
+  const body=document.getElementById('rulesBody');
+  const btn=document.getElementById('rulesToggle');
+  body.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+function updateRuleBuilder() {
+  const el = document.getElementById('ruleBuilder');
+  const inputs = state.variables.filter(v => v.type === 'input' && v.mfs.length > 0);
+  const outputs = state.variables.filter(v => v.type === 'output' && v.mfs.length > 0);
+
+  if (inputs.length === 0 || outputs.length === 0) {
+      el.innerHTML = '<span class="rule-label" style="color:var(--text3)">Add at least 1 input and 1 output with shapes to build rules.</span>';
+      return;
+  }
+
+  let html = `<span class="rule-label">IF</span>`;
+  
+  // Chain ALL inputs dynamically
+  inputs.forEach((inp, idx) => {
+      if (idx > 0) html += `<span class="rule-label" style="margin:0 4px;">AND</span>`;
+      html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(inp.name)} IS</span>`;
+      
+      let opts = `<option value="ANY">-- ANY --</option>` + inp.mfs.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
+      html += `<select class="rule-select rule-inp-sel" data-vid="${inp.id}">${opts}</select>`;
+  });
+
+  html += `<span class="rule-label" style="margin-left: 8px;">THEN</span>`;
+  
+  // Connect to the first available output
+  const out = outputs[0];
+  html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(out.name)} IS</span>`;
+  let outOpts = out.mfs.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
+  html += `<select class="rule-select rule-out-sel" data-vid="${out.id}">${outOpts}</select>`;
+
+  html += `<button class="btn btn-primary" onclick="addRule()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
+  
+  el.innerHTML = html;
+}
+
+function addRule() {
+  const inps = document.querySelectorAll('.rule-inp-sel');
+  const out = document.querySelector('.rule-out-sel');
+  
+  if(!inps.length || !out) return;
+
+  let conditions = {};
+  inps.forEach(sel => {
+      if(sel.value !== 'ANY') conditions[sel.dataset.vid] = sel.value;
+  });
+
+  if (Object.keys(conditions).length === 0) {
+      showToast('Please select at least one IF condition.');
+      return;
+  }
+
+  const conclusion = { varId: out.dataset.vid, mfId: out.value };
+
+  state.rules.push({ id: uid('r'), conditions, conclusion });
+  renderRules();
+  showToast('Rule added');
+}
+
+function renderRules() {
+  const el = document.getElementById('rulesList');
+  document.getElementById('ruleCount').textContent = state.rules.length + ' rule' + (state.rules.length !== 1 ? 's' : '');
+  
+  el.innerHTML = state.rules.map((r, i) => {
+      let condStrs = [];
+      for(let vid in r.conditions) {
+          const v = state.variables.find(x => x.id === vid);
+          const mf = v?.mfs.find(x => x.id === r.conditions[vid]);
+          if(v && mf) condStrs.push(`<b>${esc(v.name)}</b> IS <b>${esc(mf.label)}</b>`);
+      }
+      
+      const outV = state.variables.find(x => x.id === r.conclusion.varId);
+      const outMF = outV?.mfs.find(x => x.id === r.conclusion.mfId);
+      const outStr = `<b>${esc(outV?.name || '?')}</b> IS <b>${esc(outMF?.label || '?')}</b>`;
+
+      return `
+      <div class="rule-chip">
+          <span>${i + 1}. IF ${condStrs.join(' <i style="color:var(--text3); font-weight:normal;">AND</i> ')} THEN ${outStr}</span>
+          <button onclick="deleteRule('${r.id}')">×</button>
+      </div>`;
+  }).join('');
+}
+
+function deleteRule(id) {
+  state.rules = state.rules.filter(r => r.id !== id);
+  renderRules();
+}
+
+// ── SAVE / LOAD ──
+function saveProject() {
+  const name=document.getElementById('projectName').value||'project';
+  const data=JSON.stringify({
+    meta:{ name, fisType:state.fisType, defuzz:document.getElementById('defuzzMethod').value,
+           andMethod:document.getElementById('andMethod').value, orMethod:document.getElementById('orMethod').value,
+           created:new Date().toISOString(), version:'1.1' },
+    variables:state.variables, rules:state.rules
+  }, null, 2);
+  const blob=new Blob([data],{type:'application/json'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download=`${name.replace(/\s+/g,'_')}.fuzzyjson`;
+  link.click();
+  showToast('Project saved as .fuzzyjson');
+}
+
+function loadProject(evt) {
+  const file=evt.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const d=JSON.parse(e.target.result);
+      document.getElementById('projectName').value=d.meta?.name||'Loaded Project';
+      if(d.meta?.fisType) setFIS(d.meta.fisType, d.meta.fisType==='sugeno'?1:0);
+      if(d.meta?.defuzz) document.getElementById('defuzzMethod').value=d.meta.defuzz;
+      if(d.meta?.andMethod) document.getElementById('andMethod').value=d.meta.andMethod;
+      if(d.meta?.orMethod) document.getElementById('orMethod').value=d.meta.orMethod;
+      state.variables=d.variables||[];
+      
+      // Migrate old rules to new format safely
+      state.rules = (d.rules || []).map(r => {
+          if(r.conditions) return r; // Already modern
+          return {
+              id: r.id || uid('r'),
+              conditions: r.antVar && r.antMF ? { [r.antVar]: r.antMF } : {},
+              conclusion: { varId: r.consVar, mfId: r.consMF }
+          };
+      });
+
+      activeVarId=null;
+      colorIdx=0;
+      Object.values(chartInstances).forEach(c=>c.destroy());
+      chartInstances={};
+      document.getElementById('chartArea').innerHTML='';
+      renderVarLists();
+      renderMFEditor();
+      renderCharts();
+      updateRuleBuilder();
+      renderRules();
+      showToast('Project loaded successfully!');
+    } catch(err) { showToast('Error reading file. Make sure it is a valid .fuzzyjson file.'); }
+  };
+  reader.readAsText(file);
+  evt.target.value='';
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── HELPERS ──
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hexAlpha(hex,a) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// ── INIT ──
+renderVarLists();
+renderMFEditor();
+</script>
+</body>
+</html>
