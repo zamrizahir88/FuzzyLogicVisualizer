@@ -131,7 +131,7 @@ body {
 .btn-warn:hover { background: rgba(245,166,35,0.2); }
 
 /* â”€â”€ MAIN LAYOUT â”€â”€ */
-.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 200px - 44px); gap: 12px; padding: 12px; }
+.main { display: flex; flex: 1; min-height: 0; overflow: hidden; gap: 12px; padding: 12px; }
 
 /* â”€â”€ LEFT PANEL â”€â”€ */
 .panel-left {
@@ -139,6 +139,7 @@ body {
   display: flex; flex-direction: column;
   border: 1px solid var(--border);
   border-radius: 12px;
+  min-height: 0;
   overflow-y: auto;
   background: var(--surface);
 }
@@ -281,11 +282,13 @@ body {
 .panel-right {
   width: 30%; min-width: 320px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
-  overflow-y: auto; background: var(--surface);
+  min-height: 0;
+  overflow: hidden; background: var(--surface);
 }
 .panel-center {
   width: 40%; min-width: 380px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
+  min-height: 0;
   overflow: hidden; background: var(--surface);
 }
 .chart-toolbar {
@@ -350,6 +353,7 @@ body {
   border-top: none;
   background: var(--surface);
   flex: 1;
+  min-height: 0;
 }
 .rules-toggle {
   display: flex; align-items: center; gap: 8px;
@@ -364,6 +368,7 @@ body {
 .rules-toggle.open svg { transform: rotate(180deg); }
 .rules-body { display: none; padding: 12px 20px; }
 .rules-body.open { display: block; }
+.panel-rules .rules-body.open { height: calc(100% - 42px); overflow-y: auto; }
 .rule-builder {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
   padding: 10px 12px; background: var(--surface2);
@@ -476,11 +481,11 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     </div>
   </div>
   <div class="nav-sep"></div>
-  <div style="display:flex;flex-direction:column;gap:4px;padding:8px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);">
+  <div style="display:flex;flex-direction:column;gap:4px;padding:8px 12px;border:1px solid var(--border2);border-radius:10px;background:linear-gradient(135deg,#eef4ff,#ffffff);">
     <span style="font-size:13px;color:var(--accent);font-weight:700;">Created by Dr. Zamri</span>
     <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
+    <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">Curriculum Vitae</a>
   </div>
-  <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" class="btn" style="text-decoration:none;">CV</a>
   <span class="nav-badge">v2.0</span>
 </header>
 
@@ -492,10 +497,6 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
   </label>
   <button class="btn btn-success" onclick="saveProject()">Save</button>
   <button class="btn btn-primary" onclick="openDownloadCenter()">Download Center</button>
-  <button class="btn" onclick="exportAllPNG()">Export All PNG</button>
-  <button class="btn" onclick="exportAllSVG()">Export All SVG</button>
-  <button class="btn" onclick="exportPythonCode()">Python Code</button>
-  <button class="btn" onclick="viewESPCode()">C++ Code</button>
 </div>
 
 <div class="main">
@@ -570,6 +571,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
           <option value="lom">Largest of Maximum</option>
           <option value="som">Smallest of Maximum</option>
         </select>
+        <div style="flex-basis:100%;height:0;"></div>
         <span>AND:</span>
         <select class="defuzz-select" id="andMethod">
           <option value="min">min</option>
@@ -1060,7 +1062,11 @@ function exportChartPNG(vid) {
   const v = state.variables.find(x=>x.id===vid);
   const card = document.getElementById('chartcard_'+vid);
   if(!card) return;
-  html2canvas(card, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+  html2canvas(card, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    ignoreElements: (el) => el.classList && el.classList.contains('chart-export-row')
+  }).then(canvas => {
     const link = document.createElement('a');
     link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`;
     link.href = canvas.toDataURL('image/png', 1.0);
