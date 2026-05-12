@@ -38,7 +38,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -140,6 +140,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   min-height: 0;
+  height: 100%;
   overflow-y: auto;
   background: var(--surface);
 }
@@ -187,13 +188,15 @@ body {
   background: var(--surface3); padding: 1px 6px; border-radius: 4px;
 }
 .var-del {
-  opacity: 0; width: 16px; height: 16px; border-radius: 4px;
+  opacity: 0; width: 22px; height: 22px; border-radius: 6px;
   border: none; background: transparent; color: var(--danger);
-  cursor: pointer; font-size: 14px; line-height: 1;
+  cursor: pointer; line-height: 1;
   display: flex; align-items: center; justify-content: center;
   transition: opacity .15s;
 }
 .var-item:hover .var-del { opacity: 1; }
+.var-del svg, .mf-del-btn svg, .rule-del-btn svg { width: 13px; height: 13px; }
+.var-del:hover, .mf-del-btn:hover, .rule-del-btn:hover { background: rgba(180,35,59,0.08); }
 
 /* MF Editor */
 .mf-editor { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -247,8 +250,11 @@ body {
   appearance: none; min-width: 80px;
 }
 .mf-del-btn {
+  width: 22px; height: 22px;
   background: transparent; border: none; color: var(--text3);
-  cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px;
+  cursor: pointer; line-height: 1; padding: 0;
+  border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
   transition: color .15s;
 }
 .mf-del-btn:hover { color: var(--danger); }
@@ -283,12 +289,14 @@ body {
   width: 30%; min-width: 320px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
   min-height: 0;
-  overflow: hidden; background: var(--surface);
+  height: 100%;
+  overflow-y: auto; background: var(--surface);
 }
 .panel-center {
   width: 40%; min-width: 380px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
   min-height: 0;
+  height: 100%;
   overflow: hidden; background: var(--surface);
 }
 .chart-toolbar {
@@ -484,7 +492,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
   <div style="display:flex;flex-direction:column;gap:4px;padding:8px 12px;border:1px solid var(--border2);border-radius:10px;background:linear-gradient(135deg,#eef4ff,#ffffff);">
     <span style="font-size:13px;color:var(--accent);font-weight:700;">Created by Dr. Zamri</span>
     <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
-    <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">Curriculum Vitae</a>
+    <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">CV Link</a>
   </div>
   <span class="nav-badge">v2.0</span>
 </header>
@@ -745,7 +753,15 @@ function renderVarLists() {
         <div class="var-type-dot dot-${type}"></div>
         <span class="var-name">${esc(v.name)}</span>
         <span class="var-mf-count">${v.mfs.length} MF</span>
-        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete">Ã—</button>
+        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete variable">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M8 6v-1a2 2 0 012-2h4a2 2 0 012 2v1"></path>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
       </div>`).join('') : `<div style="font-size:11px;color:var(--text3);padding:4px 0;">No ${type} variables</div>`;
   });
 }
@@ -806,7 +822,15 @@ function mfCardHTML(v, mf) {
       <input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)">
       <input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)">
       <select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();renderCharts();">${shapeOpts}</select>
-      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">Ã—</button>
+      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M8 6v-1a2 2 0 012-2h4a2 2 0 012 2v1"></path>
+          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
     </div>
     <div class="mf-params">${paramHTML}</div>
   </div>`;
@@ -1414,7 +1438,15 @@ function renderRules() {
             <button class="rule-action-btn" onclick="duplicateRule('${r.id}')">Dup</button>
             <button class="rule-action-btn" onclick="moveRuleUp('${r.id}')" ${i===0?'disabled':''}>Up</button>
             <button class="rule-action-btn" onclick="moveRuleDown('${r.id}')" ${i===state.rules.length-1?'disabled':''}>Down</button>
-            <button onclick="deleteRule('${r.id}')">x</button>
+            <button class="rule-del-btn" onclick="deleteRule('${r.id}')" title="Delete rule">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M8 6v-1a2 2 0 012-2h4a2 2 0 012 2v1"></path>
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
           </div>
       </div>`;
   }).join('');
