@@ -52,59 +52,55 @@ body {
 
 /* ── MODERN NAVBAR ── */
 .navbar {
-  display: flex; align-items: center; gap: 16px;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px;
   height: 80px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
+  position: relative; z-index: 100;
   flex-shrink: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
-.nav-logo {
-  display: flex; align-items: center; gap: 14px;
-}
+.nav-left { display: flex; align-items: center; gap: 14px; width: 25%; }
 .nav-logo-icon {
   width: 36px; height: 36px;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  position: relative;
-  overflow: hidden;
+  position: relative; overflow: hidden;
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 .nav-logo-icon svg { position: relative; z-index: 1; }
-.nav-titles { display: flex; flex-direction: column; }
+.nav-badge {
+  font-size: 11px; font-family: var(--mono); font-weight: 600;
+  background: var(--accent-dim); color: var(--accent2);
+  padding: 4px 8px; border-radius: 20px; letter-spacing: .04em;
+}
+
+.nav-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: absolute; left: 50%; transform: translateX(-50%);
+  text-align: center; width: 50%;
+}
 .nav-logo-text { font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text); }
 .nav-logo-text span { color: var(--accent); }
 .nav-subtitle { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.03em; margin-top: 2px; }
 
-.nav-badge {
-  font-size: 10px; font-family: var(--mono); font-weight: 600;
-  background: var(--accent-dim); color: var(--accent2);
-  padding: 3px 8px; border-radius: 20px;
-  letter-spacing: .04em; margin-left: 4px;
-}
-.nav-spacer { flex: 1; }
-
+.nav-right { display: flex; align-items: center; justify-content: flex-end; gap: 16px; width: 25%; }
 .nav-author {
   font-size: 13px; font-weight: 500; color: var(--text2);
   background: var(--surface2); padding: 8px 16px; border-radius: 30px;
   border: 1px solid var(--border);
   display: flex; align-items: center; gap: 6px;
 }
-.nav-author a {
-  color: var(--accent); font-weight: 700; text-decoration: none; 
-  transition: all 0.2s ease;
-}
+.nav-author a { color: var(--accent); font-weight: 700; text-decoration: none; transition: all 0.2s ease; }
 .nav-author a:hover { opacity: 0.8; text-decoration: underline; }
 
 .nav-project-name {
   font-family: var(--mono); font-size: 12px; color: var(--text2);
   background: var(--surface2); border: 1px solid var(--border);
   padding: 5px 12px; border-radius: 6px;
-  outline: none; width: 200px;
-  transition: border-color .2s;
+  outline: none; width: 200px; transition: border-color .2s;
 }
 .nav-project-name:focus { border-color: var(--accent); color: var(--text); }
 
@@ -124,45 +120,32 @@ body {
 .btn-warn { background: var(--warn); border-color: var(--warn); color: #fff; }
 .btn-warn:hover { background: #9e6300; color: #fff; }
 
-/* ── MAIN LAYOUT ── */
-.main { display: flex; flex: 1; min-height: 0; overflow: hidden; gap: 12px; padding: 12px; }
+/* ── MAIN WORKSPACE ── */
+.main { 
+  display: flex; flex: 1; gap: 12px; padding: 12px; 
+  height: calc(100vh - 80px - 56px - 44px); /* Exact calculation to prevent outer scrolling */
+  min-height: 0; overflow: hidden; 
+}
 
-/* ── PANELS (FULLY SCROLLABLE) ── */
-.panel-left {
-  width: 30%; min-width: 320px; flex-shrink: 0;
+/* ── PANELS (FULLY SCROLLABLE INNER CONTENTS) ── */
+.panel-left, .panel-center, .panel-right {
   display: flex; flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow-y: auto; /* SCROLLBAR HERE */
-  background: var(--surface);
-}
-
-.panel-center {
-  width: 40%; min-width: 380px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
-  overflow-y: auto; /* SCROLLBAR HERE */
-  background: var(--surface);
+  background: var(--surface); min-height: 0; overflow: hidden;
 }
 
-.panel-right {
-  width: 30%; min-width: 320px; display: flex; flex-direction: column;
-  border: 1px solid var(--border); border-radius: 12px;
-  overflow-y: auto; /* SCROLLBAR HERE */
-  background: var(--surface);
-}
+.panel-left { width: 30%; min-width: 320px; flex-shrink: 0; }
+.panel-center { flex: 1; min-width: 380px; }
+.panel-right { width: 30%; min-width: 320px; flex-shrink: 0; }
 
-.panel-section {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 10px;
-}
-.section-label {
-  font-size: 11px; font-family: var(--mono); font-weight: 600;
-  letter-spacing: .08em; color: var(--text3); text-transform: uppercase;
-}
+.panel-left-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+.chart-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.panel-rules { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.rules-body.open { display: flex; flex: 1; overflow-y: auto; flex-direction: column; gap: 12px; min-height: 0; }
+
+.panel-section { padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.section-label { font-size: 11px; font-family: var(--mono); font-weight: 600; letter-spacing: .08em; color: var(--text3); text-transform: uppercase; }
 .icon-btn {
   width: 26px; height: 26px; border-radius: 6px;
   border: 1px solid var(--border2); background: transparent;
@@ -174,12 +157,7 @@ body {
 
 /* Variable list */
 .var-list { display: flex; flex-direction: column; gap: 4px; }
-.var-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: 7px;
-  cursor: pointer; border: 1px solid transparent;
-  transition: all .15s; position: relative;
-}
+.var-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; cursor: pointer; border: 1px solid transparent; transition: all .15s; position: relative; }
 .var-item:hover { background: var(--surface2); }
 .var-item.active { background: var(--accent-dim); border-color: rgba(124,109,250,0.3); }
 .var-type-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -193,124 +171,47 @@ body {
 .var-del {
   opacity: 0; width: 24px; height: 24px; border-radius: 6px;
   border: none; background: rgba(180, 35, 59, 0.1); color: var(--danger);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .var-item:hover .var-del { opacity: 1; }
 .var-del:hover { background: var(--danger); color: white; }
 
 /* MF Editor */
 .mf-editor { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
-.mf-var-header {
-  padding: 12px; background: var(--surface2); border-radius: 8px;
-  border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-}
+.mf-var-header { padding: 12px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .field-group { display: flex; flex-direction: column; gap: 4px; }
 .field-label { font-size: 10px; color: var(--text3); font-family: var(--mono); font-weight: 600; letter-spacing: .05em; }
-.field-input {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
-  padding: 6px 8px; outline: none; width: 100%;
-  transition: border-color .15s;
-}
+.field-input { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px; padding: 6px 8px; outline: none; width: 100%; transition: border-color .15s; }
 .field-input:focus { border-color: var(--accent); }
-.field-select {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
-  padding: 6px 8px; outline: none; width: 100%; cursor: pointer;
-}
-
-/* MF row card */
-.mf-card {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 9px; overflow: hidden;
-  transition: border-color .15s;
-}
+.mf-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; overflow: hidden; transition: border-color .15s; }
 .mf-card:hover { border-color: var(--border2); }
-.mf-card-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-bottom: 1px solid var(--border);
-}
-.mf-color-dot {
-  width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 0 0 1px var(--border2);
-}
-.mf-label-input {
-  flex: 1; background: transparent; border: none;
-  color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 600;
-  outline: none; padding: 2px 4px;
-}
-.mf-shape-select {
-  font-size: 11px; font-family: var(--mono); font-weight: 500;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text2); padding: 4px 6px;
-  outline: none; cursor: pointer; min-width: 80px;
-}
-.mf-del-btn {
-  width: 24px; height: 24px; border-radius: 6px;
-  background: transparent; border: none; color: var(--text3);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
+.mf-card-header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.mf-color-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 0 0 1px var(--border2); }
+.mf-label-input { flex: 1; background: transparent; border: none; color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 600; outline: none; padding: 2px 4px; }
+.mf-shape-select { font-size: 11px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; color: var(--text2); padding: 4px 6px; outline: none; cursor: pointer; min-width: 80px; }
+.mf-del-btn { width: 24px; height: 24px; border-radius: 6px; background: transparent; border: none; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .mf-del-btn:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
-
 .mf-params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
 .mf-param { display: flex; flex-direction: column; gap: 4px; }
 .mf-param-label { font-size: 9px; font-family: var(--mono); font-weight: 600; color: var(--text3); letter-spacing: .05em; text-align: center; }
-.mf-param-input {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text); font-family: var(--mono); font-size: 11px;
-  padding: 5px 6px; outline: none; width: 100%; text-align: center;
-  transition: border-color .15s;
-}
+.mf-param-input { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-family: var(--mono); font-size: 11px; padding: 5px 6px; outline: none; width: 100%; text-align: center; transition: border-color .15s; }
 .mf-param-input:focus { border-color: var(--accent); }
-.add-mf-btn {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px; border-radius: 8px; font-weight: 600;
-  border: 1px dashed var(--border2); background: transparent;
-  color: var(--text3); font-size: 12px; cursor: pointer;
-  transition: all .15s;
-}
+.add-mf-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 8px; font-weight: 600; border: 1px dashed var(--border2); background: transparent; color: var(--text3); font-size: 12px; cursor: pointer; transition: all .15s; }
 .add-mf-btn:hover { border-color: var(--accent); color: var(--accent2); background: var(--accent-dim); }
 
-.empty-state {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; color: var(--text3); text-align: center; padding: 40px 20px;
-}
+.empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); text-align: center; padding: 40px 20px; }
 .empty-state svg { opacity: .3; }
 .empty-state p { font-size: 12px; line-height: 1.6; }
 
 /* ── CHARTS AREA ── */
-.chart-toolbar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  flex-shrink: 0;
-}
+.chart-toolbar { display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
 .chart-title { font-family: var(--display); font-size: 14px; font-weight: 700; flex: 1; }
-.chart-area { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
-.chart-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  animation: fadeIn .3s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-}
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; animation: fadeIn .3s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-shrink: 0;}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-.chart-card-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
-}
-.chart-var-badge {
-  font-size: 10px; font-family: var(--mono); font-weight: 600;
-  padding: 3px 8px; border-radius: 20px;
-}
+.chart-card-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.chart-var-badge { font-size: 10px; font-family: var(--mono); font-weight: 600; padding: 3px 8px; border-radius: 20px; }
 .badge-input { background: rgba(11,117,227,0.15); color: var(--accent2); }
 .badge-output { background: rgba(18,122,65,0.12); color: var(--success); }
 .chart-var-name { font-family: var(--display); font-size: 15px; font-weight: 700; }
@@ -318,175 +219,83 @@ body {
 .chart-canvas-wrap { padding: 16px 16px 8px; position: relative; }
 .chart-canvas-wrap canvas { width: 100% !important; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px 14px; }
-.legend-pill {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; font-family: var(--mono); font-weight: 500;
-  padding: 4px 10px; border-radius: 20px;
-  border: 1px solid;
-}
-.chart-export-row {
-  display: flex; gap: 6px; padding: 0 16px 16px;
-}
+.legend-pill { display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: var(--mono); font-weight: 500; padding: 4px 10px; border-radius: 20px; border: 1px solid; }
+.chart-export-row { display: flex; gap: 6px; padding: 0 16px 16px; }
 
-.no-vars {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 16px;
-  color: var(--text3); padding: 40px 0;
-}
-.no-vars-icon {
-  width: 64px; height: 64px; border-radius: 20px;
-  background: var(--surface2); display: flex; align-items: center; justify-content: center;
-}
+.no-vars { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: var(--text3); padding: 40px 0; }
+.no-vars-icon { width: 64px; height: 64px; border-radius: 20px; background: var(--surface2); display: flex; align-items: center; justify-content: center; }
 .no-vars h3 { font-family: var(--display); font-size: 18px; color: var(--text2); }
 .no-vars p { font-size: 13px; text-align: center; max-width: 280px; line-height: 1.7; }
 
 /* ── RULE EDITOR ── */
-.panel-rules {
-  background: var(--surface);
-  display: flex; flex-direction: column;
-}
-.rules-toggle {
-  display: flex; align-items: center; gap: 8px;
-  padding: 12px 20px; cursor: pointer;
-  font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text2);
-  border: none; background: var(--surface2); width: 100%;
-  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-  letter-spacing: .04em;
-}
+.rules-toggle { display: flex; align-items: center; gap: 8px; padding: 12px 20px; cursor: pointer; font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text2); border: none; background: var(--surface2); width: 100%; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); letter-spacing: .04em; flex-shrink:0; }
 .rules-toggle:hover { color: var(--text); }
 .rules-body { display: none; padding: 14px 16px; flex-direction: column; gap: 12px; }
-.rules-body.open { display: flex; }
 
-.rule-builder {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-  padding: 12px; background: var(--surface2);
-  border: 1px solid var(--border); border-radius: 10px;
-}
+.rule-builder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; flex-shrink:0;}
 .rule-label { font-size: 11px; font-family: var(--mono); color: var(--accent2); font-weight: 600; }
-.rule-select {
-  font-size: 11px; font-family: var(--mono); font-weight: 500;
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 5px; color: var(--text); padding: 5px 8px;
-  outline: none; cursor: pointer;
-}
+.rule-select { font-size: 11px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border2); border-radius: 5px; color: var(--text); padding: 5px 8px; outline: none; cursor: pointer; }
 .rules-list { display: flex; flex-direction: column; gap: 6px; }
-.rule-chip {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  font-size: 12px; font-family: var(--mono); color: var(--text2);
-  padding: 8px 12px; background: var(--surface); border-radius: 8px;
-  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-}
+.rule-chip { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; font-family: var(--mono); color: var(--text2); padding: 8px 12px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 .rule-chip span { flex: 1; min-width: 200px; line-height: 1.5; }
 .rule-chip-controls { display: flex; align-items: center; gap: 6px; }
-.rule-chip-controls input[type="number"] {
-  width: 50px; background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 5px; padding: 4px; font-size: 10px; font-family: var(--mono);
-}
-.rule-action-btn {
-  background: transparent; border: 1px solid var(--border2); color: var(--text2);
-  font-size: 10px; font-weight: 600; border-radius: 5px; padding: 4px 8px; cursor: pointer;
-  transition: all 0.15s;
-}
+.rule-chip-controls input[type="number"] { width: 50px; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); border-radius: 5px; padding: 4px; font-size: 10px; font-family: var(--mono); }
+.rule-action-btn { background: transparent; border: 1px solid var(--border2); color: var(--text2); font-size: 10px; font-weight: 600; border-radius: 5px; padding: 4px 8px; cursor: pointer; transition: all 0.15s; }
 .rule-action-btn:hover { color: var(--text); background: var(--surface3); }
-.rule-chip-del {
-  width: 24px; height: 24px; border-radius: 5px;
-  background: transparent; border: none; color: var(--text3);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
+.rule-chip-del { width: 24px; height: 24px; border-radius: 5px; background: transparent; border: none; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .rule-chip-del:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
 
 /* modal */
-.modal-backdrop {
-  position: fixed; inset: 0; background: rgba(18, 36, 63, 0.7);
-  display: flex; align-items: center; justify-content: center; z-index: 1200;
-}
-.modal-card {
-  width: min(860px, 94vw);
-  background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-.modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-}
+.modal-backdrop { position: fixed; inset: 0; background: rgba(18, 36, 63, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
+.modal-card { width: min(860px, 94vw); background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .modal-header h3 { font-family: var(--display); font-size: 18px; }
-.modal-footer { 
-  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-  padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface2); border-radius: 0 0 16px 16px;
-}
+.modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface2); border-radius: 0 0 16px 16px; }
 .modal-body { padding: 20px; }
-.download-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
-}
+.download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
 .download-grid h4 { margin-bottom: 10px; color: var(--accent2); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
 .download-grid label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin: 8px 0; cursor: pointer; font-weight: 500; }
 
 /* ── FOOTER ── */
-.footer {
-  height: 44px; display: flex; align-items: center; justify-content: center;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 11px; font-family: var(--mono); font-weight: 500; color: var(--text3);
-  letter-spacing: .02em; flex-shrink: 0;
-}
+.footer { height: 44px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--border); background: var(--surface); font-size: 11px; font-family: var(--mono); font-weight: 500; color: var(--text3); letter-spacing: .02em; flex-shrink: 0; }
 
 /* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 48px; right: 24px;
-  background: var(--text); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px; padding: 12px 20px;
-  font-size: 13px; font-family: var(--mono); font-weight: 500; color: #fff;
-  display: flex; align-items: center; gap: 10px;
-  opacity: 0; transform: translateY(8px);
-  transition: all .25s; pointer-events: none; z-index: 999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+.toast { position: fixed; bottom: 48px; right: 24px; background: var(--text); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 20px; font-size: 13px; font-family: var(--mono); font-weight: 500; color: #fff; display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 
 /* ── DEFUZZ ROW ── */
-.defuzz-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 24px; border-bottom: 1px solid var(--border);
-  background: var(--surface); font-size: 12px; font-family: var(--mono); font-weight: 600; color: var(--text2);
-  flex-shrink: 0;
-}
-.settings-row { border-top: 1px solid var(--border); padding: 14px 16px; background: transparent; border-bottom: none; }
-.defuzz-select {
-  font-size: 11px; font-family: var(--mono); font-weight: 500;
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 6px; color: var(--text); padding: 4px 10px;
-  outline: none; cursor: pointer; transition: border-color 0.2s;
-}
+.defuzz-row { display: flex; align-items: center; gap: 12px; padding: 10px 24px; border-bottom: 1px solid var(--border); background: var(--surface); font-size: 12px; font-family: var(--mono); font-weight: 600; color: var(--text2); flex-shrink: 0; }
+.defuzz-select { font-size: 11px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); padding: 4px 10px; outline: none; cursor: pointer; transition: border-color 0.2s; }
 .defuzz-select:focus { border-color: var(--accent); }
 
 input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
 
 /* Global SVG Bin Icon Reference to reuse cleanly */
-.svg-trash {
-  width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-}
+.svg-trash { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
 <body>
 
 <header class="navbar">
-  <div class="nav-logo">
+  <div class="nav-left">
     <div class="nav-logo-icon">
       <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
         <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
-    <div class="nav-titles">
-      <div class="nav-logo-text">FuzzyLogic <span>Visualizer</span></div>
-      <div class="nav-subtitle">Intelligent Fuzzy Membership Function Designer</div>
-    </div>
     <span class="nav-badge">v2.0</span>
   </div>
-  <div class="nav-spacer"></div>
-  <div class="nav-author">
-    Created by <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank">Dr. Zamri</a>
+  
+  <div class="nav-center">
+    <div class="nav-logo-text">FuzzyLogic <span>Visualizer</span></div>
+    <div class="nav-subtitle">Intelligent Fuzzy Membership Function Designer</div>
+  </div>
+  
+  <div class="nav-right">
+    <div class="nav-author">
+      Created by <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank">Dr. Zamri</a>
+    </div>
   </div>
 </header>
 
@@ -502,7 +311,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     Save
   </button>
   <button class="btn btn-primary" onclick="openDownloadCenter()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 1 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
     Download Center
   </button>
 </div>
@@ -510,54 +319,48 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
 <div class="main">
 
   <div class="panel-left">
-    <div class="panel-section">
-      <div class="section-header">
-        <span class="section-label">Input Variables</span>
-        <button class="icon-btn" onclick="addVariable('input')" title="Add input variable">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-      <div class="var-list" id="inputVarList"></div>
-    </div>
+    <div class="panel-left-scroll">
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">Input Variables</span>
+            <button class="icon-btn" onclick="addVariable('input')" title="Add input variable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <div class="var-list" id="inputVarList"></div>
+        </div>
 
-    <div class="panel-section">
-      <div class="section-header">
-        <span class="section-label">Output Variables</span>
-        <button class="icon-btn" onclick="addVariable('output')" title="Add output variable">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-      <div class="var-list" id="outputVarList"></div>
-    </div>
+        <div class="panel-section">
+          <div class="section-header">
+            <span class="section-label">Output Variables</span>
+            <button class="icon-btn" onclick="addVariable('output')" title="Add output variable">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <div class="var-list" id="outputVarList"></div>
+        </div>
 
-    <div class="mf-editor" id="mfEditor">
-      <div class="empty-state">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <rect width="40" height="40" rx="10" fill="#e3edff"/>
-          <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#6d83a0" stroke-width="2" stroke-linecap="round" fill="none"/>
-        </svg>
-        <p>Select a variable from above<br>to edit its membership functions</p>
-      </div>
+        <div class="mf-editor" id="mfEditor">
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" rx="10" fill="#e3edff"/>
+              <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#6d83a0" stroke-width="2" stroke-linecap="round" fill="none"/>
+            </svg>
+            <p>Select a variable from above<br>to edit its membership functions</p>
+          </div>
+        </div>
     </div>
   </div>
 
   <div class="panel-center">
     <div class="chart-toolbar">
       <span class="chart-title">Membership Function Graphs</span>
-      <button class="btn btn-primary" onclick="showAllGraphs()">Show All Graphs</button>
-      <button class="btn" onclick="showSelectedGraph()">Show Selected</button>
+      <button class="btn" id="btnViewSummary" onclick="setViewMode('summary')">Linguistic Summary</button>
+      <button class="btn" id="btnViewSelected" onclick="setViewMode('selected')">Selected Graph</button>
+      <button class="btn btn-primary" id="btnViewAll" onclick="setViewMode('all')">Show All Graphs</button>
     </div>
     <div class="chart-area" id="chartArea">
-      <div class="no-vars">
-        <div class="no-vars-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-          </svg>
-        </div>
-        <h3>No Variables Yet</h3>
-        <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p>
       </div>
-    </div>
   </div>
 
   <div class="panel-right">
@@ -565,7 +368,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
       <div class="section-header" style="margin-bottom:8px;">
         <span class="section-label">FIS Settings</span>
       </div>
-      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0; gap:8px; flex-wrap:wrap;">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:12px; font-family:var(--mono); font-weight:600; color:var(--text2);">
         <span>FIS:</span>
         <select class="defuzz-select" id="fisTypeSelect" onchange="setFIS(this.value)">
           <option value="mamdani">Mamdani</option>
@@ -597,7 +400,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
       <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
         RULE EDITOR
-        <span id="ruleCount">0 rules</span>
+        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
       </button>
       <div class="rules-body open" id="rulesBody">
         <div class="rule-builder" id="ruleBuilder">
@@ -667,7 +470,7 @@ let state = {
   variables:[], rules:[]
 };
 let activeVarId = null;
-let showAllMode = false;
+let currentViewMode = 'summary'; // 'summary', 'selected', 'all'
 let editingRuleId = null;
 let chartInstances = {};
 let chartsRaf = null;
@@ -675,7 +478,6 @@ let colorIdx = 0;
 let mfIdCounter = 1;
 let varIdCounter = 1;
 
-// The SVG Trash Icon definition for reuse
 const trashIcon = `<svg class="svg-trash" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
 
 function uid(prefix='') { return prefix + (Date.now().toString(36) + Math.random().toString(36).slice(2)); }
@@ -707,23 +509,31 @@ function setFIS(type) {
   if(orSel) orSel.disabled = disabled;
 }
 
+// ── VIEW MODES ──
+function setViewMode(mode) {
+  currentViewMode = mode;
+  document.getElementById('btnViewAll').className = mode === 'all' ? 'btn btn-primary' : 'btn';
+  document.getElementById('btnViewSelected').className = mode === 'selected' ? 'btn btn-primary' : 'btn';
+  document.getElementById('btnViewSummary').className = mode === 'summary' ? 'btn btn-primary' : 'btn';
+  renderCharts();
+}
+
 // ── VARIABLE MANAGEMENT ──
 function addVariable(type) {
   const name = type==='input' ? `Input ${state.variables.filter(v=>v.type==='input').length+1}` : `Output ${state.variables.filter(v=>v.type==='output').length+1}`;
   const v = { id: uid('v'), type, name, min:0, max:100, unit:'', mfs:[] };
   state.variables.push(v);
   renderVarLists();
-  selectVar(v.id);
   updateRuleBuilder();
   showToast(`Variable "${name}" added`);
+  setViewMode('summary'); // Stay in summary view by default so user is not trapped
 }
 
 function deleteVariable(id, e) {
   e.stopPropagation();
   state.variables = state.variables.filter(v=>v.id!==id);
-  // Clean up rules using this variable
   state.rules = state.rules.filter(r => r.conditions[id] === undefined && r.conclusion.varId !== id);
-  if(activeVarId===id) { activeVarId=null; }
+  if(activeVarId===id) { activeVarId=null; setViewMode('summary'); }
   renderVarLists();
   renderMFEditor();
   renderCharts();
@@ -733,20 +543,9 @@ function deleteVariable(id, e) {
 
 function selectVar(id) {
   activeVarId = id;
-  showAllMode = false;
+  setViewMode('selected');
   renderVarLists();
   renderMFEditor();
-  renderCharts();
-}
-
-function showAllGraphs() {
-  showAllMode = true;
-  renderCharts();
-}
-
-function showSelectedGraph() {
-  showAllMode = false;
-  renderCharts();
 }
 
 function renderVarLists() {
@@ -837,9 +636,7 @@ function getMFParamDefs(shape) {
   return defs[shape] || defs.triangular;
 }
 
-function pickColor(vid, mfid, dot) {
-  document.getElementById('cp_'+mfid).click();
-}
+function pickColor(vid, mfid, dot) { document.getElementById('cp_'+mfid).click(); }
 
 function updateMFColor(vid, mfid, color) {
   updateMFProp(vid, mfid, 'color', color);
@@ -887,14 +684,11 @@ function deleteMF(vid, mfid) {
   const v = state.variables.find(x=>x.id===vid);
   if(!v) return;
   v.mfs = v.mfs.filter(m=>m.id!==mfid);
-  
-  // Cleanup rules mapped to this deleted MF
   state.rules = state.rules.filter(r => {
       let isAntMatch = false;
       for (let k in r.conditions) { if (r.conditions[k] === mfid) isAntMatch = true; }
       return !isAntMatch && r.conclusion.mfId !== mfid;
   });
-
   renderMFEditor();
   renderCharts();
   updateRuleBuilder();
@@ -935,6 +729,7 @@ function evalMF(mf, x) {
 // ── CHART RENDERING ──
 function renderCharts() {
   const area = document.getElementById('chartArea');
+  
   if(state.variables.length===0) {
     area.innerHTML = `<div class="no-vars">
       <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
@@ -944,42 +739,71 @@ function renderCharts() {
     chartInstances={};
     return;
   }
-  const targetVars = showAllMode
-    ? state.variables
-    : state.variables.filter(v => v.id === activeVarId);
 
-  if(!showAllMode && targetVars.length===0) {
+  // 1. LINGUISTIC SUMMARY VIEW
+  if(currentViewMode === 'summary') {
     const ins = state.variables.filter(v=>v.type==='input');
     const outs = state.variables.filter(v=>v.type==='output');
-    const summaryLines = [];
+    let lis = '';
+    
     ins.forEach((v, i) => {
-      const labels = v.mfs.map(m=>m.label).join(', ') || 'no MF yet';
-      summaryLines.push(`Input ${i+1}: ${v.name} (${labels})`);
+      const labels = v.mfs.map(m=>m.label).join(', ') || 'No MF added';
+      lis += `<li><strong style="color: var(--accent2);">Input ${i+1}:</strong> ${esc(v.name)} <span style="color:var(--text3);">(${esc(labels)})</span></li>`;
     });
+    
     outs.forEach((v, i) => {
-      const labels = v.mfs.map(m=>m.label).join(', ') || 'no MF yet';
-      summaryLines.push(`${outs.length>1?`Output ${i+1}`:'Output'}: ${v.name} (${labels})`);
+      const labels = v.mfs.map(m=>m.label).join(', ') || 'No MF added';
+      lis += `<li><strong style="color: var(--success);">Output${outs.length>1?' '+(i+1):''}:</strong> ${esc(v.name)} <span style="color:var(--text3);">(${esc(labels)})</span></li>`;
     });
-    area.innerHTML = `<div class="no-vars">
-      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
-      <h3>Linguistic Summary</h3>
-      <p style="white-space:pre-line;text-align:left;max-width:520px;">${esc(summaryLines.join('\n')) || 'Select a variable from the left panel, or click Show All Graphs.'}</p></div>`;
+
+    area.innerHTML = `
+      <div style="width: 100%; text-align: left; padding: 24px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+         <h3 style="margin-bottom: 16px; font-family: var(--display); color: var(--accent); font-size: 18px; display:flex; align-items:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            System Linguistic Summary
+         </h3>
+         <ul style="list-style: none; padding: 0; font-family: var(--mono); font-size: 14px; line-height: 2.2; color: var(--text2);">
+            ${lis}
+         </ul>
+      </div>`;
     Object.values(chartInstances).forEach(c=>c.destroy());
     chartInstances={};
     return;
   }
 
+  // 2. GRAPH VIEW (SELECTED OR ALL)
+  let targetVars = [];
+  if (currentViewMode === 'all') {
+      // Sorting Fix: Inputs first, Outputs second
+      targetVars = [
+          ...state.variables.filter(v => v.type === 'input'),
+          ...state.variables.filter(v => v.type === 'output')
+      ];
+  } else {
+      targetVars = state.variables.filter(v => v.id === activeVarId);
+  }
+
+  if(targetVars.length===0) {
+    area.innerHTML = `<div class="no-vars">...Select a variable to view its graph.</div>`;
+    Object.values(chartInstances).forEach(c=>c.destroy());
+    chartInstances={};
+    return;
+  }
+
+  // Draw Charts
   const existingIds = new Set(targetVars.map(v=>v.id));
   Object.keys(chartInstances).forEach(id=>{ if(!existingIds.has(id)){ chartInstances[id].destroy(); delete chartInstances[id]; } });
 
+  // Clean old DOM cards entirely and rebuild them in sequence 
+  // (This ensures "Show All" follows the proper sorted order physically on screen)
+  area.innerHTML = ''; 
+
   targetVars.forEach(v=>{
     const cardId = 'chartcard_'+v.id;
-    let card = document.getElementById(cardId);
-    if(!card) {
-      card = document.createElement('div');
-      card.className='chart-card'; card.id=cardId;
-      area.appendChild(card);
-    }
+    let card = document.createElement('div');
+    card.className='chart-card'; card.id=cardId;
+    area.appendChild(card);
+    
     const legendHTML = v.mfs.map(mf=>`
       <span class="legend-pill" style="background:${hexAlpha(mf.color,0.12)};border-color:${hexAlpha(mf.color,0.4)};color:${mf.color};">
         ${esc(mf.label)}
@@ -1059,12 +883,6 @@ function renderCharts() {
         }
       }
     });
-  });
-
-  // Remove chart cards for deleted variables
-  area.querySelectorAll('.chart-card').forEach(card=>{
-    const id = card.id.replace('chartcard_','');
-    if(!existingIds.has(id)) card.remove();
   });
 }
 
@@ -1557,7 +1375,7 @@ function loadProject(evt) {
       document.getElementById('chartArea').innerHTML='';
       renderVarLists();
       renderMFEditor();
-      renderCharts();
+      setViewMode('summary');
       updateRuleBuilder();
       renderRules();
       showToast('Project loaded successfully!');
@@ -1775,7 +1593,7 @@ function hexAlpha(hex,a) {
 renderVarLists();
 renderMFEditor();
 setFIS(state.fisType);
-renderCharts();
+setViewMode('summary');
 </script>
 </body>
 </html>
