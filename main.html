@@ -21,10 +21,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; }
 
-/* ── STRICT SCREEN LOCK ── */
+/* ── STRICT SCREEN LOCK (With Mobile Browser Fix) ── */
 body {
   background: var(--bg); color: var(--text); font-family: var(--sans);
-  height: 100vh; max-height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  height: 100vh; /* Fallback for older desktop browsers */
+  height: 100dvh; /* Dynamic Viewport: Fixes Chrome/Brave mobile URL bar bug */
+  max-height: 100dvh; 
+  display: flex; flex-direction: column; overflow: hidden;
 }
 
 /* ── SCROLLBAR ── */
@@ -212,7 +215,7 @@ body {
 @media (max-width: 900px) {
   /* Restructure Header & Toolbar for Touch */
   .navbar { height: auto; padding: 12px; flex-direction: column; gap: 12px; }
-  .nav-left, .nav-right { display: none; } /* Hide empty spaces on mobile */
+  .nav-left, .nav-right { display: none; }
   .nav-center { position: static; transform: none; width: 100%; text-align: center; gap: 4px; }
   .nav-logo-group { justify-content: center; }
   .nav-author { width: 100%; justify-content: center; border: none; background: transparent; padding: 4px; font-size: 12px; margin-top: 4px;}
@@ -220,14 +223,14 @@ body {
   .defuzz-row { flex-wrap: wrap; justify-content: center; padding: 10px; gap: 8px; }
   .nav-project-name { width: 100%; text-align: center; }
   .chart-toolbar { flex-wrap: wrap; justify-content: center; }
-  #btnToggleLeft, #btnToggleRight { display: none !important; } /* Hide desktop collapse arrows */
+  #btnToggleLeft, #btnToggleRight { display: none !important; }
 
   /* Tabbed Mobile Panels */
   .main { padding-bottom: 0; }
   .panel-left, .panel-center, .panel-right { display: none !important; width: 100% !important; min-width: 0 !important; border: none; border-radius: 0; }
   .panel-left.mobile-active, .panel-center.mobile-active, .panel-right.mobile-active { display: flex !important; }
   
-  /* Hide standard footer on mobile to make room for App Nav */
+  /* Hide standard footer to make room for App Nav */
   .footer { display: none; }
 
   /* Bottom App Navigation Bar */
@@ -235,7 +238,7 @@ body {
     display: flex; justify-content: space-around; align-items: center; 
     background: var(--surface); border-top: 1px solid var(--border); 
     height: 64px; flex-shrink: 0; z-index: 1000;
-    padding-bottom: env(safe-area-inset-bottom); /* iOS notch safety */
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .mobile-nav button {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; 
@@ -319,7 +322,8 @@ body {
   <div class="panel-center" id="panelCenter">
     <div class="chart-toolbar">
       <button class="icon-btn" id="btnToggleLeft" onclick="toggleLeft()" title="Toggle Left Panel"><svg class="svg-panel-left" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg></button>
-      <span class="chart-title" style="display:none;">Graphs</span> <button class="btn" id="btnViewSummary" onclick="setViewMode('summary')">Summary</button>
+      <span class="chart-title" style="display:none;">Graphs</span>
+      <button class="btn" id="btnViewSummary" onclick="setViewMode('summary')">Summary</button>
       <button class="btn" id="btnViewSelected" onclick="setViewMode('selected')">Selected</button>
       <button class="btn btn-primary" id="btnViewAll" onclick="setViewMode('all')">Show All</button>
       <button class="icon-btn" id="btnToggleRight" onclick="toggleRight()" title="Toggle Right Panel"><svg class="svg-panel-right" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg></button>
@@ -429,7 +433,7 @@ function switchMobileTab(tab) {
   } else if(tab === 'graphs') {
     document.getElementById('panelCenter').classList.add('mobile-active');
     document.getElementById('tabGraphs').classList.add('active');
-    queueRenderCharts(); // Force redraw so canvas sizes perfectly on unhide
+    queueRenderCharts(); 
   } else if(tab === 'rules') {
     document.getElementById('panelRight').classList.add('mobile-active');
     document.getElementById('tabRules').classList.add('active');
