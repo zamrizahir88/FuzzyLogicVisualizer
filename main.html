@@ -480,6 +480,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     <span style="font-size:13px;color:var(--accent);font-weight:700;">Created by Dr. Zamri</span>
     <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
   </div>
+  <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" class="btn" style="text-decoration:none;">CV</a>
   <span class="nav-badge">v2.0</span>
 </header>
 
@@ -555,12 +556,12 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
       <div class="section-header" style="margin-bottom:8px;">
         <span class="section-label">FIS Settings</span>
       </div>
-      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0;border:none;background:transparent;">
-        <div class="nav-fis">
-          <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
-          <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
-          <button class="fis-btn" id="fisBtn1" onclick="setFIS('sugeno',1)">Sugeno</button>
-        </div>
+      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0;border:none;background:transparent;flex-wrap:wrap;gap:6px;">
+        <span>FIS:</span>
+        <select class="defuzz-select" id="fisTypeSelect" onchange="setFIS(this.value)">
+          <option value="mamdani">Mamdani</option>
+          <option value="sugeno">Sugeno</option>
+        </select>
         <span>Defuzzification:</span>
         <select class="defuzz-select" id="defuzzMethod">
           <option value="centroid">Centroid (COG)</option>
@@ -569,7 +570,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
           <option value="lom">Largest of Maximum</option>
           <option value="som">Smallest of Maximum</option>
         </select>
-        <span style="margin-left:auto;color:var(--text3);">AND:</span>
+        <span>AND:</span>
         <select class="defuzz-select" id="andMethod">
           <option value="min">min</option>
           <option value="prod">prod</option>
@@ -657,6 +658,7 @@ let activeVarId = null;
 let showAllMode = false;
 let editingRuleId = null;
 let chartInstances = {};
+let chartsRaf = null;
 let colorIdx = 0;
 let mfIdCounter = 1;
 let varIdCounter = 1;
@@ -668,12 +670,26 @@ function syncSettings() {
   state.andMethod = document.getElementById('andMethod')?.value || state.andMethod;
   state.orMethod = document.getElementById('orMethod')?.value || state.orMethod;
 }
+function queueRenderCharts() {
+  if(chartsRaf) cancelAnimationFrame(chartsRaf);
+  chartsRaf = requestAnimationFrame(() => {
+    chartsRaf = null;
+    renderCharts();
+  });
+}
 
 // â”€â”€ FIS TYPE â”€â”€
-function setFIS(type, idx) {
+function setFIS(type) {
   state.fisType = type;
-  [0,1].forEach(i => document.getElementById('fisBtn'+i).classList.toggle('active', i===idx));
-  document.getElementById('defuzzRow').style.display = type==='mamdani' ? 'flex' : 'none';
+  const fisSel = document.getElementById('fisTypeSelect');
+  if(fisSel) fisSel.value = type;
+  const defuzz = document.getElementById('defuzzMethod');
+  const andSel = document.getElementById('andMethod');
+  const orSel = document.getElementById('orMethod');
+  const disabled = type === 'sugeno';
+  if(defuzz) defuzz.disabled = disabled;
+  if(andSel) andSel.disabled = disabled;
+  if(orSel) orSel.disabled = disabled;
 }
 
 // â”€â”€ VARIABLE MANAGEMENT â”€â”€
@@ -818,21 +834,21 @@ function updateMFColor(vid, mfid, color) {
 
 function updateVarProp(id, prop, val) {
   const v = state.variables.find(x=>x.id===id);
-  if(v) { v[prop]=val; renderCharts(); renderVarLists(); updateRuleBuilder(); renderRules(); }
+  if(v) { v[prop]=val; queueRenderCharts(); renderVarLists(); updateRuleBuilder(); renderRules(); }
 }
 
 function updateMFProp(vid, mfid, prop, val) {
   const v = state.variables.find(x=>x.id===vid);
   if(!v) return;
   const mf = v.mfs.find(m=>m.id===mfid);
-  if(mf) { mf[prop]=val; renderCharts(); updateRuleBuilder(); renderRules(); }
+  if(mf) { mf[prop]=val; queueRenderCharts(); updateRuleBuilder(); renderRules(); }
 }
 
 function updateMFParam(vid, mfid, key, val) {
   const v = state.variables.find(x=>x.id===vid);
   if(!v) return;
   const mf = v.mfs.find(m=>m.id===mfid);
-  if(mf) { mf.params[key]=val; renderCharts(); }
+  if(mf) { mf.params[key]=val; queueRenderCharts(); }
 }
 
 function addMF(vid) {
@@ -918,10 +934,21 @@ function renderCharts() {
     : state.variables.filter(v => v.id === activeVarId);
 
   if(!showAllMode && targetVars.length===0) {
+    const ins = state.variables.filter(v=>v.type==='input');
+    const outs = state.variables.filter(v=>v.type==='output');
+    const summaryLines = [];
+    ins.forEach((v, i) => {
+      const labels = v.mfs.map(m=>m.label).join(', ') || 'no MF yet';
+      summaryLines.push(`Input ${i+1}: ${v.name} (${labels})`);
+    });
+    outs.forEach((v, i) => {
+      const labels = v.mfs.map(m=>m.label).join(', ') || 'no MF yet';
+      summaryLines.push(`${outs.length>1?`Output ${i+1}`:'Output'}: ${v.name} (${labels})`);
+    });
     area.innerHTML = `<div class="no-vars">
       <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
-      <h3>Select a Variable</h3>
-      <p>Select an input/output variable on the right to view its dedicated graph, or click Show All Graphs.</p></div>`;
+      <h3>Linguistic Summary</h3>
+      <p style="white-space:pre-line;text-align:left;max-width:520px;">${esc(summaryLines.join('\n')) || 'Select a variable from the left panel, or click Show All Graphs.'}</p></div>`;
     Object.values(chartInstances).forEach(c=>c.destroy());
     chartInstances={};
     return;
@@ -983,7 +1010,7 @@ function renderCharts() {
       options:{
         responsive: true, maintainAspectRatio: false,
         interaction:{ mode:'index', intersect:false },
-        animation:{ duration:300 },
+        animation:{ duration:0 },
         plugins:{
           legend:{ display:false },
           tooltip:{
@@ -1484,7 +1511,7 @@ function loadProject(evt) {
     try {
       const d=JSON.parse(e.target.result);
       document.getElementById('projectName').value=d.meta?.name||'Loaded Project';
-      if(d.meta?.fisType) setFIS(d.meta.fisType, d.meta.fisType==='sugeno'?1:0);
+      if(d.meta?.fisType) setFIS(d.meta.fisType);
       if(d.meta?.defuzz) document.getElementById('defuzzMethod').value=d.meta.defuzz;
       if(d.meta?.andMethod) document.getElementById('andMethod').value=d.meta.andMethod;
       if(d.meta?.orMethod) document.getElementById('orMethod').value=d.meta.orMethod;
@@ -1728,6 +1755,8 @@ function hexAlpha(hex,a) {
 // â”€â”€ INIT â”€â”€
 renderVarLists();
 renderMFEditor();
+setFIS(state.fisType);
+renderCharts();
 </script>
 </body>
 </html>
