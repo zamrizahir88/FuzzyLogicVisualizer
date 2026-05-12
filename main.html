@@ -10,22 +10,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
-  --bg: #0d0f14;
-  --surface: #13161d;
-  --surface2: #1a1e28;
-  --surface3: #212633;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --accent: #7c6dfa;
-  --accent2: #a594ff;
-  --accent-dim: rgba(124,109,250,0.15);
-  --accent-glow: rgba(124,109,250,0.25);
-  --text: #e8eaf0;
-  --text2: #8b90a0;
-  --text3: #555a6b;
-  --success: #3ecf8e;
-  --warn: #f5a623;
-  --danger: #f06292;
+  --bg: #f3f7ff;
+  --surface: #ffffff;
+  --surface2: #eef4ff;
+  --surface3: #e3edff;
+  --border: rgba(15, 23, 42, 0.10);
+  --border2: rgba(15, 23, 42, 0.18);
+  --accent: #005bbb;
+  --accent2: #0b75e3;
+  --accent-dim: rgba(0,91,187,0.12);
+  --accent-glow: rgba(11,117,227,0.22);
+  --text: #12243f;
+  --text2: #375174;
+  --text3: #6d83a0;
+  --success: #127a41;
+  --warn: #b87400;
+  --danger: #b4233b;
   --mono: 'DM Mono', monospace;
   --sans: 'DM Sans', sans-serif;
   --display: 'Syne', sans-serif;
@@ -53,7 +53,7 @@ body {
 .navbar {
   display: flex; align-items: center; gap: 12px;
   padding: 0 20px;
-  height: 56px;
+  height: 88px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
@@ -79,7 +79,7 @@ body {
   top: 50%; transform: translateY(-50%);
 }
 .nav-logo-icon svg { position: relative; z-index: 1; }
-.nav-logo-text { font-family: var(--display); font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+.nav-logo-text { font-family: var(--display); font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
 .nav-logo-text span { color: var(--accent2); }
 .nav-badge {
   font-size: 10px; font-family: var(--mono);
@@ -131,14 +131,16 @@ body {
 .btn-warn:hover { background: rgba(245,166,35,0.2); }
 
 /* â”€â”€ MAIN LAYOUT â”€â”€ */
-.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 106px - 36px); }
+.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 200px - 44px); gap: 12px; padding: 12px; }
 
 /* â”€â”€ LEFT PANEL â”€â”€ */
 .panel-left {
-  width: 320px; flex-shrink: 0;
+  width: 30%; min-width: 320px; flex-shrink: 0;
   display: flex; flex-direction: column;
-  border-right: 1px solid var(--border);
-  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-y: auto;
+  background: var(--surface);
 }
 .panel-section {
   padding: 14px 16px;
@@ -277,8 +279,14 @@ body {
 
 /* â”€â”€ RIGHT PANEL â”€â”€ */
 .panel-right {
-  flex: 1; display: flex; flex-direction: column;
-  overflow: hidden;
+  width: 30%; min-width: 320px; display: flex; flex-direction: column;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow-y: auto; background: var(--surface);
+}
+.panel-center {
+  width: 40%; min-width: 380px; display: flex; flex-direction: column;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow-y: auto; background: var(--surface);
 }
 .chart-toolbar {
   display: flex; align-items: center; gap: 8px;
@@ -288,7 +296,7 @@ body {
   flex-shrink: 0;
 }
 .chart-title { font-family: var(--display); font-size: 13px; font-weight: 600; flex: 1; }
-.chart-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.chart-area { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 16px; }
 
 .chart-card {
   background: var(--surface);
@@ -339,9 +347,9 @@ body {
 
 /* â”€â”€ RULE EDITOR â”€â”€ */
 .panel-rules {
-  border-top: 1px solid var(--border);
+  border-top: none;
   background: var(--surface);
-  flex-shrink: 0;
+  flex: 1;
 }
 .rules-toggle {
   display: flex; align-items: center; gap: 8px;
@@ -413,7 +421,7 @@ body {
 
 /* â”€â”€ FOOTER â”€â”€ */
 .footer {
-  height: 36px; display: flex; align-items: center; justify-content: center;
+  height: 44px; display: flex; align-items: center; justify-content: center;
   border-top: 1px solid var(--border);
   background: var(--surface);
   font-size: 10px; font-family: var(--mono); color: var(--text3);
@@ -441,6 +449,7 @@ body {
   background: var(--surface); font-size: 11px; font-family: var(--mono); color: var(--text3);
   flex-shrink: 0;
 }
+.settings-row { border-top: 1px solid var(--border); }
 .defuzz-select {
   font-size: 11px; font-family: var(--mono);
   background: var(--surface2); border: 1px solid var(--border);
@@ -463,19 +472,32 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     </div>
     <div>
       <div class="nav-logo-text">FuzzyLogic Visualizer</div>
-      <div style="font-size:11px;color:var(--text2);">Intelligent Fuzzy Membership Function Designer</div>
+      <div style="font-size:15px;color:var(--text2);font-weight:600;">Intelligent Fuzzy Membership Function Designer</div>
     </div>
   </div>
   <div class="nav-sep"></div>
-  <div style="display:flex;flex-direction:column;gap:2px;">
-    <span style="font-size:11px;color:var(--text2);">Dr. Zamri</span>
+  <div style="display:flex;flex-direction:column;gap:4px;padding:8px 12px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);">
+    <span style="font-size:13px;color:var(--accent);font-weight:700;">Created by Dr. Zamri</span>
     <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
   </div>
   <span class="nav-badge">v2.0</span>
 </header>
 
-<div class="defuzz-row" id="defuzzRow">
+<div class="defuzz-row" id="projectRow">
   <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name">
+  <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
+    Load
+    <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
+  </label>
+  <button class="btn btn-success" onclick="saveProject()">Save</button>
+  <button class="btn btn-primary" onclick="openDownloadCenter()">Download Center</button>
+  <button class="btn" onclick="exportAllPNG()">Export All PNG</button>
+  <button class="btn" onclick="exportAllSVG()">Export All SVG</button>
+  <button class="btn" onclick="exportPythonCode()">Python Code</button>
+  <button class="btn" onclick="viewESPCode()">C++ Code</button>
+</div>
+
+<div class="defuzz-row settings-row" id="defuzzRow">
   <div class="nav-fis">
     <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
     <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
@@ -499,17 +521,45 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     <option value="max">max</option>
     <option value="probor">probor</option>
   </select>
-  <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
-    Load
-    <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
-  </label>
-  <button class="btn btn-success" onclick="saveProject()">Save</button>
-  <button class="btn btn-primary" onclick="openDownloadCenter()">Download Center</button>
 </div>
 <div class="main">
 
   <div class="panel-left">
+    <div class="panel-rules">
+      <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+        RULE EDITOR
+        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
+      </button>
+      <div class="rules-body open" id="rulesBody">
+        <div class="rule-builder" id="ruleBuilder">
+          <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
+        </div>
+        <div class="rules-list" id="rulesList" style="max-height:none;"></div>
+      </div>
+    </div>
+  </div>
 
+  <div class="panel-center">
+    <div class="chart-toolbar">
+      <span class="chart-title">Membership Function Graphs</span>
+      <button class="btn btn-primary" onclick="showAllGraphs()">Show All Graphs</button>
+      <button class="btn" onclick="showSelectedGraph()">Show Selected Graph</button>
+    </div>
+    <div class="chart-area" id="chartArea">
+      <div class="no-vars">
+        <div class="no-vars-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <h3>No Variables Yet</h3>
+        <p>Add input or output variables on the right panel to start building your fuzzy logic system.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-right">
     <div class="panel-section">
       <div class="section-header">
         <span class="section-label">Input Variables</span>
@@ -537,53 +587,6 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
           <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/>
         </svg>
         <p>Select a variable from above<br>to edit its membership functions</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-right">
-    <div class="chart-toolbar">
-      <span class="chart-title">Membership Function Graphs</span>
-      <button class="btn" onclick="exportAllPNG()" title="Export all charts as PNG">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Export All PNG
-      </button>
-      <button class="btn" onclick="exportAllSVG()" title="Export all as SVG">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        Export All SVG
-      </button>
-      <button class="btn" onclick="viewESPCode()" title="Generate ESP32 / C++ Code">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        C++ Code
-      </button>
-      <button class="btn" onclick="exportPythonCode()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Python Code
-      </button>
-    </div>
-    <div class="chart-area" id="chartArea">
-      <div class="no-vars">
-        <div class="no-vars-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-          </svg>
-        </div>
-        <h3>No Variables Yet</h3>
-        <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p>
-      </div>
-    </div>
-
-    <div class="panel-rules">
-      <button class="rules-toggle" id="rulesToggle" onclick="toggleRules()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
-        RULE EDITOR
-        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
-      </button>
-      <div class="rules-body" id="rulesBody">
-        <div class="rule-builder" id="ruleBuilder">
-          <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
-        </div>
-        <div class="rules-list" id="rulesList"></div>
       </div>
     </div>
   </div>
@@ -632,7 +635,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
 </div>
 
 <footer class="footer">
-  FuzzyLogic Visualizer v2.0 | Intelligent Fuzzy Membership Function Designer | Dr. Zamri, UniMAP
+  FuzzyLogic Visualizer v2.0 | Intelligent Fuzzy Membership Function Designer | Dr. Zamri, UniMAP | CV: <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="color:var(--accent);text-decoration:none;">zamrizahir88.github.io/cv/main.html</a>
 </footer>
 
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
@@ -645,6 +648,7 @@ let state = {
   variables:[], rules:[]
 };
 let activeVarId = null;
+let showAllMode = false;
 let chartInstances = {};
 let colorIdx = 0;
 let mfIdCounter = 1;
@@ -691,8 +695,20 @@ function deleteVariable(id, e) {
 
 function selectVar(id) {
   activeVarId = id;
+  showAllMode = false;
   renderVarLists();
   renderMFEditor();
+  renderCharts();
+}
+
+function showAllGraphs() {
+  showAllMode = true;
+  renderCharts();
+}
+
+function showSelectedGraph() {
+  showAllMode = false;
+  renderCharts();
 }
 
 function renderVarLists() {
@@ -890,10 +906,24 @@ function renderCharts() {
     chartInstances={};
     return;
   }
-  const existingIds = new Set(state.variables.map(v=>v.id));
+  const targetVars = showAllMode
+    ? state.variables
+    : state.variables.filter(v => v.id === activeVarId);
+
+  if(!showAllMode && targetVars.length===0) {
+    area.innerHTML = `<div class="no-vars">
+      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
+      <h3>Select a Variable</h3>
+      <p>Select an input/output variable on the right to view its dedicated graph, or click Show All Graphs.</p></div>`;
+    Object.values(chartInstances).forEach(c=>c.destroy());
+    chartInstances={};
+    return;
+  }
+
+  const existingIds = new Set(targetVars.map(v=>v.id));
   Object.keys(chartInstances).forEach(id=>{ if(!existingIds.has(id)){ chartInstances[id].destroy(); delete chartInstances[id]; } });
 
-  state.variables.forEach(v=>{
+  targetVars.forEach(v=>{
     const cardId = 'chartcard_'+v.id;
     let card = document.getElementById(cardId);
     if(!card) {
