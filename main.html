@@ -41,7 +41,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* â”€â”€ SCROLLBAR â”€â”€ */
@@ -286,7 +286,7 @@ body {
 .panel-center {
   width: 40%; min-width: 380px; display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 12px;
-  overflow-y: auto; background: var(--surface);
+  overflow: hidden; background: var(--surface);
 }
 .chart-toolbar {
   display: flex; align-items: center; gap: 8px;
@@ -497,69 +497,9 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
   <button class="btn" onclick="viewESPCode()">C++ Code</button>
 </div>
 
-<div class="defuzz-row settings-row" id="defuzzRow">
-  <div class="nav-fis">
-    <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
-    <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
-    <button class="fis-btn" id="fisBtn1" onclick="setFIS('sugeno',1)">Sugeno</button>
-  </div>
-  <span>Defuzzification:</span>
-  <select class="defuzz-select" id="defuzzMethod">
-    <option value="centroid">Centroid (COG)</option>
-    <option value="bisector">Bisector</option>
-    <option value="mom">Mean of Maximum</option>
-    <option value="lom">Largest of Maximum</option>
-    <option value="som">Smallest of Maximum</option>
-  </select>
-  <span style="margin-left:auto;color:var(--text3);">AND:</span>
-  <select class="defuzz-select" id="andMethod">
-    <option value="min">min</option>
-    <option value="prod">prod</option>
-  </select>
-  <span>OR:</span>
-  <select class="defuzz-select" id="orMethod">
-    <option value="max">max</option>
-    <option value="probor">probor</option>
-  </select>
-</div>
 <div class="main">
 
   <div class="panel-left">
-    <div class="panel-rules">
-      <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
-        RULE EDITOR
-        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
-      </button>
-      <div class="rules-body open" id="rulesBody">
-        <div class="rule-builder" id="ruleBuilder">
-          <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
-        </div>
-        <div class="rules-list" id="rulesList" style="max-height:none;"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-center">
-    <div class="chart-toolbar">
-      <span class="chart-title">Membership Function Graphs</span>
-      <button class="btn btn-primary" onclick="showAllGraphs()">Show All Graphs</button>
-      <button class="btn" onclick="showSelectedGraph()">Show Selected Graph</button>
-    </div>
-    <div class="chart-area" id="chartArea">
-      <div class="no-vars">
-        <div class="no-vars-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-          </svg>
-        </div>
-        <h3>No Variables Yet</h3>
-        <p>Add input or output variables on the right panel to start building your fuzzy logic system.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-right">
     <div class="panel-section">
       <div class="section-header">
         <span class="section-label">Input Variables</span>
@@ -587,6 +527,72 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
           <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/>
         </svg>
         <p>Select a variable from above<br>to edit its membership functions</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-center">
+    <div class="chart-toolbar">
+      <span class="chart-title">Membership Function Graphs</span>
+      <button class="btn btn-primary" onclick="showAllGraphs()">Show All Graphs</button>
+      <button class="btn" onclick="showSelectedGraph()">Show Selected Graph</button>
+    </div>
+    <div class="chart-area" id="chartArea">
+      <div class="no-vars">
+        <div class="no-vars-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <h3>No Variables Yet</h3>
+        <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div class="panel-section">
+      <div class="section-header" style="margin-bottom:8px;">
+        <span class="section-label">FIS Settings</span>
+      </div>
+      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0;border:none;background:transparent;">
+        <div class="nav-fis">
+          <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
+          <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
+          <button class="fis-btn" id="fisBtn1" onclick="setFIS('sugeno',1)">Sugeno</button>
+        </div>
+        <span>Defuzzification:</span>
+        <select class="defuzz-select" id="defuzzMethod">
+          <option value="centroid">Centroid (COG)</option>
+          <option value="bisector">Bisector</option>
+          <option value="mom">Mean of Maximum</option>
+          <option value="lom">Largest of Maximum</option>
+          <option value="som">Smallest of Maximum</option>
+        </select>
+        <span style="margin-left:auto;color:var(--text3);">AND:</span>
+        <select class="defuzz-select" id="andMethod">
+          <option value="min">min</option>
+          <option value="prod">prod</option>
+        </select>
+        <span>OR:</span>
+        <select class="defuzz-select" id="orMethod">
+          <option value="max">max</option>
+          <option value="probor">probor</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel-rules">
+      <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+        RULE EDITOR
+        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
+      </button>
+      <div class="rules-body open" id="rulesBody">
+        <div class="rule-builder" id="ruleBuilder">
+          <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
+        </div>
+        <div class="rules-list" id="rulesList" style="max-height:none;"></div>
       </div>
     </div>
   </div>
@@ -649,6 +655,7 @@ let state = {
 };
 let activeVarId = null;
 let showAllMode = false;
+let editingRuleId = null;
 let chartInstances = {};
 let colorIdx = 0;
 let mfIdCounter = 1;
@@ -1024,11 +1031,15 @@ function exportChartPNG(vid) {
   const c = chartInstances[vid];
   if(!c) return;
   const v = state.variables.find(x=>x.id===vid);
-  const link = document.createElement('a');
-  link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`;
-  link.href = c.canvas.toDataURL('image/png', 1.0);
-  link.click();
-  showToast(`Chart exported as PNG`);
+  const card = document.getElementById('chartcard_'+vid);
+  if(!card) return;
+  html2canvas(card, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    showToast(`Chart exported as PNG (with legend)`);
+  });
 }
 
 function exportAllPNG() {
@@ -1300,12 +1311,13 @@ function updateRuleBuilder() {
   let outOpts = out.mfs.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
   html += `<select class="rule-select rule-out-sel" data-vid="${out.id}">${outOpts}</select>`;
 
-  html += `<button class="btn btn-primary" onclick="addRule()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
+  html += `<button class="btn btn-primary" id="ruleSubmitBtn" onclick="saveRuleFromBuilder()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
+  html += `<button class="btn" id="ruleCancelBtn" onclick="cancelRuleEdit()" style="padding:4px 10px; font-size:11px; display:none;">Cancel</button>`;
   
   el.innerHTML = html;
 }
 
-function addRule() {
+function saveRuleFromBuilder() {
   const inps = document.querySelectorAll('.rule-inp-sel');
   const out = document.querySelector('.rule-out-sel');
   
@@ -1322,10 +1334,23 @@ function addRule() {
   }
 
   const conclusion = { varId: out.dataset.vid, mfId: out.value };
-
-  state.rules.push({ id: uid('r'), conditions, conclusion, enabled: true, weight: 1.0 });
+  if (editingRuleId) {
+    const r = state.rules.find(x=>x.id===editingRuleId);
+    if(r) {
+      r.conditions = conditions;
+      r.conclusion = conclusion;
+      showToast('Rule updated');
+    }
+    editingRuleId = null;
+  } else {
+    state.rules.push({ id: uid('r'), conditions, conclusion, enabled: true, weight: 1.0 });
+    showToast('Rule added');
+  }
+  const btn = document.getElementById('ruleSubmitBtn');
+  const cancelBtn = document.getElementById('ruleCancelBtn');
+  if(btn) btn.textContent = '+ Add Rule';
+  if(cancelBtn) cancelBtn.style.display = 'none';
   renderRules();
-  showToast('Rule added');
 }
 
 function renderRules() {
@@ -1354,6 +1379,8 @@ function renderRules() {
             <input type="number" step="0.1" min="0" max="1" value="${Number(r.weight ?? 1).toFixed(1)}" onchange="setRuleWeight('${r.id}', this.value)">
             <button class="rule-action-btn" onclick="editRule('${r.id}')">Edit</button>
             <button class="rule-action-btn" onclick="duplicateRule('${r.id}')">Dup</button>
+            <button class="rule-action-btn" onclick="moveRuleUp('${r.id}')" ${i===0?'disabled':''}>Up</button>
+            <button class="rule-action-btn" onclick="moveRuleDown('${r.id}')" ${i===state.rules.length-1?'disabled':''}>Down</button>
             <button onclick="deleteRule('${r.id}')">x</button>
           </div>
       </div>`;
@@ -1363,42 +1390,24 @@ function renderRules() {
 function editRule(id) {
   const r = state.rules.find(x => x.id === id);
   if(!r) return;
-  const conditionPairs = Object.entries(r.conditions).map(([vid,mfid]) => {
-    const v = state.variables.find(x=>x.id===vid);
-    const mf = v?.mfs.find(m=>m.id===mfid);
-    return `${v?.name || vid}:${mf?.label || mfid}`;
-  }).join(', ');
-  const edited = prompt('Edit rule conditions as Variable:MF, comma-separated', conditionPairs);
-  if(edited===null) return;
-  const outV = state.variables.find(x=>x.id===r.conclusion.varId);
-  const outMF = outV?.mfs.find(m=>m.id===r.conclusion.mfId);
-  const outEdited = prompt('Edit THEN as OutputVariable:MF', `${outV?.name || ''}:${outMF?.label || ''}`);
-  if(outEdited===null) return;
-  const parsedCond = parseRulePairs(edited, false);
-  const parsedOut = parseRulePairs(outEdited, true);
-  if(!parsedCond || !parsedOut) { showToast('Invalid rule format.'); return; }
-  r.conditions = parsedCond;
-  r.conclusion = parsedOut;
-  renderRules();
-  showToast('Rule edited');
+  editingRuleId = id;
+  Object.entries(r.conditions).forEach(([vid, mfid]) => {
+    const sel = document.querySelector(`.rule-inp-sel[data-vid="${vid}"]`);
+    if(sel) sel.value = mfid;
+  });
+  const outSel = document.querySelector('.rule-out-sel');
+  if(outSel) outSel.value = r.conclusion.mfId;
+  const btn = document.getElementById('ruleSubmitBtn');
+  const cancelBtn = document.getElementById('ruleCancelBtn');
+  if(btn) btn.textContent = 'Update Rule';
+  if(cancelBtn) cancelBtn.style.display = 'inline-flex';
+  showToast('Edit mode: update selections above then click Update Rule');
 }
 
-function parseRulePairs(txt, isConclusion) {
-  const items = txt.split(',').map(x=>x.trim()).filter(Boolean);
-  if(isConclusion && items.length!==1) return null;
-  const result = {};
-  let conclusion = null;
-  for (const item of items) {
-    const parts = item.split(':');
-    if(parts.length!==2) return null;
-    const v = state.variables.find(x=>x.name.toLowerCase()===parts[0].trim().toLowerCase());
-    if(!v) return null;
-    const mf = v.mfs.find(x=>x.label.toLowerCase()===parts[1].trim().toLowerCase());
-    if(!mf) return null;
-    if(isConclusion) conclusion = { varId: v.id, mfId: mf.id };
-    else result[v.id] = mf.id;
-  }
-  return isConclusion ? conclusion : result;
+function cancelRuleEdit() {
+  editingRuleId = null;
+  updateRuleBuilder();
+  showToast('Rule edit cancelled');
 }
 
 function duplicateRule(id) {
@@ -1427,6 +1436,20 @@ function setRuleWeight(id, value) {
   if(!r) return;
   const w = Math.max(0, Math.min(1, Number(value)));
   r.weight = Number.isFinite(w) ? w : 1;
+}
+
+function moveRuleUp(id) {
+  const idx = state.rules.findIndex(r=>r.id===id);
+  if(idx <= 0) return;
+  [state.rules[idx-1], state.rules[idx]] = [state.rules[idx], state.rules[idx-1]];
+  renderRules();
+}
+
+function moveRuleDown(id) {
+  const idx = state.rules.findIndex(r=>r.id===id);
+  if(idx < 0 || idx >= state.rules.length - 1) return;
+  [state.rules[idx+1], state.rules[idx]] = [state.rules[idx], state.rules[idx+1]];
+  renderRules();
 }
 
 function deleteRule(id) {
