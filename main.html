@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FuzzyLogic Visualizer v2.0 - UniMAP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -44,51 +44,61 @@ body {
   overflow: hidden;
 }
 
-/* â”€â”€ SCROLLBAR â”€â”€ */
-::-webkit-scrollbar { width: 4px; height: 4px; }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.25); }
 
-/* â”€â”€ NAVBAR â”€â”€ */
+/* ── MODERN NAVBAR ── */
 .navbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 20px;
-  height: 88px;
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 24px;
+  height: 80px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 .nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  margin-right: 8px;
+  display: flex; align-items: center; gap: 14px;
 }
 .nav-logo-icon {
-  width: 30px; height: 30px;
-  background: var(--accent);
-  border-radius: 8px;
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   position: relative;
   overflow: hidden;
-}
-.nav-logo-icon::before {
-  content: '';
-  position: absolute;
-  width: 100%; height: 2px;
-  background: rgba(255,255,255,0.3);
-  top: 50%; transform: translateY(-50%);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 .nav-logo-icon svg { position: relative; z-index: 1; }
-.nav-logo-text { font-family: var(--display); font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
-.nav-logo-text span { color: var(--accent2); }
+.nav-titles { display: flex; flex-direction: column; }
+.nav-logo-text { font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: var(--text); }
+.nav-logo-text span { color: var(--accent); }
+.nav-subtitle { font-size: 11px; color: var(--text3); font-weight: 500; letter-spacing: 0.03em; margin-top: 2px; }
+
 .nav-badge {
-  font-size: 10px; font-family: var(--mono);
+  font-size: 10px; font-family: var(--mono); font-weight: 600;
   background: var(--accent-dim); color: var(--accent2);
-  border: 1px solid rgba(124,109,250,0.3);
-  padding: 2px 7px; border-radius: 20px;
-  letter-spacing: .04em;
+  padding: 3px 8px; border-radius: 20px;
+  letter-spacing: .04em; margin-left: 4px;
 }
-.nav-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+.nav-spacer { flex: 1; }
+
+.nav-author {
+  font-size: 13px; font-weight: 500; color: var(--text2);
+  background: var(--surface2); padding: 8px 16px; border-radius: 30px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-author a {
+  color: var(--accent); font-weight: 700; text-decoration: none; 
+  transition: all 0.2s ease;
+}
+.nav-author a:hover { opacity: 0.8; text-decoration: underline; }
+
 .nav-project-name {
   font-family: var(--mono); font-size: 12px; color: var(--text2);
   background: var(--surface2); border: 1px solid var(--border);
@@ -97,52 +107,50 @@ body {
   transition: border-color .2s;
 }
 .nav-project-name:focus { border-color: var(--accent); color: var(--text); }
-.nav-fis { display: flex; align-items: center; gap: 6px; }
-.fis-btn {
-  font-size: 11px; font-family: var(--mono);
-  padding: 5px 10px; border-radius: 6px; cursor: pointer;
-  border: 1px solid var(--border2); background: transparent;
-  color: var(--text2); transition: all .15s;
-}
-.fis-btn.active {
-  background: var(--accent-dim); color: var(--accent2);
-  border-color: rgba(124,109,250,0.4);
-}
-.fis-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
-.nav-spacer { flex: 1; }
-.nav-actions { display: flex; gap: 8px; }
+
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; font-family: var(--sans); font-weight: 500;
+  font-size: 12px; font-family: var(--sans); font-weight: 600;
   padding: 6px 14px; border-radius: 7px; cursor: pointer;
-  border: 1px solid var(--border2); background: var(--surface2);
+  border: 1px solid var(--border2); background: var(--surface);
   color: var(--text2); transition: all .15s; white-space: nowrap;
 }
-.btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+.btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
 .btn svg { width: 14px; height: 14px; }
-.btn-primary {
-  background: var(--accent); border-color: var(--accent);
-  color: #fff;
-}
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
-.btn-success { background: rgba(62,207,142,0.12); border-color: rgba(62,207,142,0.3); color: var(--success); }
-.btn-success:hover { background: rgba(62,207,142,0.2); color: var(--success); }
-.btn-warn { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.3); color: var(--warn); }
-.btn-warn:hover { background: rgba(245,166,35,0.2); }
+.btn-success { background: var(--success); border-color: var(--success); color: #fff; }
+.btn-success:hover { background: #0f6636; color: #fff; }
+.btn-warn { background: var(--warn); border-color: var(--warn); color: #fff; }
+.btn-warn:hover { background: #9e6300; color: #fff; }
 
-/* â”€â”€ MAIN LAYOUT â”€â”€ */
+/* ── MAIN LAYOUT ── */
 .main { display: flex; flex: 1; min-height: 0; overflow: hidden; gap: 12px; padding: 12px; }
 
-/* â”€â”€ LEFT PANEL â”€â”€ */
+/* ── PANELS (FULLY SCROLLABLE) ── */
 .panel-left {
   width: 30%; min-width: 320px; flex-shrink: 0;
   display: flex; flex-direction: column;
   border: 1px solid var(--border);
   border-radius: 12px;
-  min-height: 0;
-  overflow-y: auto;
+  overflow-y: auto; /* SCROLLBAR HERE */
   background: var(--surface);
 }
+
+.panel-center {
+  width: 40%; min-width: 380px; display: flex; flex-direction: column;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow-y: auto; /* SCROLLBAR HERE */
+  background: var(--surface);
+}
+
+.panel-right {
+  width: 30%; min-width: 320px; display: flex; flex-direction: column;
+  border: 1px solid var(--border); border-radius: 12px;
+  overflow-y: auto; /* SCROLLBAR HERE */
+  background: var(--surface);
+}
+
 .panel-section {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
@@ -152,17 +160,17 @@ body {
   margin-bottom: 10px;
 }
 .section-label {
-  font-size: 10px; font-family: var(--mono); font-weight: 500;
+  font-size: 11px; font-family: var(--mono); font-weight: 600;
   letter-spacing: .08em; color: var(--text3); text-transform: uppercase;
 }
 .icon-btn {
-  width: 22px; height: 22px; border-radius: 5px;
+  width: 26px; height: 26px; border-radius: 6px;
   border: 1px solid var(--border2); background: transparent;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--text2); transition: all .15s;
 }
-.icon-btn:hover { background: var(--surface3); color: var(--text); }
-.icon-btn svg { width: 12px; height: 12px; }
+.icon-btn:hover { background: var(--surface3); color: var(--accent); border-color: var(--accent); }
+.icon-btn svg { width: 14px; height: 14px; }
 
 /* Variable list */
 .var-list { display: flex; flex-direction: column; gap: 4px; }
@@ -173,50 +181,43 @@ body {
   transition: all .15s; position: relative;
 }
 .var-item:hover { background: var(--surface2); }
-.var-item.active {
-  background: var(--accent-dim); border-color: rgba(124,109,250,0.3);
-}
-.var-type-dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-}
+.var-item.active { background: var(--accent-dim); border-color: rgba(124,109,250,0.3); }
+.var-type-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .dot-input { background: var(--accent2); }
 .dot-output { background: var(--success); }
-.var-name { font-size: 12px; font-weight: 500; flex: 1; }
+.var-name { font-size: 13px; font-weight: 600; flex: 1; }
 .var-mf-count {
-  font-size: 10px; font-family: var(--mono); color: var(--text3);
-  background: var(--surface3); padding: 1px 6px; border-radius: 4px;
+  font-size: 10px; font-family: var(--mono); color: var(--text3); font-weight: 500;
+  background: var(--surface3); padding: 2px 6px; border-radius: 4px;
 }
 .var-del {
-  opacity: 0; width: 16px; height: 16px; border-radius: 4px;
-  border: none; background: transparent; color: var(--danger);
-  cursor: pointer; font-size: 14px; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity .15s;
+  opacity: 0; width: 24px; height: 24px; border-radius: 6px;
+  border: none; background: rgba(180, 35, 59, 0.1); color: var(--danger);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
 }
 .var-item:hover .var-del { opacity: 1; }
+.var-del:hover { background: var(--danger); color: white; }
 
 /* MF Editor */
-.mf-editor { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.mf-editor { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
 .mf-var-header {
-  padding: 10px 12px; background: var(--surface2); border-radius: 8px;
+  padding: 12px; background: var(--surface2); border-radius: 8px;
   border: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
 }
 .field-group { display: flex; flex-direction: column; gap: 4px; }
-.field-label { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: .05em; }
+.field-label { font-size: 10px; color: var(--text3); font-family: var(--mono); font-weight: 600; letter-spacing: .05em; }
 .field-input {
-  background: var(--surface3); border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
-  padding: 5px 8px; outline: none; width: 100%;
+  padding: 6px 8px; outline: none; width: 100%;
   transition: border-color .15s;
 }
 .field-input:focus { border-color: var(--accent); }
 .field-select {
-  background: var(--surface3); border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px;
-  padding: 5px 8px; outline: none; width: 100%; cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555a6b'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 8px center;
+  padding: 6px 8px; outline: none; width: 100%; cursor: pointer;
 }
 
 /* MF row card */
@@ -231,40 +232,41 @@ body {
   padding: 8px 10px; border-bottom: 1px solid var(--border);
 }
 .mf-color-dot {
-  width: 10px; height: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.15);
+  width: 12px; height: 12px; border-radius: 50%; cursor: pointer; flex-shrink: 0;
+  border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 0 0 1px var(--border2);
 }
 .mf-label-input {
   flex: 1; background: transparent; border: none;
-  color: var(--text); font-family: var(--sans); font-size: 12px; font-weight: 500;
-  outline: none;
+  color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 600;
+  outline: none; padding: 2px 4px;
 }
 .mf-shape-select {
-  font-size: 10px; font-family: var(--mono);
-  background: var(--surface3); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text2); padding: 3px 6px;
-  outline: none; cursor: pointer;
-  appearance: none; min-width: 80px;
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 5px; color: var(--text2); padding: 4px 6px;
+  outline: none; cursor: pointer; min-width: 80px;
 }
 .mf-del-btn {
+  width: 24px; height: 24px; border-radius: 6px;
   background: transparent; border: none; color: var(--text3);
-  cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px;
-  transition: color .15s;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
 }
-.mf-del-btn:hover { color: var(--danger); }
-.mf-params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 10px; }
-.mf-param { display: flex; flex-direction: column; gap: 3px; }
-.mf-param-label { font-size: 9px; font-family: var(--mono); color: var(--text3); letter-spacing: .05em; text-align: center; }
+.mf-del-btn:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
+
+.mf-params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
+.mf-param { display: flex; flex-direction: column; gap: 4px; }
+.mf-param-label { font-size: 9px; font-family: var(--mono); font-weight: 600; color: var(--text3); letter-spacing: .05em; text-align: center; }
 .mf-param-input {
-  background: var(--surface3); border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   border-radius: 5px; color: var(--text); font-family: var(--mono); font-size: 11px;
-  padding: 4px 6px; outline: none; width: 100%; text-align: center;
+  padding: 5px 6px; outline: none; width: 100%; text-align: center;
   transition: border-color .15s;
 }
 .mf-param-input:focus { border-color: var(--accent); }
 .add-mf-btn {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 9px; border-radius: 8px;
+  padding: 10px; border-radius: 8px; font-weight: 600;
   border: 1px dashed var(--border2); background: transparent;
   color: var(--text3); font-size: 12px; cursor: pointer;
   transition: all .15s;
@@ -273,33 +275,21 @@ body {
 
 .empty-state {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; color: var(--text3); text-align: center; padding: 20px;
+  gap: 8px; color: var(--text3); text-align: center; padding: 40px 20px;
 }
 .empty-state svg { opacity: .3; }
 .empty-state p { font-size: 12px; line-height: 1.6; }
 
-/* â”€â”€ RIGHT PANEL â”€â”€ */
-.panel-right {
-  width: 30%; min-width: 320px; display: flex; flex-direction: column;
-  border: 1px solid var(--border); border-radius: 12px;
-  min-height: 0;
-  overflow: hidden; background: var(--surface);
-}
-.panel-center {
-  width: 40%; min-width: 380px; display: flex; flex-direction: column;
-  border: 1px solid var(--border); border-radius: 12px;
-  min-height: 0;
-  overflow: hidden; background: var(--surface);
-}
+/* ── CHARTS AREA ── */
 .chart-toolbar {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 20px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
 }
-.chart-title { font-family: var(--display); font-size: 13px; font-weight: 600; flex: 1; }
-.chart-area { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 16px; }
+.chart-title { font-family: var(--display); font-size: 14px; font-weight: 700; flex: 1; }
+.chart-area { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
 .chart-card {
   background: var(--surface);
@@ -307,6 +297,7 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   animation: fadeIn .3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -314,189 +305,206 @@ body {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+  background: var(--surface2);
 }
 .chart-var-badge {
-  font-size: 10px; font-family: var(--mono);
-  padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-family: var(--mono); font-weight: 600;
+  padding: 3px 8px; border-radius: 20px;
 }
-.badge-input { background: rgba(124,109,250,0.15); color: var(--accent2); }
-.badge-output { background: rgba(62,207,142,0.12); color: var(--success); }
-.chart-var-name { font-family: var(--display); font-size: 14px; font-weight: 600; }
-.chart-var-range { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-left: auto; }
+.badge-input { background: rgba(11,117,227,0.15); color: var(--accent2); }
+.badge-output { background: rgba(18,122,65,0.12); color: var(--success); }
+.chart-var-name { font-family: var(--display); font-size: 15px; font-weight: 700; }
+.chart-var-range { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); margin-left: auto; }
 .chart-canvas-wrap { padding: 16px 16px 8px; position: relative; }
 .chart-canvas-wrap canvas { width: 100% !important; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px 14px; }
 .legend-pill {
   display: flex; align-items: center; gap: 5px;
-  font-size: 11px; font-family: var(--mono);
-  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  padding: 4px 10px; border-radius: 20px;
   border: 1px solid;
 }
 .chart-export-row {
-  display: flex; gap: 6px; padding: 0 16px 12px;
+  display: flex; gap: 6px; padding: 0 16px 16px;
 }
 
 .no-vars {
-  flex: 1; display: flex; flex-direction: column;
+  display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 16px;
-  color: var(--text3);
+  color: var(--text3); padding: 40px 0;
 }
 .no-vars-icon {
   width: 64px; height: 64px; border-radius: 20px;
   background: var(--surface2); display: flex; align-items: center; justify-content: center;
 }
 .no-vars h3 { font-family: var(--display); font-size: 18px; color: var(--text2); }
-.no-vars p { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.7; }
+.no-vars p { font-size: 13px; text-align: center; max-width: 280px; line-height: 1.7; }
 
-/* â”€â”€ RULE EDITOR â”€â”€ */
+/* ── RULE EDITOR ── */
 .panel-rules {
-  border-top: none;
   background: var(--surface);
-  flex: 1;
-  min-height: 0;
+  display: flex; flex-direction: column;
 }
 .rules-toggle {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 20px; cursor: pointer;
-  font-size: 11px; font-family: var(--mono); color: var(--text2);
-  border: none; background: transparent; width: 100%;
-  border-top: 1px solid var(--border);
+  padding: 12px 20px; cursor: pointer;
+  font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text2);
+  border: none; background: var(--surface2); width: 100%;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   letter-spacing: .04em;
 }
 .rules-toggle:hover { color: var(--text); }
-.rules-toggle svg { transition: transform .2s; }
-.rules-toggle.open svg { transform: rotate(180deg); }
-.rules-body { display: none; padding: 12px 20px; }
-.rules-body.open { display: block; }
-.panel-rules .rules-body.open { height: calc(100% - 42px); overflow-y: auto; }
+.rules-body { display: none; padding: 14px 16px; flex-direction: column; gap: 12px; }
+.rules-body.open { display: flex; }
+
 .rule-builder {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-  padding: 10px 12px; background: var(--surface2);
-  border: 1px solid var(--border); border-radius: 8px;
-  margin-bottom: 10px;
+  padding: 12px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
 }
-.rule-label { font-size: 11px; font-family: var(--mono); color: var(--accent2); font-weight: 500; }
+.rule-label { font-size: 11px; font-family: var(--mono); color: var(--accent2); font-weight: 600; }
 .rule-select {
-  font-size: 11px; font-family: var(--mono);
-  background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 5px; color: var(--text); padding: 4px 8px;
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 5px; color: var(--text); padding: 5px 8px;
   outline: none; cursor: pointer;
 }
-.rules-list { display: flex; flex-direction: column; gap: 4px; max-height: 100px; overflow-y: auto; }
+.rules-list { display: flex; flex-direction: column; gap: 6px; }
 .rule-chip {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; font-family: var(--mono); color: var(--text2);
-  padding: 5px 10px; background: var(--surface2); border-radius: 6px;
-  border: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 12px; font-family: var(--mono); color: var(--text2);
+  padding: 8px 12px; background: var(--surface); border-radius: 8px;
+  border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
-.rule-chip span { flex: 1; }
-.rule-chip button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 0; }
-.rule-chip button:hover { color: var(--danger); }
+.rule-chip span { flex: 1; min-width: 200px; line-height: 1.5; }
 .rule-chip-controls { display: flex; align-items: center; gap: 6px; }
 .rule-chip-controls input[type="number"] {
-  width: 62px; background: var(--surface3); border: 1px solid var(--border);
-  color: var(--text2); border-radius: 5px; padding: 2px 4px; font-size: 10px;
+  width: 50px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); border-radius: 5px; padding: 4px; font-size: 10px; font-family: var(--mono);
 }
 .rule-action-btn {
   background: transparent; border: 1px solid var(--border2); color: var(--text2);
-  font-size: 10px; border-radius: 5px; padding: 2px 6px; cursor: pointer;
+  font-size: 10px; font-weight: 600; border-radius: 5px; padding: 4px 8px; cursor: pointer;
+  transition: all 0.15s;
 }
 .rule-action-btn:hover { color: var(--text); background: var(--surface3); }
+.rule-chip-del {
+  width: 24px; height: 24px; border-radius: 5px;
+  background: transparent; border: none; color: var(--text3);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.rule-chip-del:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
 
 /* modal */
 .modal-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.62);
+  position: fixed; inset: 0; background: rgba(18, 36, 63, 0.7);
   display: flex; align-items: center; justify-content: center; z-index: 1200;
 }
 .modal-card {
   width: min(860px, 94vw);
-  background: var(--surface); border: 1px solid var(--border2); border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-.modal-header, .modal-footer {
+.modal-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
 }
-.modal-footer { border-bottom: none; border-top: 1px solid var(--border); justify-content: flex-end; gap: 8px; }
-.modal-body { padding: 14px; }
+.modal-header h3 { font-family: var(--display); font-size: 18px; }
+.modal-footer { 
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface2); border-radius: 0 0 16px 16px;
+}
+.modal-body { padding: 20px; }
 .download-grid {
-  display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 12px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
 }
-.download-grid h4 { margin-bottom: 6px; color: var(--accent2); font-family: var(--mono); font-size: 11px; }
-.download-grid label { display: block; font-size: 12px; color: var(--text2); margin: 6px 0; }
+.download-grid h4 { margin-bottom: 10px; color: var(--accent2); font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+.download-grid label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); margin: 8px 0; cursor: pointer; font-weight: 500; }
 
-/* â”€â”€ FOOTER â”€â”€ */
+/* ── FOOTER ── */
 .footer {
   height: 44px; display: flex; align-items: center; justify-content: center;
   border-top: 1px solid var(--border);
   background: var(--surface);
-  font-size: 10px; font-family: var(--mono); color: var(--text3);
-  letter-spacing: .06em; flex-shrink: 0;
+  font-size: 11px; font-family: var(--mono); font-weight: 500; color: var(--text3);
+  letter-spacing: .02em; flex-shrink: 0;
 }
-.footer span { color: var(--accent2); }
 
-/* â”€â”€ TOAST â”€â”€ */
+/* ── TOAST ── */
 .toast {
-  position: fixed; bottom: 48px; right: 20px;
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 8px; padding: 10px 16px;
-  font-size: 12px; font-family: var(--mono); color: var(--text);
-  display: flex; align-items: center; gap: 8px;
+  position: fixed; bottom: 48px; right: 24px;
+  background: var(--text); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 12px 20px;
+  font-size: 13px; font-family: var(--mono); font-weight: 500; color: #fff;
+  display: flex; align-items: center; gap: 10px;
   opacity: 0; transform: translateY(8px);
   transition: all .25s; pointer-events: none; z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 .toast.show { opacity: 1; transform: translateY(0); }
-.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 
-/* â”€â”€ DEFUZZ ROW â”€â”€ */
+/* ── DEFUZZ ROW ── */
 .defuzz-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-bottom: 1px solid var(--border);
-  background: var(--surface); font-size: 11px; font-family: var(--mono); color: var(--text3);
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 24px; border-bottom: 1px solid var(--border);
+  background: var(--surface); font-size: 12px; font-family: var(--mono); font-weight: 600; color: var(--text2);
   flex-shrink: 0;
 }
-.settings-row { border-top: 1px solid var(--border); }
+.settings-row { border-top: 1px solid var(--border); padding: 14px 16px; background: transparent; border-bottom: none; }
 .defuzz-select {
-  font-size: 11px; font-family: var(--mono);
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 5px; color: var(--text2); padding: 3px 8px;
-  outline: none; cursor: pointer;
+  font-size: 11px; font-family: var(--mono); font-weight: 500;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--text); padding: 4px 10px;
+  outline: none; cursor: pointer; transition: border-color 0.2s;
 }
+.defuzz-select:focus { border-color: var(--accent); }
 
-/* color picker hidden input */
 input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
+
+/* Global SVG Bin Icon Reference to reuse cleanly */
+.svg-trash {
+  width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
 </style>
 </head>
 <body>
 
-<header class="navbar academic-header">
+<header class="navbar">
   <div class="nav-logo">
     <div class="nav-logo-icon">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
-    <div>
-      <div class="nav-logo-text">FuzzyLogic Visualizer</div>
-      <div style="font-size:15px;color:var(--text2);font-weight:600;">Intelligent Fuzzy Membership Function Designer</div>
+    <div class="nav-titles">
+      <div class="nav-logo-text">FuzzyLogic <span>Visualizer</span></div>
+      <div class="nav-subtitle">Intelligent Fuzzy Membership Function Designer</div>
     </div>
+    <span class="nav-badge">v2.0</span>
   </div>
-  <div class="nav-sep"></div>
-  <div style="display:flex;flex-direction:column;gap:4px;padding:8px 12px;border:1px solid var(--border2);border-radius:10px;background:linear-gradient(135deg,#eef4ff,#ffffff);">
-    <span style="font-size:13px;color:var(--accent);font-weight:700;">Created by Dr. Zamri</span>
-    <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
-    <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">Curriculum Vitae</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-author">
+    Created by <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank">Dr. Zamri</a>
   </div>
-  <span class="nav-badge">v2.0</span>
 </header>
 
 <div class="defuzz-row" id="projectRow">
   <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name">
   <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
     Load
     <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
   </label>
-  <button class="btn btn-success" onclick="saveProject()">Save</button>
-  <button class="btn btn-primary" onclick="openDownloadCenter()">Download Center</button>
+  <button class="btn btn-success" onclick="saveProject()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Save
+  </button>
+  <button class="btn btn-primary" onclick="openDownloadCenter()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    Download Center
+  </button>
 </div>
 
 <div class="main">
@@ -525,8 +533,8 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     <div class="mf-editor" id="mfEditor">
       <div class="empty-state">
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <rect width="40" height="40" rx="10" fill="#1a1e28"/>
-          <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <rect width="40" height="40" rx="10" fill="#e3edff"/>
+          <path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#6d83a0" stroke-width="2" stroke-linecap="round" fill="none"/>
         </svg>
         <p>Select a variable from above<br>to edit its membership functions</p>
       </div>
@@ -537,13 +545,13 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     <div class="chart-toolbar">
       <span class="chart-title">Membership Function Graphs</span>
       <button class="btn btn-primary" onclick="showAllGraphs()">Show All Graphs</button>
-      <button class="btn" onclick="showSelectedGraph()">Show Selected Graph</button>
+      <button class="btn" onclick="showSelectedGraph()">Show Selected</button>
     </div>
     <div class="chart-area" id="chartArea">
       <div class="no-vars">
         <div class="no-vars-icon">
           <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/>
           </svg>
         </div>
         <h3>No Variables Yet</h3>
@@ -557,7 +565,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
       <div class="section-header" style="margin-bottom:8px;">
         <span class="section-label">FIS Settings</span>
       </div>
-      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0;border:none;background:transparent;flex-wrap:wrap;gap:6px;">
+      <div class="defuzz-row settings-row" id="defuzzRow" style="padding:0; gap:8px; flex-wrap:wrap;">
         <span>FIS:</span>
         <select class="defuzz-select" id="fisTypeSelect" onchange="setFIS(this.value)">
           <option value="mamdani">Mamdani</option>
@@ -589,13 +597,13 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
       <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
         RULE EDITOR
-        <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span>
+        <span id="ruleCount">0 rules</span>
       </button>
       <div class="rules-body open" id="rulesBody">
         <div class="rule-builder" id="ruleBuilder">
           <span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span>
         </div>
-        <div class="rules-list" id="rulesList" style="max-height:none;"></div>
+        <div class="rules-list" id="rulesList"></div>
       </div>
     </div>
   </div>
@@ -605,7 +613,9 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
   <div class="modal-card">
     <div class="modal-header">
       <h3>Download Center</h3>
-      <button class="icon-btn" onclick="closeDownloadCenter()">x</button>
+      <button class="icon-btn" onclick="closeDownloadCenter()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
     </div>
     <div class="modal-body">
       <div class="download-grid">
@@ -632,7 +642,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
           <label><input type="checkbox" class="dl-item" value="cpp"> Generic C++/ESP32</label>
         </div>
       </div>
-      <p style="margin-top:12px;color:var(--text3);font-size:11px;">
+      <p style="margin-top:16px;color:var(--text3);font-size:12px;font-weight:500;">
         Select one or more export types, then click Download Selected.
       </p>
     </div>
@@ -644,7 +654,7 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
 </div>
 
 <footer class="footer">
-  FuzzyLogic Visualizer v2.0 | Intelligent Fuzzy Membership Function Designer | Dr. Zamri, UniMAP | CV: <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank" style="color:var(--accent);text-decoration:none;">zamrizahir88.github.io/cv/main.html</a>
+  FuzzyLogic Visualizer v2.0 &nbsp;|&nbsp; Intelligent Fuzzy Membership Function Designer &nbsp;|&nbsp; Dr. Zamri, UniMAP
 </footer>
 
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
@@ -665,6 +675,9 @@ let colorIdx = 0;
 let mfIdCounter = 1;
 let varIdCounter = 1;
 
+// The SVG Trash Icon definition for reuse
+const trashIcon = `<svg class="svg-trash" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
 function uid(prefix='') { return prefix + (Date.now().toString(36) + Math.random().toString(36).slice(2)); }
 function nextColor() { return COLORS[colorIdx++ % COLORS.length]; }
 function syncSettings() {
@@ -680,7 +693,7 @@ function queueRenderCharts() {
   });
 }
 
-// â”€â”€ FIS TYPE â”€â”€
+// ── FIS TYPE ──
 function setFIS(type) {
   state.fisType = type;
   const fisSel = document.getElementById('fisTypeSelect');
@@ -694,7 +707,7 @@ function setFIS(type) {
   if(orSel) orSel.disabled = disabled;
 }
 
-// â”€â”€ VARIABLE MANAGEMENT â”€â”€
+// ── VARIABLE MANAGEMENT ──
 function addVariable(type) {
   const name = type==='input' ? `Input ${state.variables.filter(v=>v.type==='input').length+1}` : `Output ${state.variables.filter(v=>v.type==='output').length+1}`;
   const v = { id: uid('v'), type, name, min:0, max:100, unit:'', mfs:[] };
@@ -745,18 +758,18 @@ function renderVarLists() {
         <div class="var-type-dot dot-${type}"></div>
         <span class="var-name">${esc(v.name)}</span>
         <span class="var-mf-count">${v.mfs.length} MF</span>
-        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete">Ã—</button>
+        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete Variable">${trashIcon}</button>
       </div>`).join('') : `<div style="font-size:11px;color:var(--text3);padding:4px 0;">No ${type} variables</div>`;
   });
 }
 
-// â”€â”€ MF EDITOR â”€â”€
+// ── MF EDITOR ──
 function renderMFEditor() {
   const editor = document.getElementById('mfEditor');
   const v = state.variables.find(x=>x.id===activeVarId);
   if(!v) {
     editor.innerHTML = `<div class="empty-state">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#1a1e28"/><path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#555a6b" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="#e3edff"/><path d="M8 28 Q12 16 20 20 Q28 24 32 12" stroke="#6d83a0" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
       <p>Select a variable from above<br>to edit its membership functions</p></div>`;
     return;
   }
@@ -780,12 +793,12 @@ function renderMFEditor() {
       </div>
       <div class="field-group">
         <span class="field-label">UNIT</span>
-        <input class="field-input" value="${esc(v.unit)}" placeholder="Â°C, kgâ€¦" oninput="updateVarProp('${v.id}','unit',this.value)">
+        <input class="field-input" value="${esc(v.unit)}" placeholder="°C, kg…" oninput="updateVarProp('${v.id}','unit',this.value)">
       </div>
     </div>
     ${v.mfs.map(mf=>mfCardHTML(v,mf)).join('')}
     <button class="add-mf-btn" onclick="addMF('${v.id}')">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Add Membership Function
     </button>`;
 }
@@ -806,7 +819,7 @@ function mfCardHTML(v, mf) {
       <input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)">
       <input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)">
       <select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();renderCharts();">${shapeOpts}</select>
-      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">Ã—</button>
+      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">${trashIcon}</button>
     </div>
     <div class="mf-params">${paramHTML}</div>
   </div>`;
@@ -888,7 +901,7 @@ function deleteMF(vid, mfid) {
   renderRules();
 }
 
-// â”€â”€ MF MATH â”€â”€
+// ── MF MATH ──
 function evalMF(mf, x) {
   const p = mf.params;
   switch(mf.shape) {
@@ -919,12 +932,12 @@ function evalMF(mf, x) {
   }
 }
 
-// â”€â”€ CHART RENDERING â”€â”€
+// ── CHART RENDERING ──
 function renderCharts() {
   const area = document.getElementById('chartArea');
   if(state.variables.length===0) {
     area.innerHTML = `<div class="no-vars">
-      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
+      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
       <h3>No Variables Yet</h3>
       <p>Add input or output variables on the left panel to start building your fuzzy logic system.</p></div>`;
     Object.values(chartInstances).forEach(c=>c.destroy());
@@ -948,7 +961,7 @@ function renderCharts() {
       summaryLines.push(`${outs.length>1?`Output ${i+1}`:'Output'}: ${v.name} (${labels})`);
     });
     area.innerHTML = `<div class="no-vars">
-      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#555a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
+      <div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>
       <h3>Linguistic Summary</h3>
       <p style="white-space:pre-line;text-align:left;max-width:520px;">${esc(summaryLines.join('\n')) || 'Select a variable from the left panel, or click Show All Graphs.'}</p></div>`;
     Object.values(chartInstances).forEach(c=>c.destroy());
@@ -1023,7 +1036,7 @@ function renderCharts() {
             padding:10, cornerRadius:8,
             callbacks:{
               title: items=>`x = ${(+items[0].label).toFixed(2)} ${v.unit}`,
-              label: item=>`  ${item.dataset.label}: Î¼ = ${item.raw.toFixed(4)}`
+              label: item=>`  ${item.dataset.label}: μ = ${item.raw.toFixed(4)}`
             }
           }
         },
@@ -1038,7 +1051,7 @@ function renderCharts() {
           },
           y:{
             min:0, max:1,
-            title:{ display:true, text:'Î¼(x)', color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
+            title:{ display:true, text:'μ(x)', color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
             ticks:{ color:'#555a6b', font:{family:"'DM Mono',monospace",size:10}, stepSize:0.2 },
             grid:{ color:'rgba(255,255,255,0.04)' },
             border:{ color:'rgba(255,255,255,0.1)' }
@@ -1055,7 +1068,7 @@ function renderCharts() {
   });
 }
 
-// â”€â”€ EXPORT â”€â”€
+// ── EXPORT ──
 function exportChartPNG(vid) {
   const c = chartInstances[vid];
   if(!c) return;
@@ -1121,14 +1134,14 @@ function exportChartSVG(vid) {
 
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#13161d;font-family:sans-serif;">
 <rect width="${W}" height="${H}" fill="#13161d" rx="12"/>
-<text x="${W/2}" y="18" text-anchor="middle" fill="#e8eaf0" font-family="'Syne',sans-serif" font-size="13" font-weight="600">${v.name} â€” Membership Functions</text>
+<text x="${W/2}" y="18" text-anchor="middle" fill="#e8eaf0" font-family="'Syne',sans-serif" font-size="13" font-weight="600">${v.name} — Membership Functions</text>
 ${xTicksHTML}${yTicksHTML}${paths}
 <text x="${W/2}" y="${PT+cH+36}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11">${v.name}${v.unit?` (${v.unit})`:''}</text>
-<text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11" transform="rotate(-90,14,${PT+cH/2})">Î¼(x)</text>
+<text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11" transform="rotate(-90,14,${PT+cH/2})">μ(x)</text>
 <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
 <line x1="${PL}" y1="${PT+cH}" x2="${PL+cW}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
 ${legendItems}
-<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v1.0 â€” Zamm Studio Â© 2026</text>
+<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v2.0 — Zamm Studio © 2026</text>
 </svg>`;
 
   const blob=new Blob([svg],{type:'image/svg+xml'});
@@ -1143,7 +1156,7 @@ function exportAllSVG() {
   state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartSVG(v.id), i*200); });
 }
 
-// â”€â”€ C++ (ESP32) CODE GENERATOR â”€â”€
+// ── C++ (ESP32) CODE GENERATOR ──
 function viewESPCode() {
   if (state.variables.length === 0) {
       showToast("Please add variables and shapes first to generate C++ code.");
@@ -1211,12 +1224,12 @@ function viewESPCode() {
   newWindow.document.write(`<title>C++ Code Export</title><pre style="background: #0d0f14; color: #10b981; padding: 20px; font-family: monospace; font-size: 14px; height: 100vh; margin: 0; overflow-y: auto;">${code}</pre>`);
 }
 
-// â”€â”€ PYTHON CODE EXPORT â”€â”€
+// ── PYTHON CODE EXPORT ──
 function exportPythonCode() {
   const pname = document.getElementById('projectName').value || 'fuzzy_project';
-  let code=`# FuzzyLogic Visualizer â€” Python Code Export
+  let code=`# FuzzyLogic Visualizer — Python Code Export
 # Project: ${pname}
-# Generated by FuzzyLogic Visualizer v1.0 â€” Zamm Studio Â© 2026
+# Generated by FuzzyLogic Visualizer v2.0 — Zamm Studio © 2026
 # FIS Type: ${state.fisType} | Defuzz: ${state.defuzz}
 
 import numpy as np
@@ -1307,7 +1320,7 @@ function pyMF(mf) {
   }
 }
 
-// â”€â”€ DYNAMIC MULTI-INPUT RULES â”€â”€
+// ── DYNAMIC MULTI-INPUT RULES ──
 function toggleRules() {
   const body=document.getElementById('rulesBody');
   const btn=document.getElementById('rulesToggle');
@@ -1409,12 +1422,12 @@ function renderRules() {
             <label style="font-size:10px;">
               <input type="checkbox" ${r.enabled===false?'':'checked'} onchange="toggleRuleEnabled('${r.id}', this.checked)"> ON
             </label>
-            <input type="number" step="0.1" min="0" max="1" value="${Number(r.weight ?? 1).toFixed(1)}" onchange="setRuleWeight('${r.id}', this.value)">
-            <button class="rule-action-btn" onclick="editRule('${r.id}')">Edit</button>
-            <button class="rule-action-btn" onclick="duplicateRule('${r.id}')">Dup</button>
-            <button class="rule-action-btn" onclick="moveRuleUp('${r.id}')" ${i===0?'disabled':''}>Up</button>
-            <button class="rule-action-btn" onclick="moveRuleDown('${r.id}')" ${i===state.rules.length-1?'disabled':''}>Down</button>
-            <button onclick="deleteRule('${r.id}')">x</button>
+            <input type="number" step="0.1" min="0" max="1" value="${Number(r.weight ?? 1).toFixed(1)}" onchange="setRuleWeight('${r.id}', this.value)" title="Rule Weight">
+            <button class="rule-action-btn" onclick="editRule('${r.id}')" title="Edit">Edit</button>
+            <button class="rule-action-btn" onclick="duplicateRule('${r.id}')" title="Duplicate">Dup</button>
+            <button class="rule-action-btn" onclick="moveRuleUp('${r.id}')" ${i===0?'disabled':''} title="Move Up">Up</button>
+            <button class="rule-action-btn" onclick="moveRuleDown('${r.id}')" ${i===state.rules.length-1?'disabled':''} title="Move Down">Down</button>
+            <button class="rule-chip-del" onclick="deleteRule('${r.id}')" title="Delete Rule">${trashIcon}</button>
           </div>
       </div>`;
   }).join('');
@@ -1490,7 +1503,7 @@ function deleteRule(id) {
   renderRules();
 }
 
-// â”€â”€ SAVE / LOAD â”€â”€
+// ── SAVE / LOAD ──
 function saveProject() {
   syncSettings();
   const name=document.getElementById('projectName').value||'project';
@@ -1741,7 +1754,7 @@ function downloadText(content, filename, mime) {
   link.click();
 }
 
-// â”€â”€ TOAST â”€â”€
+// ── TOAST ──
 let toastTimer;
 function showToast(msg) {
   const t=document.getElementById('toast');
@@ -1751,14 +1764,14 @@ function showToast(msg) {
   toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// â”€â”€ HELPERS â”€â”€
+// ── HELPERS ──
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function hexAlpha(hex,a) {
   const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${a})`;
 }
 
-// â”€â”€ INIT â”€â”€
+// ── INIT ──
 renderVarLists();
 renderMFEditor();
 setFIS(state.fisType);
