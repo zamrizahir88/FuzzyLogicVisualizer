@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FuzzyLogic Visualizer — Zamm Studio</title>
+<title>FuzzyLogic Visualizer v2.0 - UniMAP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -44,12 +44,12 @@ body {
   overflow-x: hidden;
 }
 
-/* ── SCROLLBAR ── */
+/* â”€â”€ SCROLLBAR â”€â”€ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
 
-/* ── NAVBAR ── */
+/* â”€â”€ NAVBAR â”€â”€ */
 .navbar {
   display: flex; align-items: center; gap: 12px;
   padding: 0 20px;
@@ -130,10 +130,10 @@ body {
 .btn-warn { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.3); color: var(--warn); }
 .btn-warn:hover { background: rgba(245,166,35,0.2); }
 
-/* ── MAIN LAYOUT ── */
-.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 56px - 36px); }
+/* â”€â”€ MAIN LAYOUT â”€â”€ */
+.main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 106px - 36px); }
 
-/* ── LEFT PANEL ── */
+/* â”€â”€ LEFT PANEL â”€â”€ */
 .panel-left {
   width: 320px; flex-shrink: 0;
   display: flex; flex-direction: column;
@@ -275,7 +275,7 @@ body {
 .empty-state svg { opacity: .3; }
 .empty-state p { font-size: 12px; line-height: 1.6; }
 
-/* ── RIGHT PANEL ── */
+/* â”€â”€ RIGHT PANEL â”€â”€ */
 .panel-right {
   flex: 1; display: flex; flex-direction: column;
   overflow: hidden;
@@ -337,7 +337,7 @@ body {
 .no-vars h3 { font-family: var(--display); font-size: 18px; color: var(--text2); }
 .no-vars p { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.7; }
 
-/* ── RULE EDITOR ── */
+/* â”€â”€ RULE EDITOR â”€â”€ */
 .panel-rules {
   border-top: 1px solid var(--border);
   background: var(--surface);
@@ -379,8 +379,39 @@ body {
 .rule-chip span { flex: 1; }
 .rule-chip button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 0; }
 .rule-chip button:hover { color: var(--danger); }
+.rule-chip-controls { display: flex; align-items: center; gap: 6px; }
+.rule-chip-controls input[type="number"] {
+  width: 62px; background: var(--surface3); border: 1px solid var(--border);
+  color: var(--text2); border-radius: 5px; padding: 2px 4px; font-size: 10px;
+}
+.rule-action-btn {
+  background: transparent; border: 1px solid var(--border2); color: var(--text2);
+  font-size: 10px; border-radius: 5px; padding: 2px 6px; cursor: pointer;
+}
+.rule-action-btn:hover { color: var(--text); background: var(--surface3); }
 
-/* ── FOOTER ── */
+/* modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.62);
+  display: flex; align-items: center; justify-content: center; z-index: 1200;
+}
+.modal-card {
+  width: min(860px, 94vw);
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 12px;
+}
+.modal-header, .modal-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+}
+.modal-footer { border-bottom: none; border-top: 1px solid var(--border); justify-content: flex-end; gap: 8px; }
+.modal-body { padding: 14px; }
+.download-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 12px;
+}
+.download-grid h4 { margin-bottom: 6px; color: var(--accent2); font-family: var(--mono); font-size: 11px; }
+.download-grid label { display: block; font-size: 12px; color: var(--text2); margin: 6px 0; }
+
+/* â”€â”€ FOOTER â”€â”€ */
 .footer {
   height: 36px; display: flex; align-items: center; justify-content: center;
   border-top: 1px solid var(--border);
@@ -390,7 +421,7 @@ body {
 }
 .footer span { color: var(--accent2); }
 
-/* ── TOAST ── */
+/* â”€â”€ TOAST â”€â”€ */
 .toast {
   position: fixed; bottom: 48px; right: 20px;
   background: var(--surface2); border: 1px solid var(--border2);
@@ -403,7 +434,7 @@ body {
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
 
-/* ── DEFUZZ ROW ── */
+/* â”€â”€ DEFUZZ ROW â”€â”€ */
 .defuzz-row {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 16px; border-bottom: 1px solid var(--border);
@@ -423,40 +454,34 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
 </head>
 <body>
 
-<nav class="navbar">
+<header class="navbar academic-header">
   <div class="nav-logo">
     <div class="nav-logo-icon">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/>
       </svg>
     </div>
-    <span class="nav-logo-text">Fuzzy<span>Logic</span> Visualizer</span>
+    <div>
+      <div class="nav-logo-text">FuzzyLogic Visualizer</div>
+      <div style="font-size:11px;color:var(--text2);">Intelligent Fuzzy Membership Function Designer</div>
+    </div>
   </div>
-  <span class="nav-badge">v1.0</span>
   <div class="nav-sep"></div>
-  <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name…">
-  <div class="nav-sep"></div>
+  <div style="display:flex;flex-direction:column;gap:2px;">
+    <span style="font-size:11px;color:var(--text2);">Dr. Zamri</span>
+    <span style="font-size:11px;color:var(--text3);">Universiti Malaysia Perlis (UniMAP)</span>
+  </div>
+  <span class="nav-badge">v2.0</span>
+</header>
+
+<div class="defuzz-row" id="defuzzRow">
+  <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name">
   <div class="nav-fis">
     <span style="font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.06em;">FIS</span>
     <button class="fis-btn active" id="fisBtn0" onclick="setFIS('mamdani',0)">Mamdani</button>
     <button class="fis-btn" id="fisBtn1" onclick="setFIS('sugeno',1)">Sugeno</button>
   </div>
-  <div class="nav-spacer"></div>
-  <div class="nav-actions">
-    <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Load Project
-      <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
-    </label>
-    <button class="btn btn-success" onclick="saveProject()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Save Project
-    </button>
-  </div>
-</nav>
-
-<div class="defuzz-row" id="defuzzRow">
-  <span>Defuzzification method:</span>
+  <span>Defuzzification:</span>
   <select class="defuzz-select" id="defuzzMethod">
     <option value="centroid">Centroid (COG)</option>
     <option value="bisector">Bisector</option>
@@ -464,18 +489,23 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
     <option value="lom">Largest of Maximum</option>
     <option value="som">Smallest of Maximum</option>
   </select>
-  <span style="margin-left:auto;color:var(--text3);">AND method:</span>
+  <span style="margin-left:auto;color:var(--text3);">AND:</span>
   <select class="defuzz-select" id="andMethod">
     <option value="min">min</option>
     <option value="prod">prod</option>
   </select>
-  <span>OR method:</span>
+  <span>OR:</span>
   <select class="defuzz-select" id="orMethod">
     <option value="max">max</option>
     <option value="probor">probor</option>
   </select>
+  <label class="btn btn-warn" style="cursor:pointer;" title="Load project file">
+    Load
+    <input type="file" id="loadFile" accept=".fuzzyjson,.json" style="display:none" onchange="loadProject(event)">
+  </label>
+  <button class="btn btn-success" onclick="saveProject()">Save</button>
+  <button class="btn btn-primary" onclick="openDownloadCenter()">Download Center</button>
 </div>
-
 <div class="main">
 
   <div class="panel-left">
@@ -559,15 +589,61 @@ input[type=color] { opacity: 0; position: absolute; width: 0; height: 0; }
   </div>
 </div>
 
+<div id="downloadCenterModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Download Center</h3>
+      <button class="icon-btn" onclick="closeDownloadCenter()">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="download-grid">
+        <div>
+          <h4>Graph Exports</h4>
+          <label><input type="checkbox" class="dl-item" value="all_png"> All PNG</label>
+          <label><input type="checkbox" class="dl-item" value="all_svg"> All SVG</label>
+          <label><input type="checkbox" class="dl-item" value="pdf_report"> PDF Report (quick snapshot)</label>
+        </div>
+        <div>
+          <h4>Rule Exports</h4>
+          <label><input type="checkbox" class="dl-item" value="rules_txt"> TXT (readable)</label>
+          <label><input type="checkbox" class="dl-item" value="rules_csv"> CSV (data)</label>
+          <label><input type="checkbox" class="dl-item" value="rules_json"> JSON (structured)</label>
+        </div>
+        <div>
+          <h4>Simulation Exports</h4>
+          <label><input type="checkbox" class="dl-item" value="python"> Python .py</label>
+          <label><input type="checkbox" class="dl-item" value="matlab_m"> MATLAB .m script</label>
+          <label><input type="checkbox" class="dl-item" value="matlab_fis"> MATLAB .fis</label>
+        </div>
+        <div>
+          <h4>Embedded Exports</h4>
+          <label><input type="checkbox" class="dl-item" value="cpp"> Generic C++/ESP32</label>
+        </div>
+      </div>
+      <p style="margin-top:12px;color:var(--text3);font-size:11px;">
+        Select one or more export types, then click Download Selected.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeDownloadCenter()">Cancel</button>
+      <button class="btn btn-primary" onclick="downloadSelected()">Download Selected</button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
-  FuzzyLogic Visualizer v1.0 &nbsp;|&nbsp; Designed &amp; Engineered by <span>&nbsp;Zamm Studio</span>&nbsp;© 2026
+  FuzzyLogic Visualizer v2.0 | Intelligent Fuzzy Membership Function Designer | Dr. Zamri, UniMAP
 </footer>
 
 <div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg"></span></div>
 
 <script>
 const COLORS = ['#7c6dfa','#3ecf8e','#f5a623','#f06292','#5bc4f5','#c084fc','#fb923c','#34d399','#f472b6','#60a5fa'];
-let state = { fisType:'mamdani', defuzz:'centroid', andMethod:'min', orMethod:'max', variables:[], rules:[] };
+let state = {
+  fisType:'mamdani', defuzz:'centroid', andMethod:'min', orMethod:'max',
+  metadata: { author: 'Dr. Zamri', institution: 'Universiti Malaysia Perlis (UniMAP)' },
+  variables:[], rules:[]
+};
 let activeVarId = null;
 let chartInstances = {};
 let colorIdx = 0;
@@ -576,15 +652,20 @@ let varIdCounter = 1;
 
 function uid(prefix='') { return prefix + (Date.now().toString(36) + Math.random().toString(36).slice(2)); }
 function nextColor() { return COLORS[colorIdx++ % COLORS.length]; }
+function syncSettings() {
+  state.defuzz = document.getElementById('defuzzMethod')?.value || state.defuzz;
+  state.andMethod = document.getElementById('andMethod')?.value || state.andMethod;
+  state.orMethod = document.getElementById('orMethod')?.value || state.orMethod;
+}
 
-// ── FIS TYPE ──
+// â”€â”€ FIS TYPE â”€â”€
 function setFIS(type, idx) {
   state.fisType = type;
   [0,1].forEach(i => document.getElementById('fisBtn'+i).classList.toggle('active', i===idx));
   document.getElementById('defuzzRow').style.display = type==='mamdani' ? 'flex' : 'none';
 }
 
-// ── VARIABLE MANAGEMENT ──
+// â”€â”€ VARIABLE MANAGEMENT â”€â”€
 function addVariable(type) {
   const name = type==='input' ? `Input ${state.variables.filter(v=>v.type==='input').length+1}` : `Output ${state.variables.filter(v=>v.type==='output').length+1}`;
   const v = { id: uid('v'), type, name, min:0, max:100, unit:'', mfs:[] };
@@ -623,12 +704,12 @@ function renderVarLists() {
         <div class="var-type-dot dot-${type}"></div>
         <span class="var-name">${esc(v.name)}</span>
         <span class="var-mf-count">${v.mfs.length} MF</span>
-        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete">×</button>
+        <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete">Ã—</button>
       </div>`).join('') : `<div style="font-size:11px;color:var(--text3);padding:4px 0;">No ${type} variables</div>`;
   });
 }
 
-// ── MF EDITOR ──
+// â”€â”€ MF EDITOR â”€â”€
 function renderMFEditor() {
   const editor = document.getElementById('mfEditor');
   const v = state.variables.find(x=>x.id===activeVarId);
@@ -658,7 +739,7 @@ function renderMFEditor() {
       </div>
       <div class="field-group">
         <span class="field-label">UNIT</span>
-        <input class="field-input" value="${esc(v.unit)}" placeholder="°C, kg…" oninput="updateVarProp('${v.id}','unit',this.value)">
+        <input class="field-input" value="${esc(v.unit)}" placeholder="Â°C, kgâ€¦" oninput="updateVarProp('${v.id}','unit',this.value)">
       </div>
     </div>
     ${v.mfs.map(mf=>mfCardHTML(v,mf)).join('')}
@@ -684,7 +765,7 @@ function mfCardHTML(v, mf) {
       <input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)">
       <input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)">
       <select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();renderCharts();">${shapeOpts}</select>
-      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">×</button>
+      <button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">Ã—</button>
     </div>
     <div class="mf-params">${paramHTML}</div>
   </div>`;
@@ -766,7 +847,7 @@ function deleteMF(vid, mfid) {
   renderRules();
 }
 
-// ── MF MATH ──
+// â”€â”€ MF MATH â”€â”€
 function evalMF(mf, x) {
   const p = mf.params;
   switch(mf.shape) {
@@ -797,7 +878,7 @@ function evalMF(mf, x) {
   }
 }
 
-// ── CHART RENDERING ──
+// â”€â”€ CHART RENDERING â”€â”€
 function renderCharts() {
   const area = document.getElementById('chartArea');
   if(state.variables.length===0) {
@@ -876,7 +957,7 @@ function renderCharts() {
             padding:10, cornerRadius:8,
             callbacks:{
               title: items=>`x = ${(+items[0].label).toFixed(2)} ${v.unit}`,
-              label: item=>`  ${item.dataset.label}: μ = ${item.raw.toFixed(4)}`
+              label: item=>`  ${item.dataset.label}: Î¼ = ${item.raw.toFixed(4)}`
             }
           }
         },
@@ -891,7 +972,7 @@ function renderCharts() {
           },
           y:{
             min:0, max:1,
-            title:{ display:true, text:'μ(x)', color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
+            title:{ display:true, text:'Î¼(x)', color:'#8b90a0', font:{family:"'DM Sans',sans-serif",size:11} },
             ticks:{ color:'#555a6b', font:{family:"'DM Mono',monospace",size:10}, stepSize:0.2 },
             grid:{ color:'rgba(255,255,255,0.04)' },
             border:{ color:'rgba(255,255,255,0.1)' }
@@ -908,7 +989,7 @@ function renderCharts() {
   });
 }
 
-// ── EXPORT ──
+// â”€â”€ EXPORT â”€â”€
 function exportChartPNG(vid) {
   const c = chartInstances[vid];
   if(!c) return;
@@ -966,14 +1047,14 @@ function exportChartSVG(vid) {
 
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#13161d;font-family:sans-serif;">
 <rect width="${W}" height="${H}" fill="#13161d" rx="12"/>
-<text x="${W/2}" y="18" text-anchor="middle" fill="#e8eaf0" font-family="'Syne',sans-serif" font-size="13" font-weight="600">${v.name} — Membership Functions</text>
+<text x="${W/2}" y="18" text-anchor="middle" fill="#e8eaf0" font-family="'Syne',sans-serif" font-size="13" font-weight="600">${v.name} â€” Membership Functions</text>
 ${xTicksHTML}${yTicksHTML}${paths}
 <text x="${W/2}" y="${PT+cH+36}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11">${v.name}${v.unit?` (${v.unit})`:''}</text>
-<text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11" transform="rotate(-90,14,${PT+cH/2})">μ(x)</text>
+<text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#8b90a0" font-family="sans-serif" font-size="11" transform="rotate(-90,14,${PT+cH/2})">Î¼(x)</text>
 <line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
 <line x1="${PL}" y1="${PT+cH}" x2="${PL+cW}" y2="${PT+cH}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
 ${legendItems}
-<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v1.0 — Zamm Studio © 2026</text>
+<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v1.0 â€” Zamm Studio Â© 2026</text>
 </svg>`;
 
   const blob=new Blob([svg],{type:'image/svg+xml'});
@@ -988,7 +1069,7 @@ function exportAllSVG() {
   state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartSVG(v.id), i*200); });
 }
 
-// ── C++ (ESP32) CODE GENERATOR ──
+// â”€â”€ C++ (ESP32) CODE GENERATOR â”€â”€
 function viewESPCode() {
   if (state.variables.length === 0) {
       showToast("Please add variables and shapes first to generate C++ code.");
@@ -1018,9 +1099,10 @@ function viewESPCode() {
   });
 
   // Output rules (AND implemented via minimum)
-  if (state.rules.length > 0) {
+  const activeRules = state.rules.filter(r => r.enabled !== false);
+  if (activeRules.length > 0) {
       code += `// Rule Evaluation\nvoid evaluateRules() {\n`;
-      state.rules.forEach((r, idx) => {
+      activeRules.forEach((r, idx) => {
           let conds = [];
           for(let vId in r.conditions) {
               const v = state.variables.find(x => x.id === vId);
@@ -1044,7 +1126,7 @@ function viewESPCode() {
               const safeOutName = outV.name.replace(/[^a-zA-Z0-9]/g, '');
               const safeOutLabel = outM.label.replace(/[^a-zA-Z0-9]/g, '');
               
-              code += `  // Rule ${idx+1}\n  float rule${idx+1} = ${minStr};\n  ${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()} = max(${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()}, rule${idx+1});\n\n`;
+              code += `  // Rule ${idx+1}\n  float rule${idx+1} = (${minStr}) * ${Number(r.weight ?? 1).toFixed(2)};\n  ${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()} = max(${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()}, rule${idx+1});\n\n`;
           }
       });
       code += `}\n`;
@@ -1055,12 +1137,12 @@ function viewESPCode() {
   newWindow.document.write(`<title>C++ Code Export</title><pre style="background: #0d0f14; color: #10b981; padding: 20px; font-family: monospace; font-size: 14px; height: 100vh; margin: 0; overflow-y: auto;">${code}</pre>`);
 }
 
-// ── PYTHON CODE EXPORT ──
+// â”€â”€ PYTHON CODE EXPORT â”€â”€
 function exportPythonCode() {
   const pname = document.getElementById('projectName').value || 'fuzzy_project';
-  let code=`# FuzzyLogic Visualizer — Python Code Export
+  let code=`# FuzzyLogic Visualizer â€” Python Code Export
 # Project: ${pname}
-# Generated by FuzzyLogic Visualizer v1.0 — Zamm Studio © 2026
+# Generated by FuzzyLogic Visualizer v1.0 â€” Zamm Studio Â© 2026
 # FIS Type: ${state.fisType} | Defuzz: ${state.defuzz}
 
 import numpy as np
@@ -1094,9 +1176,10 @@ plt.style.use('dark_background')
     code+=`\n`;
   });
 
-  if(state.rules.length>0) {
+  const activeRules = state.rules.filter(r => r.enabled !== false);
+  if(activeRules.length>0) {
     code+=`# Rules\n`;
-    state.rules.forEach((r,i)=>{
+    activeRules.forEach((r,i)=>{
       let condParts = [];
       for(let vId in r.conditions) {
           const av=state.variables.find(v=>v.id===vId);
@@ -1114,10 +1197,10 @@ plt.style.use('dark_background')
           let condExpr = condParts.join(' & '); // scikit-fuzzy uses & for AND
           const cn=cv.name.replace(/\s+/g,'_').toLowerCase();
           const cl=cmf.label.replace(/\s+/g,'_').toLowerCase();
-          code+=`rule${i+1} = ctrl.Rule(${condExpr}, ${cn}['${cl}'])\n`;
+          code+=`rule${i+1} = ctrl.Rule(${condExpr}, ${cn}['${cl}'])  # weight=${Number(r.weight ?? 1).toFixed(2)}\n`;
       }
     });
-    const ruleNames=state.rules.map((_,i)=>`rule${i+1}`).join(', ');
+    const ruleNames=activeRules.map((_,i)=>`rule${i+1}`).join(', ');
     const outName=outputs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output';
     code+=`\n# Control system\n${outName}_ctrl = ctrl.ControlSystem([${ruleNames}])\n${outName}_sim = ctrl.ControlSystemSimulation(${outName}_ctrl)\n\n`;
   }
@@ -1139,18 +1222,18 @@ plt.style.use('dark_background')
 
 function pyMF(mf) {
   const p=mf.params;
-  const u=`np.linspace(0,1,500)`;
+  const u=`universe`;
   switch(mf.shape) {
-    case 'triangular': return `trimf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.a}, ${p.b}, ${p.c}])`;
-    case 'trapezoidal': return `trapmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.a}, ${p.b}, ${p.c}, ${p.d}])`;
-    case 'gaussian': return `gaussmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.mean}, ${p.sigma})`;
-    case 'bell': return `gbellmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.a}, ${p.b}, ${p.c})`;
-    case 'sigmoidal': return `sigmf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, ${p.a}, ${p.c})`;
-    default: return `trimf(${mf.label.replace(/\s+/g,'_').toLowerCase()}.universe, [${p.x||50}-1, ${p.x||50}, ${p.x||50}+1])`;
+    case 'triangular': return `trimf(${u}, [${p.a}, ${p.b}, ${p.c}])`;
+    case 'trapezoidal': return `trapmf(${u}, [${p.a}, ${p.b}, ${p.c}, ${p.d}])`;
+    case 'gaussian': return `gaussmf(${u}, ${p.mean}, ${p.sigma})`;
+    case 'bell': return `gbellmf(${u}, ${p.a}, ${p.b}, ${p.c})`;
+    case 'sigmoidal': return `sigmf(${u}, ${p.a}, ${p.c})`;
+    default: return `trimf(${u}, [${p.x||50}-1, ${p.x||50}, ${p.x||50}+1])`;
   }
 }
 
-// ── DYNAMIC MULTI-INPUT RULES ──
+// â”€â”€ DYNAMIC MULTI-INPUT RULES â”€â”€
 function toggleRules() {
   const body=document.getElementById('rulesBody');
   const btn=document.getElementById('rulesToggle');
@@ -1210,7 +1293,7 @@ function addRule() {
 
   const conclusion = { varId: out.dataset.vid, mfId: out.value };
 
-  state.rules.push({ id: uid('r'), conditions, conclusion });
+  state.rules.push({ id: uid('r'), conditions, conclusion, enabled: true, weight: 1.0 });
   renderRules();
   showToast('Rule added');
 }
@@ -1233,10 +1316,87 @@ function renderRules() {
 
       return `
       <div class="rule-chip">
-          <span>${i + 1}. IF ${condStrs.join(' <i style="color:var(--text3); font-weight:normal;">AND</i> ')} THEN ${outStr}</span>
-          <button onclick="deleteRule('${r.id}')">×</button>
+          <span style="${r.enabled===false?'opacity:.5;':''}">${i + 1}. IF ${condStrs.join(' <i style="color:var(--text3); font-weight:normal;">AND</i> ')} THEN ${outStr}</span>
+          <div class="rule-chip-controls">
+            <label style="font-size:10px;">
+              <input type="checkbox" ${r.enabled===false?'':'checked'} onchange="toggleRuleEnabled('${r.id}', this.checked)"> ON
+            </label>
+            <input type="number" step="0.1" min="0" max="1" value="${Number(r.weight ?? 1).toFixed(1)}" onchange="setRuleWeight('${r.id}', this.value)">
+            <button class="rule-action-btn" onclick="editRule('${r.id}')">Edit</button>
+            <button class="rule-action-btn" onclick="duplicateRule('${r.id}')">Dup</button>
+            <button onclick="deleteRule('${r.id}')">x</button>
+          </div>
       </div>`;
   }).join('');
+}
+
+function editRule(id) {
+  const r = state.rules.find(x => x.id === id);
+  if(!r) return;
+  const conditionPairs = Object.entries(r.conditions).map(([vid,mfid]) => {
+    const v = state.variables.find(x=>x.id===vid);
+    const mf = v?.mfs.find(m=>m.id===mfid);
+    return `${v?.name || vid}:${mf?.label || mfid}`;
+  }).join(', ');
+  const edited = prompt('Edit rule conditions as Variable:MF, comma-separated', conditionPairs);
+  if(edited===null) return;
+  const outV = state.variables.find(x=>x.id===r.conclusion.varId);
+  const outMF = outV?.mfs.find(m=>m.id===r.conclusion.mfId);
+  const outEdited = prompt('Edit THEN as OutputVariable:MF', `${outV?.name || ''}:${outMF?.label || ''}`);
+  if(outEdited===null) return;
+  const parsedCond = parseRulePairs(edited, false);
+  const parsedOut = parseRulePairs(outEdited, true);
+  if(!parsedCond || !parsedOut) { showToast('Invalid rule format.'); return; }
+  r.conditions = parsedCond;
+  r.conclusion = parsedOut;
+  renderRules();
+  showToast('Rule edited');
+}
+
+function parseRulePairs(txt, isConclusion) {
+  const items = txt.split(',').map(x=>x.trim()).filter(Boolean);
+  if(isConclusion && items.length!==1) return null;
+  const result = {};
+  let conclusion = null;
+  for (const item of items) {
+    const parts = item.split(':');
+    if(parts.length!==2) return null;
+    const v = state.variables.find(x=>x.name.toLowerCase()===parts[0].trim().toLowerCase());
+    if(!v) return null;
+    const mf = v.mfs.find(x=>x.label.toLowerCase()===parts[1].trim().toLowerCase());
+    if(!mf) return null;
+    if(isConclusion) conclusion = { varId: v.id, mfId: mf.id };
+    else result[v.id] = mf.id;
+  }
+  return isConclusion ? conclusion : result;
+}
+
+function duplicateRule(id) {
+  const r = state.rules.find(x => x.id === id);
+  if(!r) return;
+  state.rules.push({
+    id: uid('r'),
+    conditions: JSON.parse(JSON.stringify(r.conditions)),
+    conclusion: JSON.parse(JSON.stringify(r.conclusion)),
+    enabled: r.enabled !== false,
+    weight: Number(r.weight ?? 1)
+  });
+  renderRules();
+  showToast('Rule duplicated');
+}
+
+function toggleRuleEnabled(id, checked) {
+  const r = state.rules.find(x=>x.id===id);
+  if(!r) return;
+  r.enabled = !!checked;
+  renderRules();
+}
+
+function setRuleWeight(id, value) {
+  const r = state.rules.find(x=>x.id===id);
+  if(!r) return;
+  const w = Math.max(0, Math.min(1, Number(value)));
+  r.weight = Number.isFinite(w) ? w : 1;
 }
 
 function deleteRule(id) {
@@ -1244,13 +1404,15 @@ function deleteRule(id) {
   renderRules();
 }
 
-// ── SAVE / LOAD ──
+// â”€â”€ SAVE / LOAD â”€â”€
 function saveProject() {
+  syncSettings();
   const name=document.getElementById('projectName').value||'project';
   const data=JSON.stringify({
     meta:{ name, fisType:state.fisType, defuzz:document.getElementById('defuzzMethod').value,
            andMethod:document.getElementById('andMethod').value, orMethod:document.getElementById('orMethod').value,
-           created:new Date().toISOString(), version:'1.1' },
+           author: state.metadata.author, institution: state.metadata.institution,
+           created:new Date().toISOString(), version:'2.0' },
     variables:state.variables, rules:state.rules
   }, null, 2);
   const blob=new Blob([data],{type:'application/json'});
@@ -1274,14 +1436,18 @@ function loadProject(evt) {
       if(d.meta?.andMethod) document.getElementById('andMethod').value=d.meta.andMethod;
       if(d.meta?.orMethod) document.getElementById('orMethod').value=d.meta.orMethod;
       state.variables=d.variables||[];
+      state.metadata.author = d.meta?.author || 'Dr. Zamri';
+      state.metadata.institution = d.meta?.institution || 'Universiti Malaysia Perlis (UniMAP)';
       
       // Migrate old rules to new format safely
       state.rules = (d.rules || []).map(r => {
-          if(r.conditions) return r; // Already modern
+          if(r.conditions) return { ...r, enabled: r.enabled !== false, weight: Number(r.weight ?? 1) };
           return {
               id: r.id || uid('r'),
               conditions: r.antVar && r.antMF ? { [r.antVar]: r.antMF } : {},
-              conclusion: { varId: r.consVar, mfId: r.consMF }
+              conclusion: { varId: r.consVar, mfId: r.consMF },
+              enabled: true,
+              weight: 1.0
           };
       });
 
@@ -1302,7 +1468,194 @@ function loadProject(evt) {
   evt.target.value='';
 }
 
-// ── TOAST ──
+function openDownloadCenter() {
+  document.getElementById('downloadCenterModal').style.display = 'flex';
+}
+function closeDownloadCenter() {
+  document.getElementById('downloadCenterModal').style.display = 'none';
+}
+
+function downloadSelected() {
+  const selected = [...document.querySelectorAll('.dl-item:checked')].map(x=>x.value);
+  if(!selected.length) { showToast('Select at least one export item.'); return; }
+  selected.forEach((key, i) => {
+    setTimeout(() => {
+      if(key==='all_png') exportAllPNG();
+      if(key==='all_svg') exportAllSVG();
+      if(key==='pdf_report') exportPDFReport();
+      if(key==='rules_txt') exportRulesTXT();
+      if(key==='rules_csv') exportRulesCSV();
+      if(key==='rules_json') exportRulesJSON();
+      if(key==='python') exportPythonCode();
+      if(key==='matlab_m') exportMatlabM();
+      if(key==='matlab_fis') exportMatlabFIS();
+      if(key==='cpp') viewESPCode();
+    }, i * 220);
+  });
+  closeDownloadCenter();
+}
+
+function exportRulesTXT() {
+  const name = document.getElementById('projectName').value || 'Project';
+  const lines = [
+    `FuzzyLogic Visualizer v2.0`,
+    `System: ${name}`,
+    `Author: ${state.metadata.author}`,
+    `Institution: ${state.metadata.institution}`,
+    `Date: ${new Date().toISOString()}`,
+    ''
+  ];
+  state.rules.forEach((r, idx) => {
+    const cond = Object.entries(r.conditions).map(([vid,mfid]) => {
+      const v = state.variables.find(x=>x.id===vid);
+      const mf = v?.mfs.find(m=>m.id===mfid);
+      return `${v?.name || vid} IS ${mf?.label || mfid}`;
+    }).join(' AND ');
+    const ov = state.variables.find(x=>x.id===r.conclusion.varId);
+    const om = ov?.mfs.find(x=>x.id===r.conclusion.mfId);
+    lines.push(`${idx+1}. IF ${cond} THEN ${ov?.name || '?'} IS ${om?.label || '?'} [enabled=${r.enabled!==false}, weight=${Number(r.weight ?? 1).toFixed(2)}]`);
+  });
+  downloadText(lines.join('\n'), `${name.replace(/\s+/g,'_')}_rules.txt`, 'text/plain');
+}
+
+function exportRulesCSV() {
+  const rows = [['index','if_conditions','then_output','enabled','weight']];
+  state.rules.forEach((r, idx) => {
+    const cond = Object.entries(r.conditions).map(([vid,mfid]) => {
+      const v = state.variables.find(x=>x.id===vid);
+      const mf = v?.mfs.find(m=>m.id===mfid);
+      return `${v?.name || vid} IS ${mf?.label || mfid}`;
+    }).join(' AND ');
+    const ov = state.variables.find(x=>x.id===r.conclusion.varId);
+    const om = ov?.mfs.find(x=>x.id===r.conclusion.mfId);
+    rows.push([idx+1, cond, `${ov?.name || '?'} IS ${om?.label || '?'}`, r.enabled!==false, Number(r.weight ?? 1).toFixed(2)]);
+  });
+  const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const name = document.getElementById('projectName').value || 'project';
+  downloadText(csv, `${name.replace(/\s+/g,'_')}_rules.csv`, 'text/csv');
+}
+
+function exportRulesJSON() {
+  const name = document.getElementById('projectName').value || 'project';
+  downloadText(JSON.stringify(state.rules, null, 2), `${name.replace(/\s+/g,'_')}_rules.json`, 'application/json');
+}
+
+function exportMatlabM() {
+  syncSettings();
+  const name = document.getElementById('projectName').value || 'fuzzy_project';
+  const sys = name.replace(/[^a-zA-Z0-9_]/g,'_');
+  let m = `% Generated by FuzzyLogic Visualizer v2.0\n`;
+  m += `% Author: ${state.metadata.author} | Institution: ${state.metadata.institution}\n`;
+  m += `fis = mamfis('Name','${sys}');\n`;
+  state.variables.filter(v=>v.type==='input').forEach(v=>{
+    m += `fis = addInput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;
+    v.mfs.forEach(mf=>{ m += matlabAddMF('input', v.name, mf); });
+  });
+  state.variables.filter(v=>v.type==='output').forEach(v=>{
+    m += `fis = addOutput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;
+    v.mfs.forEach(mf=>{ m += matlabAddMF('output', v.name, mf); });
+  });
+  const outVar = state.variables.find(v=>v.type==='output');
+  const outNames = outVar?.mfs.map(x=>x.id) || [];
+  const inVars = state.variables.filter(v=>v.type==='input');
+  const activeRules = state.rules.filter(r=>r.enabled!==false);
+  const ruleRows = activeRules.map(r => {
+    const ant = inVars.map(v => {
+      const idx = v.mfs.findIndex(m=>m.id===r.conditions[v.id]);
+      return idx >= 0 ? idx+1 : 0;
+    });
+    const consIdx = outNames.findIndex(id=>id===r.conclusion.mfId) + 1;
+    return [...ant, consIdx>0?consIdx:1, Number(r.weight ?? 1), 1];
+  });
+  if(ruleRows.length) {
+    m += `ruleList = [\n${ruleRows.map(r=>`  ${r.join(' ')}`).join(';\n')}\n];\n`;
+    m += `fis = addRule(fis,ruleList);\n`;
+  }
+  m += `writeFIS(fis,'${sys}.fis');\n`;
+  m += `disp('FIS generated and saved');\n`;
+  downloadText(m, `${sys}.m`, 'text/plain');
+}
+
+function matlabAddMF(varType, varName, mf) {
+  const p = mf.params;
+  if(mf.shape==='triangular') return `fis = addMF(fis,'${varType}','${varName}','trimf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
+  if(mf.shape==='trapezoidal') return `fis = addMF(fis,'${varType}','${varName}','trapmf',[${p.a} ${p.b} ${p.c} ${p.d}],'Name','${mf.label}');\n`;
+  if(mf.shape==='gaussian') return `fis = addMF(fis,'${varType}','${varName}','gaussmf',[${p.sigma} ${p.mean}],'Name','${mf.label}');\n`;
+  if(mf.shape==='bell') return `fis = addMF(fis,'${varType}','${varName}','gbellmf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
+  if(mf.shape==='sigmoidal') return `fis = addMF(fis,'${varType}','${varName}','sigmf',[${p.a} ${p.c}],'Name','${mf.label}');\n`;
+  return `fis = addMF(fis,'${varType}','${varName}','trimf',[${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}],'Name','${mf.label}');\n`;
+}
+
+function exportMatlabFIS() {
+  syncSettings();
+  const name = (document.getElementById('projectName').value || 'fuzzy_project').replace(/[^a-zA-Z0-9_]/g,'_');
+  const ins = state.variables.filter(v=>v.type==='input');
+  const outs = state.variables.filter(v=>v.type==='output');
+  let fis = `[System]\nName='${name}'\nType='mamdani'\nNumInputs=${ins.length}\nNumOutputs=${outs.length}\nNumRules=${state.rules.filter(r=>r.enabled!==false).length}\nAndMethod='${state.andMethod}'\nOrMethod='${state.orMethod}'\nDefuzzMethod='${state.defuzz}'\nImpMethod='min'\nAggMethod='max'\n\n`;
+  ins.forEach((v, i) => {
+    fis += `[Input${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;
+    v.mfs.forEach((mf, j)=>{ fis += `MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`; });
+    fis += `\n`;
+  });
+  outs.forEach((v, i) => {
+    fis += `[Output${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;
+    v.mfs.forEach((mf, j)=>{ fis += `MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`; });
+    fis += `\n`;
+  });
+  fis += `[Rules]\n`;
+  const inVars = ins;
+  const outVar = outs[0];
+  const activeRules = state.rules.filter(r=>r.enabled!==false);
+  activeRules.forEach(r=>{
+    const ants = inVars.map(v=>{
+      const idx = v.mfs.findIndex(m=>m.id===r.conditions[v.id]);
+      return idx >= 0 ? idx+1 : 0;
+    });
+    const c = outVar ? (outVar.mfs.findIndex(m=>m.id===r.conclusion.mfId)+1) : 1;
+    fis += `${ants.join(' ')} , ${c>0?c:1} (${Number(r.weight ?? 1).toFixed(2)}) : 1\n`;
+  });
+  downloadText(fis, `${name}.fis`, 'text/plain');
+}
+
+function fisMfType(shape) {
+  if(shape==='triangular') return 'trimf';
+  if(shape==='trapezoidal') return 'trapmf';
+  if(shape==='gaussian') return 'gaussmf';
+  if(shape==='bell') return 'gbellmf';
+  if(shape==='sigmoidal') return 'sigmf';
+  return 'trimf';
+}
+
+function fisMfParams(mf) {
+  const p = mf.params;
+  if(mf.shape==='triangular') return `${p.a} ${p.b} ${p.c}`;
+  if(mf.shape==='trapezoidal') return `${p.a} ${p.b} ${p.c} ${p.d}`;
+  if(mf.shape==='gaussian') return `${p.sigma} ${p.mean}`;
+  if(mf.shape==='bell') return `${p.a} ${p.b} ${p.c}`;
+  if(mf.shape==='sigmoidal') return `${p.a} ${p.c}`;
+  return `${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}`;
+}
+
+function exportPDFReport() {
+  html2canvas(document.body, { backgroundColor: '#0d0f14', scale: 1 }).then(canvas => {
+    const link = document.createElement('a');
+    const name = (document.getElementById('projectName').value || 'project').replace(/\s+/g,'_');
+    link.download = `${name}_report.png`;
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    showToast('Report snapshot exported');
+  });
+}
+
+function downloadText(content, filename, mime) {
+  const blob = new Blob([content], { type: mime || 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+// â”€â”€ TOAST â”€â”€
 let toastTimer;
 function showToast(msg) {
   const t=document.getElementById('toast');
@@ -1312,14 +1665,14 @@ function showToast(msg) {
   toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ── HELPERS ──
+// â”€â”€ HELPERS â”€â”€
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function hexAlpha(hex,a) {
   const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${a})`;
 }
 
-// ── INIT ──
+// â”€â”€ INIT â”€â”€
 renderVarLists();
 renderMFEditor();
 </script>
