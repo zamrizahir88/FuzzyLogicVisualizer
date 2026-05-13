@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FuzzyLogic Visualizer v2.0 - UniMAP</title>
+<title>FuzzyLogic Visualizer v2.1 - UniMAP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
 <style>
 :root {
   --bg: #f3f7ff; --surface: #ffffff; --surface2: #eef4ff; --surface3: #e3edff;
@@ -15,28 +17,25 @@
   --accent: #005bbb; --accent2: #0b75e3; --accent-dim: rgba(0,91,187,0.12); --accent-glow: rgba(11,117,227,0.22);
   --text: #12243f; --text2: #375174; --text3: #6d83a0;
   --success: #127a41; --warn: #b87400; --danger: #d93545; --danger-bg: #fdecee;
+  --sim-fill: rgba(160, 160, 180, 0.3); --sim-border: rgba(130, 130, 155, 0.6); --sim-line: #4a4a6a;
   --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif; --display: 'Syne', sans-serif;
   --radius: 10px; --radius-lg: 16px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; }
 
-/* ── STRICT SCREEN LOCK (With Mobile Browser Fix) ── */
 body {
   background: var(--bg); color: var(--text); font-family: var(--sans);
-  height: 100vh; /* Fallback for older desktop browsers */
-  height: 100dvh; /* Dynamic Viewport: Fixes Chrome/Brave mobile URL bar bug */
-  max-height: 100dvh; 
+  height: 100vh; height: 100dvh; max-height: 100dvh;
   display: flex; flex-direction: column; overflow: hidden;
 }
 
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.25); }
 
-/* ── MODERN NAVBAR ── */
+/* ── NAVBAR ── */
 .navbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px; height: 80px; background: var(--surface);
@@ -63,7 +62,7 @@ body {
 .nav-project-name:focus { border-color: var(--accent); color: var(--text); }
 .btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-family: var(--sans); font-weight: 600; padding: 6px 14px; border-radius: 7px; cursor: pointer; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); transition: all .15s; white-space: nowrap; }
 .btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.btn svg { width: 14px; height: 14px; }
+.btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
 .btn-success { background: var(--success); border-color: var(--success); color: #fff; }
@@ -71,23 +70,97 @@ body {
 .btn-warn { background: var(--warn); border-color: var(--warn); color: #fff; }
 .btn-warn:hover { background: #9e6300; color: #fff; }
 .btn-outline { background: transparent; border: 1px solid var(--border2); }
+.btn-sim-run { background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; color: #fff; font-weight: 700; padding: 10px 16px; border-radius: 8px; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(124,58,237,0.3); transition: all 0.2s; }
+.btn-sim-run:hover { background: linear-gradient(135deg, #6d28d9, #9333ea); box-shadow: 0 4px 12px rgba(124,58,237,0.4); transform: translateY(-1px); }
+.btn-sim-stop { background: linear-gradient(135deg, #e04a5a, #c0392b); border: none; color: #fff; font-weight: 700; padding: 10px 16px; border-radius: 8px; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(224,74,90,0.3); transition: all 0.2s; }
+.btn-sim-stop:hover { background: linear-gradient(135deg, #d93545, #a93226); box-shadow: 0 4px 12px rgba(224,74,90,0.4); transform: translateY(-1px); }
+.btn-sim-tray { background: var(--surface); border: 1px solid var(--accent2); color: var(--accent2); font-weight: 600; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.btn-sim-tray:hover { background: var(--accent-dim); }
+.btn-sim-tray.added { animation: trayPulse 0.4s ease; }
+@keyframes trayPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); background: var(--accent-dim); } }
 
 /* ── MAIN WORKSPACE ── */
 .main { display: flex; flex: 1; gap: 12px; padding: 12px; min-height: 0; overflow: hidden; }
 
 /* ── PANELS ── */
 .panel-left, .panel-center, .panel-right { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); height: 100%; min-height: 0; overflow: hidden; transition: width 0.3s ease, min-width 0.3s ease; }
-.panel-left { width: 30%; min-width: 320px; flex-shrink: 0; }
+.panel-left { width: 28%; min-width: 300px; flex-shrink: 0; }
 .panel-center { flex: 1; min-width: 380px; }
-.panel-right { width: 30%; min-width: 320px; flex-shrink: 0; }
+.panel-right { width: 32%; min-width: 340px; flex-shrink: 0; }
 
 /* ── INDEPENDENT SCROLL ZONES ── */
 .panel-left-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
 .chart-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; min-height: 0; }
-.panel-rules { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.rules-body.open { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 14px 16px; gap: 12px; }
-.rule-builder { flex-shrink: 0; }
-.rules-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0; padding-right: 4px; }
+
+/* Right Panel Sections */
+.panel-right-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+.panel-right-section { border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.panel-right-section:last-child { border-bottom: none; }
+
+/* Collapsible Sections */
+.collapsible-toggle { display: flex; align-items: center; gap: 8px; padding: 12px 16px; cursor: pointer; font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text2); border: none; background: var(--surface2); width: 100%; letter-spacing: .04em; transition: all 0.15s; }
+.collapsible-toggle:hover { color: var(--text); background: var(--surface3); }
+.collapsible-toggle svg { width: 12px; height: 12px; transition: transform 0.2s; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.collapsible-toggle.collapsed svg { transform: rotate(-90deg); }
+.collapsible-body { overflow: hidden; transition: max-height 0.3s ease; }
+.collapsible-body.collapsed { max-height: 0 !important; padding: 0 !important; }
+
+/* Mini collapsible for rule firing */
+.mini-collapsible-toggle { display: flex; align-items: center; gap: 6px; padding: 6px 10px; cursor: pointer; font-size: 10px; font-family: var(--mono); font-weight: 600; color: var(--text3); border: none; background: transparent; width: 100%; letter-spacing: .04em; transition: all 0.15s; border-radius: 6px; }
+.mini-collapsible-toggle:hover { color: var(--text); background: var(--surface2); }
+.mini-collapsible-toggle svg { width: 10px; height: 10px; transition: transform 0.2s; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.mini-collapsible-toggle.collapsed svg { transform: rotate(-90deg); }
+.mini-collapsible-body.collapsed { display: none; }
+
+/* Settings specific */
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px; }
+.settings-grid .fgrp { display: flex; flex-direction: column; gap: 4px; }
+.settings-grid label { font-size: 10px; font-family: var(--mono); font-weight: 600; color: var(--text3); text-transform: uppercase; }
+.settings-grid select { font-size: 12px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); padding: 6px 8px; outline: none; cursor: pointer; }
+.settings-grid select:focus { border-color: var(--accent); }
+
+/* Simulation Section */
+.simulation-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.sim-status-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.sim-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sim-status-dot.running { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+.sim-status-dot.stopped { background: #94a3b8; }
+.sim-status-text { font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text3); letter-spacing: 0.04em; }
+.sim-input-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+.sim-input-label { font-size: 12px; font-weight: 600; color: var(--text); min-width: 80px; }
+.sim-input-slider { flex: 1; -webkit-appearance: none; height: 6px; background: var(--border2); border-radius: 3px; outline: none; cursor: pointer; }
+.sim-input-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+.sim-input-value { width: 55px; text-align: center; font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent2); background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 4px; outline: none; }
+.sim-input-value:focus { border-color: var(--accent); }
+.sim-input-unit { font-size: 10px; color: var(--text3); min-width: 30px; }
+.sim-input-mf-row { display: flex; align-items: center; gap: 6px; padding: 0 0 2px 92px; flex-wrap: wrap; }
+.sim-active-mf { font-size: 9px; font-family: var(--mono); color: var(--text2); padding: 2px 6px; background: var(--accent-dim); border-radius: 3px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.sim-active-mf-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.sim-active-mf span { font-weight: 700; color: var(--accent2); }
+.sim-result-box { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 2px solid var(--accent2); border-radius: 10px; padding: 14px; text-align: center; }
+.sim-result-box.active { animation: pulseGlow 2s ease-in-out infinite; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(11,117,227,0.2); } 50% { box-shadow: 0 0 0 8px rgba(11,117,227,0); } }
+.sim-result-box.paused { border-color: var(--text3); background: linear-gradient(135deg, #f8fafc, #f1f5f9); }
+.sim-result-label { font-size: 10px; font-family: var(--mono); font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.sim-result-value { font-size: 32px; font-family: var(--display); font-weight: 800; color: var(--accent); transition: color 0.3s; }
+.sim-result-value.inactive { color: var(--text3); font-size: 18px; font-family: var(--mono); font-weight: 500; }
+.sim-result-unit { font-size: 14px; color: var(--text2); }
+.sim-result-meta { font-size: 9px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
+.sim-action-row { display: flex; gap: 8px; align-items: center; }
+.sim-tray-badge { font-size: 10px; font-family: var(--mono); font-weight: 600; color: var(--accent2); background: var(--accent-dim); padding: 3px 8px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+.sim-tray-badge:hover { background: rgba(11,117,227,0.2); }
+
+/* Test Tray */
+.tray-section { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 4px; }
+.tray-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 10px; font-family: var(--mono); color: var(--text2); border-bottom: 1px solid var(--border); background: var(--surface); transition: background 0.15s; }
+.tray-item:last-child { border-bottom: none; }
+.tray-item:hover { background: var(--surface2); }
+.tray-item-num { font-weight: 700; color: var(--accent2); min-width: 20px; }
+.tray-item-desc { flex: 1; }
+.tray-item-result { font-weight: 700; color: var(--accent); }
+.tray-item-del { width: 20px; height: 20px; border-radius: 4px; border: none; background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.tray-item-del:hover { background: rgba(180,35,59,0.1); color: var(--danger); }
+.tray-footer { display: flex; gap: 6px; padding: 8px 10px; background: var(--surface2); border-top: 1px solid var(--border); }
 
 /* ── COMPONENTS ── */
 .panel-section { padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -95,7 +168,11 @@ body {
 .section-label { font-size: 11px; font-family: var(--mono); font-weight: 600; letter-spacing: .08em; color: var(--text3); text-transform: uppercase; }
 .icon-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border2); background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); transition: all .15s; }
 .icon-btn:hover { background: var(--surface3); color: var(--accent); border-color: var(--accent); }
-.icon-btn svg { width: 14px; height: 14px; }
+.icon-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* SVG Icons Reference */
+.svg-trash { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.svg-panel-left, .svg-panel-right { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Variable list */
 .var-list { display: flex; flex-direction: column; gap: 4px; }
@@ -110,6 +187,7 @@ body {
 .var-del { opacity: 0; width: 24px; height: 24px; border-radius: 6px; border: none; background: rgba(180, 35, 59, 0.1); color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .var-item:hover .var-del { opacity: 1; }
 .var-del:hover { background: var(--danger); color: white; }
+.var-del svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* MF Editor */
 .mf-editor { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -126,6 +204,7 @@ body {
 .mf-shape-select { font-size: 11px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; color: var(--text2); padding: 4px 6px; outline: none; cursor: pointer; min-width: 80px; }
 .mf-del-btn { width: 24px; height: 24px; border-radius: 6px; background: transparent; border: none; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .mf-del-btn:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
+.mf-del-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .mf-params { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; }
 .mf-param { display: flex; flex-direction: column; gap: 4px; }
 .mf-param-label { font-size: 9px; font-family: var(--mono); font-weight: 600; color: var(--text3); letter-spacing: .05em; text-align: center; }
@@ -134,6 +213,7 @@ body {
 .mf-param-input.invalid { border: 1.5px solid var(--danger) !important; background: var(--danger-bg); color: var(--danger); font-weight: bold; }
 .add-mf-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 8px; font-weight: 600; border: 1px dashed var(--border2); background: transparent; color: var(--text3); font-size: 12px; cursor: pointer; transition: all .15s; flex-shrink:0;}
 .add-mf-btn:hover { border-color: var(--accent); color: var(--accent2); background: var(--accent-dim); }
+.add-mf-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); text-align: center; padding: 40px 20px; }
 .empty-state svg { opacity: .3; }
 .empty-state p { font-size: 12px; line-height: 1.6; }
@@ -149,23 +229,18 @@ body {
 .badge-output { background: rgba(18,122,65,0.12); color: var(--success); }
 .chart-var-name { font-family: var(--display); font-size: 15px; font-weight: 700; }
 .chart-var-range { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); margin-left: auto; }
+.chart-sim-badge { font-size: 10px; background: rgba(124,58,237,0.12); color: #7c3aed; padding: 2px 8px; border-radius: 10px; font-family: var(--mono); font-weight: 600; transition: all 0.3s; display: none; }
+.chart-sim-badge.visible { display: inline; }
+.chart-sim-badge.changed { animation: badgePulse 0.5s ease; }
+@keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); color: #a855f7; } }
 .chart-canvas-wrap { padding: 16px 16px 8px; position: relative; }
 .chart-canvas-wrap canvas { width: 100% !important; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 16px 14px; }
 .legend-pill { display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: var(--mono); font-weight: 500; padding: 4px 10px; border-radius: 20px; border: 1px solid; }
 .chart-export-row { display: flex; gap: 6px; padding: 0 16px 16px; }
 
-/* ── SETTINGS 2x2 GRID ── */
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-.settings-grid .fgrp { display: flex; flex-direction: column; gap: 4px; }
-.settings-grid label { font-size: 10px; font-family: var(--mono); font-weight: 600; color: var(--text3); text-transform: uppercase; }
-.settings-grid select { font-size: 12px; font-family: var(--mono); font-weight: 500; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; color: var(--text); padding: 6px 8px; outline: none; cursor: pointer; }
-.settings-grid select:focus { border-color: var(--accent); }
-
 /* ── RULE EDITOR ── */
-.rules-toggle { display: flex; align-items: center; gap: 8px; padding: 12px 20px; cursor: pointer; font-size: 11px; font-family: var(--mono); font-weight: 600; color: var(--text2); border: none; background: var(--surface2); width: 100%; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); letter-spacing: .04em; flex-shrink:0; }
-.rules-toggle:hover { color: var(--text); }
-.rules-body { display: none; }
+.rules-body.open { display: flex; flex-direction: column; padding: 12px 16px; gap: 10px; }
 .rule-builder { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
 .rule-builder-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .rule-label { font-size: 11px; font-family: var(--mono); color: var(--accent2); font-weight: 600; }
@@ -179,12 +254,14 @@ body {
 .rule-action-btn:hover { color: var(--text); background: var(--surface3); }
 .rule-chip-del { width: 24px; height: 24px; border-radius: 5px; background: transparent; border: none; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .rule-chip-del:hover { background: rgba(180, 35, 59, 0.1); color: var(--danger); }
+.rule-chip-del svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(18, 36, 63, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1200; }
 .modal-card { width: min(860px, 94vw); background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
 .modal-header h3 { font-family: var(--display); font-size: 18px; }
+.modal-header .icon-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface2); border-radius: 0 0 16px 16px; }
 .modal-body { padding: 20px; }
 .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
@@ -200,20 +277,50 @@ body {
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
 
-/* SVG Icons Reference */
-.svg-trash { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.svg-panel-left, .svg-panel-right { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Fix for rule firing strength bars inside mini-collapsible */
+.mini-collapsible-body .sim-firing-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text2);
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+.mini-collapsible-body .sim-firing-rule:last-child {
+  border-bottom: none;
+}
+.mini-collapsible-body .sim-firing-bar-bg {
+  flex: 1;
+  height: 6px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 40px;
+}
+.mini-collapsible-body .sim-firing-bar-fill {
+  height: 100%;
+  background: var(--accent2);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.mini-collapsible-body .sim-firing-strength {
+  width: 45px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--accent2);
+  font-family: var(--mono);
+}
 
 /* Panel Collapse Logic (Desktop) */
 .panel-left.collapsed { display: none; }
 .panel-right.collapsed { display: none; }
 
-
 /* =========================================
    NATIVE APP MOBILE UX (Tabbed Navigation) 
    ========================================= */
 @media (max-width: 900px) {
-  /* Restructure Header & Toolbar for Touch */
   .navbar { height: auto; padding: 12px; flex-direction: column; gap: 12px; }
   .nav-left, .nav-right { display: none; }
   .nav-center { position: static; transform: none; width: 100%; text-align: center; gap: 4px; }
@@ -225,15 +332,17 @@ body {
   .chart-toolbar { flex-wrap: wrap; justify-content: center; }
   #btnToggleLeft, #btnToggleRight { display: none !important; }
 
-  /* Tabbed Mobile Panels */
   .main { padding-bottom: 0; }
   .panel-left, .panel-center, .panel-right { display: none !important; width: 100% !important; min-width: 0 !important; border: none; border-radius: 0; }
   .panel-left.mobile-active, .panel-center.mobile-active, .panel-right.mobile-active { display: flex !important; }
   
-  /* Hide standard footer to make room for App Nav */
   .footer { display: none; }
 
-  /* Bottom App Navigation Bar */
+  .sim-input-slider::-webkit-slider-thumb { width: 24px; height: 24px; }
+  .sim-input-value { padding: 6px 8px; font-size: 14px; }
+  .sim-input-label { min-width: 65px; font-size: 11px; }
+  .sim-input-mf-row { padding-left: 75px; }
+  
   .mobile-nav {
     display: flex; justify-content: space-around; align-items: center; 
     background: var(--surface); border-top: 1px solid var(--border); 
@@ -242,7 +351,7 @@ body {
   }
   .mobile-nav button {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; 
-    background: none; border: none; font-family: var(--sans); font-size: 11px; font-weight: 600; 
+    background: none; border: none; font-family: var(--sans); font-size: 10px; font-weight: 600; 
     color: var(--text3); cursor: pointer; transition: color 0.2s; height: 100%;
   }
   .mobile-nav button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -261,7 +370,7 @@ body {
         <svg width="20" height="20" viewBox="0 0 16 16" fill="none"><path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
       </div>
       <div class="nav-logo-text">FuzzyLogic <span>Visualizer</span></div>
-      <span class="nav-badge">v2.0</span>
+      <span class="nav-badge">v2.1</span>
     </div>
     <div class="nav-author">
       Created by <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank">Dr. Zamri</a>
@@ -332,22 +441,50 @@ body {
   </div>
 
   <div class="panel-right" id="panelRight">
-    <div class="panel-section" style="padding-bottom:0;">
-      <div class="section-header" style="margin-bottom:0;"><span class="section-label">FIS Settings</span></div>
-    </div>
-    
-    <div class="settings-grid" id="defuzzRow">
-      <div class="fgrp"><label>FIS Type</label><select id="fisTypeSelect" onchange="setFIS(this.value)"><option value="mamdani">Mamdani</option><option value="sugeno">Sugeno</option></select></div>
-      <div class="fgrp"><label>Defuzzification</label><select id="defuzzMethod"><option value="centroid">Centroid (COG)</option><option value="bisector">Bisector</option><option value="mom">Mean of Max</option><option value="lom">Largest of Max</option><option value="som">Smallest of Max</option></select></div>
-      <div class="fgrp"><label>AND Method</label><select id="andMethod"><option value="min">min</option><option value="prod">prod</option></select></div>
-      <div class="fgrp"><label>OR Method</label><select id="orMethod"><option value="max">max</option><option value="probor">probor</option></select></div>
-    </div>
+    <div class="panel-right-scroll">
+      <!-- FIS Settings Section -->
+      <div class="panel-right-section">
+        <button class="collapsible-toggle" onclick="toggleCollapsible('fisSettings')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+          FIS SETTINGS
+        </button>
+        <div class="collapsible-body" id="fisSettingsBody">
+          <div class="settings-grid" id="defuzzRow">
+            <div class="fgrp"><label>FIS Type</label><select id="fisTypeSelect" onchange="setFIS(this.value)"><option value="mamdani">Mamdani</option><option value="sugeno">Sugeno</option></select></div>
+            <div class="fgrp"><label>Defuzzification</label><select id="defuzzMethod"><option value="centroid">Centroid (COG)</option><option value="bisector">Bisector</option><option value="mom">Mean of Max</option><option value="lom">Largest of Max</option><option value="som">Smallest of Max</option></select></div>
+            <div class="fgrp"><label>AND Method</label><select id="andMethod"><option value="min">min</option><option value="prod">prod</option></select></div>
+            <div class="fgrp"><label>OR Method</label><select id="orMethod"><option value="max">max</option><option value="probor">probor</option></select></div>
+          </div>
+        </div>
+      </div>
 
-    <div class="panel-rules">
-      <button class="rules-toggle open" id="rulesToggle" onclick="toggleRules()"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg> RULE EDITOR <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;">0 rules</span></button>
-      <div class="rules-body open" id="rulesBody">
-        <div class="rule-builder" id="ruleBuilder"><span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span></div>
-        <div class="rules-list" id="rulesList"></div>
+      <!-- Rule Editor Section -->
+      <div class="panel-right-section">
+        <button class="collapsible-toggle" onclick="toggleCollapsible('rulesEditor')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+          RULE EDITOR <span id="ruleCount" style="background:var(--accent-dim);color:var(--accent2);padding:1px 7px;border-radius:10px;font-size:10px;margin-left:4px;">0 rules</span>
+        </button>
+        <div class="collapsible-body" id="rulesEditorBody">
+          <div class="rules-body open" id="rulesBody">
+            <div class="rule-builder" id="ruleBuilder"><span class="rule-label" style="color:var(--text3);">Add inputs/outputs with MFs to build rules.</span></div>
+            <div class="rules-list" id="rulesList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Section -->
+      <div class="panel-right-section">
+        <button class="collapsible-toggle" onclick="toggleCollapsible('simulation')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+          🔬 SIMULATION
+        </button>
+        <div class="collapsible-body" id="simulationBody" style="max-height:2000px;">
+          <div class="simulation-body" id="simContent">
+            <div style="font-size:11px; color:var(--text3); text-align:center; padding:20px;">
+              Add input variables with MFs<br>and rules to enable simulation.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -358,12 +495,12 @@ body {
     <div class="modal-header"><h3>Download Center</h3><button class="icon-btn" onclick="closeDownloadCenter()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
     <div class="modal-body">
       <div class="download-grid">
-        <div><h4>Graph Exports</h4><label><input type="checkbox" class="dl-item" value="all_png"> All PNG</label><label><input type="checkbox" class="dl-item" value="all_svg"> All SVG</label><label><input type="checkbox" class="dl-item" value="pdf_report"> PDF Report (quick snapshot)</label></div>
+        <div><h4>Graph Exports</h4><label><input type="checkbox" class="dl-item" value="all_png"> All PNG</label><label><input type="checkbox" class="dl-item" value="all_svg"> All SVG</label><label><input type="checkbox" class="dl-item" value="pdf_report"> PDF Report</label></div>
         <div><h4>Rule Exports</h4><label><input type="checkbox" class="dl-item" value="rules_txt"> TXT (readable)</label><label><input type="checkbox" class="dl-item" value="rules_csv"> CSV (data)</label><label><input type="checkbox" class="dl-item" value="rules_json"> JSON (structured)</label></div>
-        <div><h4>Simulation Exports</h4><label><input type="checkbox" class="dl-item" value="python"> Python .py</label><label><input type="checkbox" class="dl-item" value="matlab_m"> MATLAB .m script</label><label><input type="checkbox" class="dl-item" value="matlab_fis"> MATLAB .fis</label></div>
-        <div><h4>Embedded Exports</h4><label><input type="checkbox" class="dl-item" value="cpp"> Generic C++/ESP32</label></div>
+        <div><h4>Simulation Exports</h4><label><input type="checkbox" class="dl-item" value="python"> Python .py</label><label><input type="checkbox" class="dl-item" value="matlab_m"> MATLAB .m</label><label><input type="checkbox" class="dl-item" value="matlab_fis"> MATLAB .fis</label></div>
+        <div><h4>Embedded</h4><label><input type="checkbox" class="dl-item" value="cpp"> C++/ESP32</label></div>
       </div>
-      <p style="margin-top:16px;color:var(--text3);font-size:12px;font-weight:500;">Select one or more export types, then click Download Selected.</p>
+      <p style="margin-top:16px;color:var(--text3);font-size:12px;font-weight:500;">Select export types, then click Download Selected.</p>
     </div>
     <div class="modal-footer"><button class="btn" onclick="closeDownloadCenter()">Cancel</button><button class="btn btn-primary" onclick="downloadSelected()">Download Selected</button></div>
   </div>
@@ -372,7 +509,7 @@ body {
 <div class="mobile-nav">
   <button id="tabVars" class="active" onclick="switchMobileTab('vars')">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-    Variables
+    Vars
   </button>
   <button id="tabGraphs" onclick="switchMobileTab('graphs')">
     <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -381,6 +518,10 @@ body {
   <button id="tabRules" onclick="switchMobileTab('rules')">
     <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     Rules
+  </button>
+  <button id="tabSim" onclick="switchMobileTab('sim')">
+    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Sim
   </button>
 </div>
 
@@ -392,6 +533,13 @@ body {
 
 <script>
 const COLORS = ['#7c6dfa','#3ecf8e','#f5a623','#f06292','#5bc4f5','#c084fc','#fb923c','#34d399','#f472b6','#60a5fa'];
+const SIM_COLORS = {
+  aggregateFill: 'rgba(160, 160, 180, 0.3)',
+  aggregateBorder: 'rgba(130, 130, 155, 0.6)',
+  defuzzLine: '#4a4a6a',
+  inputLine: 'rgba(80, 80, 120, 0.5)'
+};
+
 let state = {
   fisType:'mamdani', defuzz:'centroid', andMethod:'min', orMethod:'max',
   metadata: { author: 'Dr. Zamri', institution: 'Universiti Malaysia Perlis (UniMAP)' },
@@ -403,6 +551,13 @@ let editingRuleId = null;
 let chartInstances = {};
 let chartsRaf = null;
 let colorIdx = 0;
+let simInputValues = {};
+let simResults = null;
+let simRunning = false;
+let simTimer = null;
+let simPreviousCrispValues = {};
+let ruleFiringExpanded = true;
+let testTray = [];
 
 const trashIcon = `<svg class="svg-trash" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
 
@@ -413,12 +568,42 @@ function syncSettings() {
   state.andMethod = document.getElementById('andMethod')?.value || state.andMethod;
   state.orMethod = document.getElementById('orMethod')?.value || state.orMethod;
 }
-function queueRenderCharts() {
-  if(chartsRaf) cancelAnimationFrame(chartsRaf);
-  chartsRaf = requestAnimationFrame(() => { chartsRaf = null; renderCharts(); });
+
+// ── COLLAPSIBLE SECTIONS ──
+function toggleCollapsible(sectionId) {
+  const body = document.getElementById(sectionId + 'Body');
+  const toggle = body?.previousElementSibling;
+  if (!body || !toggle) return;
+  const isCollapsed = body.classList.contains('collapsed');
+  if (isCollapsed) {
+    body.classList.remove('collapsed');
+    toggle.classList.remove('collapsed');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    if (sectionId === 'simulation') buildSimulationPanel();
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    requestAnimationFrame(() => {
+      body.classList.add('collapsed');
+      toggle.classList.add('collapsed');
+      body.style.maxHeight = '0px';
+    });
+  }
 }
 
-// ── MOBILE TAB SWITCHING LOGIC ──
+function toggleMiniCollapsible(sectionId) {
+  const body = document.getElementById(sectionId + 'Body');
+  const toggle = body?.previousElementSibling;
+  if (!body || !toggle) return;
+  if (body.classList.contains('collapsed')) {
+    body.classList.remove('collapsed');
+    toggle.classList.remove('collapsed');
+  } else {
+    body.classList.add('collapsed');
+    toggle.classList.add('collapsed');
+  }
+}
+
+// ── MOBILE TAB SWITCHING ──
 function switchMobileTab(tab) {
   document.getElementById('panelLeft').classList.remove('mobile-active');
   document.getElementById('panelCenter').classList.remove('mobile-active');
@@ -426,6 +611,7 @@ function switchMobileTab(tab) {
   document.getElementById('tabVars').classList.remove('active');
   document.getElementById('tabGraphs').classList.remove('active');
   document.getElementById('tabRules').classList.remove('active');
+  document.getElementById('tabSim').classList.remove('active');
 
   if(tab === 'vars') {
     document.getElementById('panelLeft').classList.add('mobile-active');
@@ -433,10 +619,27 @@ function switchMobileTab(tab) {
   } else if(tab === 'graphs') {
     document.getElementById('panelCenter').classList.add('mobile-active');
     document.getElementById('tabGraphs').classList.add('active');
-    queueRenderCharts(); 
+    refreshAllCharts();
   } else if(tab === 'rules') {
     document.getElementById('panelRight').classList.add('mobile-active');
     document.getElementById('tabRules').classList.add('active');
+  } else if(tab === 'sim') {
+    document.getElementById('panelRight').classList.add('mobile-active');
+    document.getElementById('tabSim').classList.add('active');
+    const simBody = document.getElementById('simulationBody');
+    if (simBody && simBody.classList.contains('collapsed')) {
+      simBody.classList.remove('collapsed');
+      simBody.previousElementSibling?.classList.remove('collapsed');
+      simBody.style.maxHeight = '2000px';
+    }
+    buildSimulationPanel();
+    setTimeout(() => {
+      const outputVars = state.variables.filter(v => v.type === 'output');
+      if (outputVars.length > 0) {
+        const outputCard = document.getElementById('chartcard_' + outputVars[0].id);
+        if (outputCard) outputCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 400);
   }
 }
 
@@ -444,40 +647,78 @@ function switchMobileTab(tab) {
 function toggleLeft() { document.getElementById('panelLeft').classList.toggle('collapsed'); }
 function toggleRight() { document.getElementById('panelRight').classList.toggle('collapsed'); }
 
-// ── ONBOARDING: LOAD EXAMPLE / RESET ──
+// ── SIMULATION TOGGLE ──
+function toggleSimulation() {
+  simRunning = !simRunning;
+  if (simRunning) {
+    simResults = SimulationEngine.run(simInputValues);
+    updateAllChartOverlays();
+  } else {
+    clearAllChartOverlays();
+  }
+  buildSimulationPanel();
+}
+
+function clearAllChartOverlays() {
+  Object.values(chartInstances).forEach(chart => {
+    chart.config._simOverlay = null;
+    chart.draw();
+  });
+  // Update sim badges
+  state.variables.filter(v => v.type === 'output').forEach(v => {
+    const badge = document.getElementById('simBadge_' + v.id);
+    if (badge) badge.classList.remove('visible');
+  });
+}
+
+// ── ONBOARDING ──
 function resetWorkspace() {
   if(confirm("Are you sure you want to clear the workspace? Unsaved changes will be lost.")) {
-    state.variables = []; state.rules = []; activeVarId = null;
+    state.variables = []; state.rules = []; activeVarId = null; simInputValues = {}; simResults = null; simPreviousCrispValues = {};
+    simRunning = false; testTray = [];
     document.getElementById('projectName').value = 'Untitled Project';
-    setViewMode('summary'); renderVarLists(); renderMFEditor(); updateRuleBuilder(); renderRules();
+    setViewMode('summary'); renderVarLists(); renderMFEditor(); updateRuleBuilder(); renderRules(); buildSimulationPanel();
     showToast('Workspace reset');
   }
 }
+
 function loadExample() {
   if(state.variables.length > 0) {
     if(!confirm("Loading the example will overwrite your current workspace. Proceed?")) return;
   }
-  document.getElementById('projectName').value = 'Air Conditioning System';
+  document.getElementById('projectName').value = 'Health Monitoring System';
   state.variables = [
-    { id: 'v1', type: 'input', name: 'Temperature', min: 0, max: 40, unit: '°C', mfs: [
-      { id: 'm1', label: 'Cold', shape: 'trapezoidal', color: '#7c6dfa', params: { a:0, b:0, c:15, d:22 } },
-      { id: 'm2', label: 'Hot', shape: 'trapezoidal', color: '#f5a623', params: { a:18, b:25, c:40, d:40 } }
+    { id: 'v1', type: 'input', name: 'Heart Rate', min: 40, max: 200, unit: 'bpm', mfs: [
+      { id: 'm1', label: 'Low', shape: 'trapezoidal', color: '#7c6dfa', params: { a:40, b:40, c:55, d:70 } },
+      { id: 'm2', label: 'Normal', shape: 'triangular', color: '#3ecf8e', params: { a:55, b:80, c:105 } },
+      { id: 'm3', label: 'High', shape: 'trapezoidal', color: '#f5a623', params: { a:90, b:120, c:200, d:200 } }
     ]},
-    { id: 'v2', type: 'input', name: 'Humidity', min: 0, max: 100, unit: '%', mfs: [
-      { id: 'm3', label: 'Dry', shape: 'triangular', color: '#3ecf8e', params: { a:0, b:20, c:60 } },
-      { id: 'm4', label: 'Wet', shape: 'triangular', color: '#5bc4f5', params: { a:40, b:80, c:100 } }
+    { id: 'v2', type: 'input', name: 'Body Temp', min: 34, max: 42, unit: '°C', mfs: [
+      { id: 'm4', label: 'Low', shape: 'trapezoidal', color: '#5bc4f5', params: { a:34, b:34, c:35.5, d:36.5 } },
+      { id: 'm5', label: 'Normal', shape: 'triangular', color: '#3ecf8e', params: { a:36, b:37, c:38 } },
+      { id: 'm6', label: 'High', shape: 'trapezoidal', color: '#f06292', params: { a:37.5, b:39, c:42, d:42 } }
     ]},
-    { id: 'v3', type: 'output', name: 'Fan Speed', min: 0, max: 100, unit: '%', mfs: [
-      { id: 'm5', label: 'Slow', shape: 'triangular', color: '#f06292', params: { a:0, b:25, c:50 } },
-      { id: 'm6', label: 'Fast', shape: 'triangular', color: '#c084fc', params: { a:50, b:100, c:100 } }
+    { id: 'v3', type: 'output', name: 'Health Score', min: 0, max: 100, unit: '%', mfs: [
+      { id: 'm7', label: 'Critical', shape: 'triangular', color: '#d93545', params: { a:0, b:20, c:40 } },
+      { id: 'm8', label: 'Moderate', shape: 'triangular', color: '#f5a623', params: { a:25, b:50, c:75 } },
+      { id: 'm9', label: 'Healthy', shape: 'triangular', color: '#22c55e', params: { a:60, b:85, c:100 } }
     ]}
   ];
   state.rules = [
-    { id: uid('r'), logic: 'AND', conditions: { 'v1': 'm2', 'v2': 'm4' }, conclusion: { varId: 'v3', mfId: 'm6' }, enabled: true, weight: 1.0 },
-    { id: uid('r'), logic: 'AND', conditions: { 'v1': 'm1' }, conclusion: { varId: 'v3', mfId: 'm5' }, enabled: true, weight: 1.0 }
+    { id: uid('r'), logic: 'AND', conditions: { 'v1': 'm2', 'v2': 'm5' }, conclusion: { varId: 'v3', mfId: 'm9' }, enabled: true, weight: 1.0 },
+    { id: uid('r'), logic: 'OR', conditions: { 'v1': 'm1', 'v2': 'm4' }, conclusion: { varId: 'v3', mfId: 'm7' }, enabled: true, weight: 1.0 },
+    { id: uid('r'), logic: 'OR', conditions: { 'v1': 'm3', 'v2': 'm6' }, conclusion: { varId: 'v3', mfId: 'm7' }, enabled: true, weight: 1.0 }
   ];
-  activeVarId = null; setViewMode('summary'); renderVarLists(); renderMFEditor(); updateRuleBuilder(); renderRules();
-  showToast('Example Loaded Successfully');
+  // Pre-load test tray with example cases
+  testTray = [
+    { inputs: { 'v1': 72, 'v2': 37 }, outputs: { 'v3': 85.00 }, defuzzMethod: 'centroid', timestamp: new Date(Date.now() - 60000).toISOString() },
+    { inputs: { 'v1': 50, 'v2': 35 }, outputs: { 'v3': 15.00 }, defuzzMethod: 'centroid', timestamp: new Date(Date.now() - 30000).toISOString() },
+    { inputs: { 'v1': 130, 'v2': 40 }, outputs: { 'v3': 10.00 }, defuzzMethod: 'centroid', timestamp: new Date().toISOString() }
+  ];
+  activeVarId = null; simInputValues = {}; simResults = null; simPreviousCrispValues = {}; simRunning = false;
+  setViewMode('all'); renderVarLists(); renderMFEditor(); updateRuleBuilder(); renderRules(); buildSimulationPanel();
+  clearAllChartOverlays();
+  showToast('Example Loaded — Click RUN to simulate');
 }
 
 // ── FIS TYPE ──
@@ -486,6 +727,8 @@ function setFIS(type) {
   const defuzz = document.getElementById('defuzzMethod'), andSel = document.getElementById('andMethod'), orSel = document.getElementById('orMethod');
   const disabled = type === 'sugeno';
   if(defuzz) defuzz.disabled = disabled; if(andSel) andSel.disabled = disabled; if(orSel) orSel.disabled = disabled;
+  if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); }
+  buildSimulationPanel();
 }
 
 // ── VIEW MODES ──
@@ -494,20 +737,22 @@ function setViewMode(mode) {
   document.getElementById('btnViewAll').className = mode === 'all' ? 'btn btn-primary' : 'btn';
   document.getElementById('btnViewSelected').className = mode === 'selected' ? 'btn btn-primary' : 'btn';
   document.getElementById('btnViewSummary').className = mode === 'summary' ? 'btn btn-primary' : 'btn';
-  queueRenderCharts();
+  refreshAllCharts();
 }
 
 // ── VARIABLE MANAGEMENT ──
 function addVariable(type) {
   const name = type==='input' ? `Input ${state.variables.filter(v=>v.type==='input').length+1}` : `Output ${state.variables.filter(v=>v.type==='output').length+1}`;
   state.variables.push({ id: uid('v'), type, name, min:0, max:100, unit:'', mfs:[] });
-  renderVarLists(); updateRuleBuilder(); showToast(`Variable "${name}" added`); setViewMode('summary');
+  simInputValues = {}; simResults = null; simPreviousCrispValues = {}; simRunning = false;
+  renderVarLists(); updateRuleBuilder(); buildSimulationPanel(); showToast(`Variable "${name}" added`); setViewMode('summary');
 }
 function deleteVariable(id, e) {
   e.stopPropagation(); state.variables = state.variables.filter(v=>v.id!==id);
   state.rules = state.rules.filter(r => r.conditions[id] === undefined && r.conclusion.varId !== id);
   if(activeVarId===id) { activeVarId=null; setViewMode('summary'); }
-  renderVarLists(); renderMFEditor(); queueRenderCharts(); updateRuleBuilder(); renderRules();
+  delete simInputValues[id]; delete simPreviousCrispValues[id]; simResults = null; simRunning = false;
+  renderVarLists(); renderMFEditor(); refreshAllCharts(); updateRuleBuilder(); renderRules(); buildSimulationPanel();
 }
 function selectVar(id) { activeVarId = id; setViewMode('selected'); renderVarLists(); renderMFEditor(); }
 
@@ -522,7 +767,7 @@ function renderVarLists() {
   });
 }
 
-// ── MF EDITOR & VALIDATION ──
+// ── MF EDITOR ──
 function validateMFParams(shape, p) {
     if (shape === 'triangular') return p.a <= p.b && p.b <= p.c;
     if (shape === 'trapezoidal') return p.a <= p.b && p.b <= p.c && p.c <= p.d;
@@ -548,8 +793,8 @@ function mfCardHTML(v, mf) {
   const shapeOpts = shapes.map(s=>`<option value="${s}" ${mf.shape===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('');
   const params = getMFParamDefs(mf.shape), isValid = validateMFParams(mf.shape, mf.params);
   const inputClass = isValid ? 'mf-param-input' : 'mf-param-input invalid';
-  const paramHTML = params.map(p=>`<div class="mf-param"><span class="mf-param-label">${p.key.toUpperCase()}</span><input class="${inputClass}" type="number" step="any" value="${mf.params[p.key]??p.default}" oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)" title="${isValid ? '' : 'Invalid geometry! Check your math.'}"></div>`).join('');
-  return `<div class="mf-card" id="mfcard_${mf.id}"><div class="mf-card-header"><div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)"></div><input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)"><input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)"><select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();queueRenderCharts();">${shapeOpts}</select><button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')">${trashIcon}</button></div><div class="mf-params">${paramHTML}</div></div>`;
+  const paramHTML = params.map(p=>`<div class="mf-param"><span class="mf-param-label">${p.key.toUpperCase()}</span><input class="${inputClass}" type="number" step="any" value="${mf.params[p.key]??p.default}" oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)" title="${isValid ? '' : 'Invalid geometry!'}"></div>`).join('');
+  return `<div class="mf-card" id="mfcard_${mf.id}"><div class="mf-card-header"><div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)"></div><input type="color" id="cp_${mf.id}" value="${mf.color}" oninput="updateMFColor('${v.id}','${mf.id}',this.value)"><input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)"><select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();refreshAllCharts();buildSimulationPanel();">${shapeOpts}</select><button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')">${trashIcon}</button></div><div class="mf-params">${paramHTML}</div></div>`;
 }
 
 function getMFParamDefs(shape) {
@@ -559,22 +804,24 @@ function getMFParamDefs(shape) {
 
 function pickColor(vid, mfid, dot) { document.getElementById('cp_'+mfid).click(); }
 function updateMFColor(vid, mfid, color) { updateMFProp(vid, mfid, 'color', color); const dot = document.querySelector(`#mfcard_${mfid} .mf-color-dot`); if(dot) dot.style.background = color; }
-function updateVarProp(id, prop, val) { const v = state.variables.find(x=>x.id===id); if(v) { v[prop]=val; queueRenderCharts(); renderVarLists(); updateRuleBuilder(); renderRules(); } }
-function updateMFProp(vid, mfid, prop, val) { const v = state.variables.find(x=>x.id===vid); if(!v) return; const mf = v.mfs.find(m=>m.id===mfid); if(mf) { mf[prop]=val; queueRenderCharts(); updateRuleBuilder(); renderRules(); } }
-function updateMFParam(vid, mfid, key, val) { const v = state.variables.find(x=>x.id===vid); if(!v) return; const mf = v.mfs.find(m=>m.id===mfid); if(mf) { mf.params[key]=val; queueRenderCharts(); renderMFEditor(); } }
+function updateVarProp(id, prop, val) { const v = state.variables.find(x=>x.id===id); if(v) { v[prop]=val; delete simInputValues[id]; simResults = null; simRunning = false; refreshAllCharts(); renderVarLists(); updateRuleBuilder(); renderRules(); buildSimulationPanel(); } }
+function updateMFProp(vid, mfid, prop, val) { const v = state.variables.find(x=>x.id===vid); if(!v) return; const mf = v.mfs.find(m=>m.id===mfid); if(mf) { mf[prop]=val; if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } refreshAllCharts(); updateRuleBuilder(); renderRules(); buildSimulationPanel(); } }
+function updateMFParam(vid, mfid, key, val) { const v = state.variables.find(x=>x.id===vid); if(!v) return; const mf = v.mfs.find(m=>m.id===mfid); if(mf) { mf.params[key]=val; if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } refreshAllCharts(); renderMFEditor(); buildSimulationPanel(); } }
 
 function addMF(vid) {
   const v = state.variables.find(x=>x.id===vid); if(!v) return;
   const color = nextColor(), n = v.mfs.length, span = v.max - v.min, b = v.min + span*(n+1)/(Math.max(v.mfs.length+2, 3));
   v.mfs.push({ id: uid('mf'), label: `MF ${n+1}`, shape:'triangular', color, params:{ a: Math.max(v.min, b - span/4), b, c: Math.min(v.max, b + span/4) } });
-  renderMFEditor(); queueRenderCharts(); updateRuleBuilder();
+  simResults = null; simRunning = false;
+  renderMFEditor(); refreshAllCharts(); updateRuleBuilder(); buildSimulationPanel();
   setTimeout(()=>{ const scrollContainer = document.querySelector('.panel-left-scroll'); if(scrollContainer) scrollContainer.scrollTop = scrollContainer.scrollHeight; },60);
 }
 
 function deleteMF(vid, mfid) {
   const v = state.variables.find(x=>x.id===vid); if(!v) return; v.mfs = v.mfs.filter(m=>m.id!==mfid);
   state.rules = state.rules.filter(r => { let isAntMatch = false; for (let k in r.conditions) { if (r.conditions[k] === mfid) isAntMatch = true; } return !isAntMatch && r.conclusion.mfId !== mfid; });
-  renderMFEditor(); queueRenderCharts(); updateRuleBuilder(); renderRules();
+  simResults = null; simRunning = false;
+  renderMFEditor(); refreshAllCharts(); updateRuleBuilder(); renderRules(); buildSimulationPanel();
 }
 
 function evalMF(mf, x) {
@@ -590,11 +837,462 @@ function evalMF(mf, x) {
   }
 }
 
-// ── CHART RENDERING ──
+// ============================================================
+//  SIMULATION ENGINE
+// ============================================================
+const SimulationEngine = {
+  fuzzify(variable, crispValue) {
+    const memberships = {};
+    variable.mfs.forEach(mf => { memberships[mf.id] = evalMF(mf, crispValue); });
+    return memberships;
+  },
+
+  evaluateRules(fuzzifiedInputs) {
+    const activeRules = state.rules.filter(r => r.enabled !== false);
+    const results = [];
+    activeRules.forEach(rule => {
+      let antecedentValues = [];
+      for (let varId in rule.conditions) {
+        const mfId = rule.conditions[varId];
+        antecedentValues.push((fuzzifiedInputs[varId] && fuzzifiedInputs[varId][mfId] !== undefined) ? fuzzifiedInputs[varId][mfId] : 0);
+      }
+      if (antecedentValues.length === 0) return;
+      let firingStrength;
+      if (rule.logic === 'OR') {
+        firingStrength = state.orMethod === 'probor' ? antecedentValues.reduce((a, b) => a + b - a * b, 0) : Math.max(...antecedentValues);
+      } else {
+        firingStrength = state.andMethod === 'prod' ? antecedentValues.reduce((a, b) => a * b, 1) : Math.min(...antecedentValues);
+      }
+      firingStrength *= (rule.weight ?? 1);
+      results.push({ ruleId: rule.id, conclusion: rule.conclusion, firingStrength: Math.max(0, Math.min(1, firingStrength)), antecedentValues });
+    });
+    return results;
+  },
+
+  aggregate(ruleResults) {
+    const outputVariables = state.variables.filter(v => v.type === 'output');
+    const aggregation = {};
+    outputVariables.forEach(outVar => {
+      const clips = [];
+      ruleResults.forEach(result => {
+        if (result.conclusion.varId === outVar.id && result.firingStrength > 0) {
+          const mf = outVar.mfs.find(m => m.id === result.conclusion.mfId);
+          if (mf) clips.push({ mf, firingStrength: result.firingStrength });
+        }
+      });
+      aggregation[outVar.id] = { variable: outVar, clips };
+    });
+    return aggregation;
+  },
+
+  defuzzify(aggregationResult, method, samples = 500) {
+    const variable = aggregationResult.variable;
+    const clips = aggregationResult.clips;
+    if (clips.length === 0) return null;
+    const xMin = variable.min, xMax = variable.max, step = (xMax - xMin) / (samples - 1);
+    const points = [];
+    for (let i = 0; i < samples; i++) {
+      const x = xMin + i * step;
+      let maxMu = 0;
+      clips.forEach(clip => { maxMu = Math.max(maxMu, Math.min(evalMF(clip.mf, x), clip.firingStrength)); });
+      points.push({ x, mu: maxMu });
+    }
+    switch (method) {
+      case 'centroid': return this._centroid(points, step);
+      case 'bisector': return this._bisector(points, step);
+      case 'mom': return this._mom(points);
+      case 'som': return this._som(points);
+      case 'lom': return this._lom(points);
+      default: return this._centroid(points, step);
+    }
+  },
+
+  _centroid(points, step) { let sXM=0, sM=0; points.forEach(p=>{sXM+=p.x*p.mu; sM+=p.mu;}); return sM===0?null:sXM/sM; },
+  _bisector(points, step) { const tA=points.reduce((s,p)=>s+p.mu*step,0); if(tA===0)return null; let cA=0; for(let i=0;i<points.length;i++){cA+=points[i].mu*step; if(cA>=tA/2)return points[i].x;} return points[points.length-1].x; },
+  _mom(points) { let mM=0; points.forEach(p=>{if(p.mu>mM)mM=p.mu;}); if(mM===0)return null; const mP=points.filter(p=>p.mu>=mM*0.999); return mP.reduce((s,p)=>s+p.x,0)/mP.length; },
+  _som(points) { let mM=0; points.forEach(p=>{if(p.mu>mM)mM=p.mu;}); for(let i=0;i<points.length;i++){if(points[i].mu>=mM*0.999)return points[i].x;} return null; },
+  _lom(points) { let mM=0; points.forEach(p=>{if(p.mu>mM)mM=p.mu;}); for(let i=points.length-1;i>=0;i--){if(points[i].mu>=mM*0.999)return points[i].x;} return null; },
+
+  run(inputValues) {
+    syncSettings();
+    const inputVars = state.variables.filter(v => v.type === 'input');
+    const outputVars = state.variables.filter(v => v.type === 'output');
+    if (inputVars.length === 0 || outputVars.length === 0) return { error: 'Need at least 1 input and 1 output variable' };
+    if (state.rules.filter(r => r.enabled !== false).length === 0) return { error: 'No active rules defined' };
+    const fuzzified = {};
+    inputVars.forEach(v => { fuzzified[v.id] = this.fuzzify(v, inputValues[v.id] ?? ((v.min + v.max) / 2)); });
+    const ruleResults = this.evaluateRules(fuzzified);
+    const aggregation = this.aggregate(ruleResults);
+    const outputs = {};
+    const defuzzMethod = document.getElementById('defuzzMethod')?.value || 'centroid';
+    for (let outId in aggregation) {
+      outputs[outId] = { variable: aggregation[outId].variable, crispValue: this.defuzzify(aggregation[outId], defuzzMethod), aggregation: aggregation[outId] };
+    }
+    return { fuzzified, ruleResults, aggregation, outputs, defuzzMethod };
+  },
+
+  getAggregatedPoints(aggregationResult, samples = 300) {
+    const variable = aggregationResult.variable, clips = aggregationResult.clips;
+    const points = [], step = (variable.max - variable.min) / (samples - 1);
+    for (let i = 0; i < samples; i++) {
+      const x = variable.min + i * step;
+      let maxMu = 0;
+      clips.forEach(clip => { maxMu = Math.max(maxMu, Math.min(evalMF(clip.mf, x), clip.firingStrength)); });
+      points.push({ x, mu: maxMu });
+    }
+    return points;
+  }
+};
+
+// ============================================================
+//  SIMULATION UI
+// ============================================================
+function buildSimulationPanel() {
+  const container = document.getElementById('simContent');
+  const inputVars = state.variables.filter(v => v.type === 'input');
+  const outputVars = state.variables.filter(v => v.type === 'output');
+  
+  if (inputVars.length === 0 || outputVars.length === 0) {
+    container.innerHTML = `<div style="font-size:11px; color:var(--text3); text-align:center; padding:20px;">Add input variables with MFs<br>and rules to enable simulation.</div>`;
+    return;
+  }
+  
+  inputVars.forEach(v => { if (!(v.id in simInputValues)) simInputValues[v.id] = (v.min + v.max) / 2; });
+  
+  let html = '';
+  
+  // Status row
+  html += `
+    <div class="sim-status-row">
+      <div class="sim-status-dot ${simRunning ? 'running' : 'stopped'}"></div>
+      <span class="sim-status-text">${simRunning ? 'RUNNING' : 'STOPPED'}</span>
+    </div>`;
+  
+  // Input sliders with μ values
+  inputVars.forEach(v => {
+    const val = simInputValues[v.id] ?? ((v.min + v.max) / 2);
+    const fuzzified = SimulationEngine.fuzzify(v, val);
+    const activeMFs = v.mfs.filter(mf => fuzzified[mf.id] > 0.001).sort((a, b) => fuzzified[b.id] - fuzzified[a.id]).slice(0, 3);
+    
+    const activeMFHTML = activeMFs.length > 0
+      ? activeMFs.map(mf => `<span class="sim-active-mf"><span class="sim-active-mf-dot" style="background:${mf.color};"></span>${esc(mf.label)} <span>μ=${fuzzified[mf.id].toFixed(3)}</span></span>`).join('')
+      : `<span class="sim-active-mf" style="color:var(--text3);">—</span>`;
+    
+    html += `
+      <div class="sim-input-row">
+        <span class="sim-input-label">${esc(v.name)}</span>
+        <input type="range" class="sim-input-slider" min="${v.min}" max="${v.max}" step="${(v.max - v.min) / 200}" value="${val}" oninput="updateSimInput('${v.id}', parseFloat(this.value))">
+        <input type="number" class="sim-input-value" value="${val.toFixed(2)}" onchange="updateSimInput('${v.id}', parseFloat(this.value))">
+        <span class="sim-input-unit">${esc(v.unit)}</span>
+      </div>
+      <div class="sim-input-mf-row">${activeMFHTML}</div>`;
+  });
+  
+  // Run/Stop button
+  html += `
+    <div style="text-align:center;">
+      <button class="${simRunning ? 'btn-sim-stop' : 'btn-sim-run'}" onclick="toggleSimulation()" style="width:100%;">
+        ${simRunning ? '⏸️ STOP Simulation' : '▶️ RUN SIMULATION'}
+      </button>
+    </div>`;
+  
+  // Results section - ALWAYS VISIBLE
+  html += `<div style="margin-top:8px;">`;
+  outputVars.forEach(outVar => {
+    const hasResult = simResults && simResults.outputs && simResults.outputs[outVar.id];
+    const crispValue = hasResult ? simResults.outputs[outVar.id].crispValue : null;
+    const hasFiring = crispValue !== null && crispValue !== undefined;
+    const hasAnyRule = state.rules.filter(r => r.enabled !== false).length > 0;
+    
+    let statusMessage = '', valueClass = '', displayValue = '', metaText = '', boxClass = '';
+    
+    if (!hasAnyRule) {
+      statusMessage = 'No active rules'; valueClass = 'inactive'; displayValue = '—'; metaText = 'Define rules to simulate'; boxClass = 'paused';
+    } else if (!simRunning && !hasFiring) {
+      statusMessage = 'Click RUN to start'; valueClass = 'inactive'; displayValue = '—'; metaText = ''; boxClass = 'paused';
+    } else if (!hasFiring) {
+      statusMessage = 'No rules firing'; valueClass = 'inactive'; displayValue = '—'; metaText = 'Adjust inputs to activate rules'; boxClass = 'paused';
+    } else if (!simRunning) {
+      valueClass = 'active'; displayValue = crispValue.toFixed(2); metaText = (simResults.defuzzMethod || 'centroid') + ' · PAUSED'; boxClass = 'paused';
+    } else {
+      valueClass = 'active'; displayValue = crispValue.toFixed(2); metaText = (simResults.defuzzMethod || 'centroid'); boxClass = 'active';
+    }
+    
+    html += `
+      <div class="sim-result-box ${boxClass}" style="margin-bottom:8px;">
+        <div class="sim-result-label">${esc(outVar.name)}</div>
+        <div class="sim-result-value ${valueClass === 'inactive' ? 'inactive' : ''}">${displayValue}</div>
+        <div class="sim-result-unit">${esc(outVar.unit)}</div>
+        <div class="sim-result-meta">${metaText}</div>
+      </div>`;
+  });
+  
+  // Action buttons
+  html += `
+    <div class="sim-action-row">
+      <button class="btn-sim-tray" id="btnAddTray" onclick="addToTray()">➕ Add to Tray</button>
+      ${testTray.length > 0 ? `<span class="sim-tray-badge" onclick="toggleMiniCollapsible('traySection')" title="Toggle test tray">📋 ${testTray.length} case${testTray.length !== 1 ? 's' : ''}</span>` : ''}
+    </div>`;
+  
+  // Test Tray (collapsible)
+  if (testTray.length > 0) {
+    html += `
+      <div class="tray-section" style="margin-top:6px;">
+        <button class="mini-collapsible-toggle" onclick="toggleMiniCollapsible('traySection')">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+          Test Tray (${testTray.length})
+        </button>
+        <div class="mini-collapsible-body" id="traySectionBody">
+          ${testTray.map((tc, i) => {
+            const inDesc = Object.entries(tc.inputs).map(([vid, val]) => {
+              const v = state.variables.find(x => x.id === vid);
+              return v ? `${esc(v.name)}=${val.toFixed(1)}` : `${vid}=${val.toFixed(1)}`;
+            }).join(', ');
+            const outDesc = Object.entries(tc.outputs).map(([vid, val]) => {
+              const v = state.variables.find(x => x.id === vid);
+              return v ? `${esc(v.name)}=${val?.toFixed?.(2) || 'N/A'}` : `${vid}=${val}`;
+            }).join(', ');
+            return `
+              <div class="tray-item">
+                <span class="tray-item-num">#${i+1}</span>
+                <span class="tray-item-desc">${inDesc}</span>
+                <span class="tray-item-result">→ ${outDesc}</span>
+                <button class="tray-item-del" onclick="removeFromTray(${i})" title="Remove">×</button>
+              </div>`;
+          }).join('')}
+          <div class="tray-footer">
+            <button class="btn" style="flex:1; font-size:10px; padding:4px;" onclick="exportTrayCSV()">📥 Export CSV</button>
+            <button class="btn" style="font-size:10px; padding:4px; color:var(--danger);" onclick="clearTray()">🗑️ Clear</button>
+          </div>
+        </div>
+      </div>`;
+  }
+  
+  // Rule Firing Strengths (collapsible)
+  const activeRules = state.rules.filter(r => r.enabled !== false);
+  if (activeRules.length > 0) {
+    const anyFiring = simResults && simResults.ruleResults && simResults.ruleResults.some(rr => rr.firingStrength > 0);
+    html += `
+      <div style="margin-top:4px;">
+        <button class="mini-collapsible-toggle ${ruleFiringExpanded ? '' : 'collapsed'}" onclick="ruleFiringExpanded = !ruleFiringExpanded; buildSimulationPanel();">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
+          Rule Firing Strengths (${activeRules.length}) ${anyFiring ? '' : '— none firing'}
+        </button>
+        <div class="mini-collapsible-body ${ruleFiringExpanded ? '' : 'collapsed'}" id="ruleFiringBody">
+          ${activeRules.map((r, i) => {
+            let strength = 0;
+            if (simResults && simResults.ruleResults) {
+              const found = simResults.ruleResults.find(rr => rr.ruleId === r.id);
+              if (found) strength = found.firingStrength;
+            }
+            const pct = (strength * 100).toFixed(1);
+            const isActive = strength > 0;
+            return `
+              <div class="sim-firing-rule">
+                <span style="min-width:32px; font-size:10px; font-weight:600; ${isActive ? 'color:var(--accent2);' : 'color:var(--text3);'}">R${i+1}</span>
+                <div class="sim-firing-bar-bg">
+                  <div class="sim-firing-bar-fill" style="width:${pct}%; ${isActive ? '' : 'opacity:0.25; background:var(--text3);'}"></div>
+                </div>
+                <span class="sim-firing-strength" style="${isActive ? 'color:var(--accent2);' : 'color:var(--text3);'}">${strength.toFixed(3)}</span>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+  
+  html += `</div>`;
+  
+  container.innerHTML = html;
+}
+
+function updateSimInput(varId, value) {
+  const v = state.variables.find(x => x.id === varId);
+  if (!v) return;
+  const clamped = Math.max(v.min, Math.min(v.max, value));
+  simInputValues[varId] = clamped;
+  
+  // Update slider and number input
+  const container = document.getElementById('simContent');
+  const slider = container?.querySelector(`input[type="range"][oninput*="${varId}"]`);
+  const numInput = container?.querySelector(`input[type="number"][onchange*="${varId}"]`);
+  if (slider && parseFloat(slider.value) !== clamped) slider.value = clamped;
+  if (numInput && parseFloat(numInput.value) !== clamped) numInput.value = clamped.toFixed(2);
+  
+  // Update μ values inline
+  const mfRow = container?.querySelectorAll('.sim-input-mf-row')[Array.from(container.querySelectorAll('.sim-input-row')).findIndex(row => row.querySelector(`[oninput*="${varId}"]`))];
+  if (mfRow) {
+    const fuzzified = SimulationEngine.fuzzify(v, clamped);
+    const activeMFs = v.mfs.filter(mf => fuzzified[mf.id] > 0.001).sort((a, b) => fuzzified[b.id] - fuzzified[a.id]).slice(0, 3);
+    mfRow.innerHTML = activeMFs.length > 0
+      ? activeMFs.map(mf => `<span class="sim-active-mf"><span class="sim-active-mf-dot" style="background:${mf.color};"></span>${esc(mf.label)} <span>μ=${fuzzified[mf.id].toFixed(3)}</span></span>`).join('')
+      : `<span class="sim-active-mf" style="color:var(--text3);">—</span>`;
+  }
+  
+  if (simRunning) {
+    debouncedSimulate();
+  }
+}
+
+function debouncedSimulate() {
+  if (simTimer) clearTimeout(simTimer);
+  simTimer = setTimeout(() => {
+    simResults = SimulationEngine.run(simInputValues);
+    buildSimulationPanel();
+    updateAllChartOverlays();
+  }, 200);
+}
+
+function addToTray() {
+  if (!simResults || !simResults.outputs) {
+    showToast('Run simulation first before adding to tray');
+    return;
+  }
+  const hasValidOutput = Object.values(simResults.outputs).some(o => o.crispValue !== null);
+  if (!hasValidOutput) {
+    showToast('No valid output to add to tray');
+    return;
+  }
+  testTray.push({
+    inputs: { ...simInputValues },
+    outputs: Object.fromEntries(Object.entries(simResults.outputs).map(([id, out]) => [id, out.crispValue])),
+    defuzzMethod: simResults.defuzzMethod,
+    timestamp: new Date().toISOString()
+  });
+  // Animate button
+  const btn = document.getElementById('btnAddTray');
+  if (btn) { btn.classList.add('added'); setTimeout(() => btn.classList.remove('added'), 400); }
+  buildSimulationPanel();
+  // Auto-expand tray
+  const trayBody = document.getElementById('traySectionBody');
+  if (trayBody && trayBody.classList.contains('collapsed')) {
+    trayBody.classList.remove('collapsed');
+    trayBody.previousElementSibling?.classList.remove('collapsed');
+  }
+  showToast(`Added to tray (${testTray.length} total)`);
+}
+
+function removeFromTray(index) {
+  testTray.splice(index, 1);
+  buildSimulationPanel();
+}
+
+function clearTray() {
+  if (confirm('Clear all test cases from tray?')) {
+    testTray = [];
+    buildSimulationPanel();
+    showToast('Tray cleared');
+  }
+}
+
+function exportTrayCSV() {
+  if (testTray.length === 0) { showToast('No test cases to export'); return; }
+  const inputVars = state.variables.filter(v => v.type === 'input');
+  const outputVars = state.variables.filter(v => v.type === 'output');
+  const headers = [...inputVars.map(v => v.name), ...outputVars.map(v => v.name), 'Defuzz Method', 'Timestamp'];
+  const rows = testTray.map(tc => {
+    const inVals = inputVars.map(v => tc.inputs[v.id]?.toFixed(2) ?? '—');
+    const outVals = outputVars.map(v => tc.outputs[v.id]?.toFixed(2) ?? '—');
+    return [...inVals, ...outVals, tc.defuzzMethod || 'centroid', tc.timestamp];
+  });
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const name = (document.getElementById('projectName').value || 'simulation').replace(/\s+/g,'_');
+  downloadText(csv, `${name}_test_cases.csv`, 'text/csv');
+  showToast(`Exported ${testTray.length} test cases`);
+}
+
+// ============================================================
+//  CHART RENDERING (with canvas plugin)
+// ============================================================
+
+// Chart.js Plugin for simulation overlay
+const simulationOverlayPlugin = {
+  id: 'simulationOverlay',
+  afterDraw(chart) {
+    const overlayData = chart.config._simOverlay;
+    if (!overlayData) return;
+    
+    const ctx = chart.ctx;
+    const xAxis = chart.scales.x;
+    const yAxis = chart.scales.y;
+    const chartArea = chart.chartArea;
+    
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+    ctx.clip();
+    
+    // Draw aggregated set
+    if (overlayData.aggregatedPoints && overlayData.aggregatedPoints.length > 0) {
+      const pts = overlayData.aggregatedPoints;
+      ctx.beginPath();
+      const firstX = xAxis.getPixelForValue(pts[0].x);
+      const firstY = yAxis.getPixelForValue(pts[0].mu);
+      ctx.moveTo(firstX, yAxis.getPixelForValue(0));
+      ctx.lineTo(firstX, firstY);
+      
+      for (let i = 0; i < pts.length; i++) {
+        const px = xAxis.getPixelForValue(pts[i].x);
+        const py = yAxis.getPixelForValue(pts[i].mu);
+        ctx.lineTo(px, py);
+      }
+      
+      const lastX = xAxis.getPixelForValue(pts[pts.length - 1].x);
+      ctx.lineTo(lastX, yAxis.getPixelForValue(0));
+      ctx.closePath();
+      
+      ctx.fillStyle = SIM_COLORS.aggregateFill;
+      ctx.fill();
+      ctx.strokeStyle = SIM_COLORS.aggregateBorder;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    
+    // Draw defuzz line
+    if (overlayData.defuzzValue !== null && overlayData.defuzzValue !== undefined) {
+      const defX = xAxis.getPixelForValue(overlayData.defuzzValue);
+      ctx.beginPath();
+      ctx.moveTo(defX, chartArea.top);
+      ctx.lineTo(defX, chartArea.bottom);
+      ctx.strokeStyle = SIM_COLORS.defuzzLine;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    
+    // Draw input value line for input charts
+    if (overlayData.inputValue !== null && overlayData.inputValue !== undefined) {
+      const inX = xAxis.getPixelForValue(overlayData.inputValue);
+      ctx.beginPath();
+      ctx.moveTo(inX, chartArea.top);
+      ctx.lineTo(inX, chartArea.bottom);
+      ctx.strokeStyle = SIM_COLORS.inputLine;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    
+    ctx.restore();
+  }
+};
+
+// Register plugin
+if (typeof Chart !== 'undefined' && !Chart.registry.plugins.get('simulationOverlay')) {
+  Chart.register(simulationOverlayPlugin);
+}
+
+function refreshAllCharts() {
+  renderCharts();
+  if (simRunning) updateAllChartOverlays();
+}
+
 function renderCharts() {
   const area = document.getElementById('chartArea');
   if(state.variables.length===0) {
-    area.innerHTML = `<div class="no-vars"><div class="no-vars-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div><h3>No Variables Yet</h3><p>Add input or output variables on the left panel to start building your fuzzy logic system.</p></div>`;
+    area.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text3);text-align:center;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 24 Q8 12 16 16 Q24 20 28 8" stroke="#6d83a0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><h3 style="font-family:var(--display);font-size:16px;">No Variables Yet</h3><p style="font-size:12px;">Add input or output variables on the left panel to start building your fuzzy logic system.</p></div>`;
     Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; return;
   }
 
@@ -606,29 +1304,193 @@ function renderCharts() {
     Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; return;
   }
 
-  let targetVars = currentViewMode === 'all' ? [ ...state.variables.filter(v => v.type === 'input'), ...state.variables.filter(v => v.type === 'output') ] : state.variables.filter(v => v.id === activeVarId);
-  if(targetVars.length===0) { area.innerHTML = `<div class="no-vars">...Select a variable to view its graph.</div>`; Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; return; }
+  let targetVars = currentViewMode === 'all' 
+    ? [...state.variables.filter(v => v.type === 'input'), ...state.variables.filter(v => v.type === 'output')] 
+    : state.variables.filter(v => v.id === activeVarId);
+    
+  if(targetVars.length===0) { 
+    area.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-family:var(--mono);font-size:13px;">Select a variable to view its graph.</div>`; 
+    Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; 
+    return; 
+  }
 
   const existingIds = new Set(targetVars.map(v=>v.id));
   Object.keys(chartInstances).forEach(id=>{ if(!existingIds.has(id)){ chartInstances[id].destroy(); delete chartInstances[id]; } });
-  area.innerHTML = ''; 
-
+  
   targetVars.forEach(v=>{
-    const cardId = 'chartcard_'+v.id; let card = document.createElement('div'); card.className='chart-card'; card.id=cardId; area.appendChild(card);
-    const legendHTML = v.mfs.map(mf=>`<span class="legend-pill" style="background:${hexAlpha(mf.color,0.12)};border-color:${hexAlpha(mf.color,0.4)};color:${mf.color};">${esc(mf.label)}</span>`).join('');
-    card.innerHTML = `<div class="chart-card-header"><span class="chart-var-badge badge-${v.type}">${v.type.toUpperCase()}</span><span class="chart-var-name">${esc(v.name)}</span><span class="chart-var-range">[${v.min}, ${v.max}] ${esc(v.unit)}</span></div><div class="chart-canvas-wrap" style="height:220px;"><canvas id="canvas_${v.id}"></canvas></div><div class="chart-legend">${legendHTML}</div><div class="chart-export-row"><button class="btn" onclick="exportChartPNG('${v.id}')" style="font-size:11px;padding:4px 10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>PNG</button><button class="btn" onclick="exportChartSVG('${v.id}')" style="font-size:11px;padding:4px 10px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>SVG</button></div>`;
-    if(chartInstances[v.id]) { chartInstances[v.id].destroy(); }
-    const N = 500, labels = Array.from({length:N}, (_,i)=> +(v.min + (v.max-v.min)*i/(N-1)).toFixed(4));
-    const datasets = v.mfs.map(mf=>({ label: mf.label, data: labels.map(x=>+evalMF(mf,x).toFixed(4)), borderColor: mf.color, backgroundColor: hexAlpha(mf.color, 0.18), fill: true, tension: mf.shape==='triangular'||mf.shape==='trapezoidal'||mf.shape==='singleton' ? 0 : 0.4, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: mf.color }));
-    const ctx = document.getElementById('canvas_'+v.id).getContext('2d');
-    chartInstances[v.id] = new Chart(ctx, { type:'line', data:{ labels, datasets }, options:{ responsive: true, maintainAspectRatio: false, interaction:{ mode:'index', intersect:false }, animation:{ duration:0 }, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'#13161d', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#8b90a0', bodyColor:'#e8eaf0', titleFont:{ family:"'DM Mono',monospace", size:10 }, bodyFont:{ family:"'DM Mono',monospace", size:11 }, padding:10, cornerRadius:8, callbacks:{ title: items=>`x = ${(+items[0].label).toFixed(2)} ${v.unit}`, label: item=>`  ${item.dataset.label}: μ = ${item.raw.toFixed(4)}` } } }, scales:{ x:{ type:'linear', min:v.min, max:v.max, title:{ display:true, text: v.name+(v.unit?` (${v.unit})`:''), color:'#1A1D2E', font:{family:"'DM Sans',sans-serif",size:12, weight:'bold'} }, ticks:{ color:'#1A1D2E', font:{family:"'DM Mono',monospace",size:10, weight:'bold'}, maxTicksLimit:10, callback: val => (+val).toFixed(v.max-v.min>100?0:1) }, grid:{ color:'rgba(0,0,0,0.05)' }, border:{ color:'#1A1D2E', width: 2 } }, y:{ min:0, max:1, title:{ display:true, text:'μ(x)', color:'#1A1D2E', font:{family:"'DM Sans',sans-serif",size:12, weight:'bold'} }, ticks:{ color:'#1A1D2E', font:{family:"'DM Mono',monospace",size:10, weight:'bold'}, stepSize:0.2 }, grid:{ color:'rgba(0,0,0,0.05)' }, border:{ color:'#1A1D2E', width: 2 } } } } });
+    const cardId = 'chartcard_'+v.id;
+    let existingCard = document.getElementById(cardId);
+    if (!existingCard) {
+      let card = document.createElement('div'); card.className='chart-card'; card.id=cardId; area.appendChild(card);
+    }
+    buildChartCard(v);
+  });
+  
+  const allCards = area.querySelectorAll('.chart-card');
+  allCards.forEach(card => {
+    const cardVarId = card.id.replace('chartcard_', '');
+    if (!targetVars.find(v => v.id === cardVarId)) card.remove();
+  });
+}
+
+function buildChartCard(v) {
+  const card = document.getElementById('chartcard_' + v.id);
+  if (!card) return;
+  
+  const legendHTML = v.mfs.map(mf=>`<span class="legend-pill" style="background:${hexAlpha(mf.color,0.12)};border-color:${hexAlpha(mf.color,0.4)};color:${mf.color};">${esc(mf.label)}</span>`).join('');
+  
+  card.innerHTML = `
+    <div class="chart-card-header">
+      <span class="chart-var-badge badge-${v.type}">${v.type.toUpperCase()}</span>
+      <span class="chart-var-name">${esc(v.name)}</span>
+      <span class="chart-sim-badge" id="simBadge_${v.id}">Sim: —</span>
+      <span class="chart-var-range">[${v.min}, ${v.max}] ${esc(v.unit)}</span>
+    </div>
+    <div class="chart-canvas-wrap" style="height:240px;">
+      <canvas id="canvas_${v.id}"></canvas>
+    </div>
+    <div class="chart-legend">${legendHTML}</div>
+    <div class="chart-export-row">
+      <button class="btn" onclick="exportChartPNG('${v.id}')" style="font-size:11px;padding:4px 10px;">PNG</button>
+      <button class="btn" onclick="exportChartSVG('${v.id}')" style="font-size:11px;padding:4px 10px;">SVG</button>
+    </div>`;
+  
+  if(chartInstances[v.id]) { chartInstances[v.id].destroy(); }
+  
+  const N = 500;
+  const labels = Array.from({length: N}, (_, i) => +(v.min + (v.max - v.min) * i / (N - 1)).toFixed(4));
+  
+  const datasets = v.mfs.map(mf => ({
+    label: mf.label, 
+    data: labels.map(x => +evalMF(mf, x).toFixed(4)), 
+    borderColor: mf.color, 
+    backgroundColor: hexAlpha(mf.color, 0.18), 
+    fill: true, 
+    tension: mf.shape === 'triangular' || mf.shape === 'trapezoidal' || mf.shape === 'singleton' ? 0 : 0.4, 
+    borderWidth: 2.5, 
+    pointRadius: 0, 
+    pointHoverRadius: 4, 
+    pointHoverBackgroundColor: mf.color
+  }));
+  
+  const ctx = document.getElementById('canvas_' + v.id).getContext('2d');
+  
+  chartInstances[v.id] = new Chart(ctx, { 
+    type: 'line', 
+    data: { labels, datasets }, 
+    options: { 
+      responsive: true, 
+      maintainAspectRatio: false, 
+      interaction: { mode: 'index', intersect: false }, 
+      animation: { duration: 250 },
+      plugins: { 
+        legend: { display: false }, 
+        tooltip: { 
+          backgroundColor: '#13161d', 
+          borderColor: 'rgba(255,255,255,0.1)', 
+          borderWidth: 1, 
+          titleColor: '#8b90a0', 
+          bodyColor: '#e8eaf0', 
+          titleFont: { family: "'DM Mono',monospace", size: 10 }, 
+          bodyFont: { family: "'DM Mono',monospace", size: 11 }, 
+          padding: 10, 
+          cornerRadius: 8, 
+          callbacks: { 
+            title: items => `x = ${(+items[0].label).toFixed(2)} ${v.unit}`, 
+            label: item => `  ${item.dataset.label}: μ = ${item.raw?.toFixed?.(4) ?? '—'}` 
+          } 
+        } 
+      }, 
+      scales: { 
+        x: { 
+          type: 'linear', 
+          min: v.min, max: v.max, 
+          title: { display: true, text: v.name + (v.unit ? ` (${v.unit})` : ''), color: '#1A1D2E', font: { family: "'DM Sans',sans-serif", size: 12, weight: 'bold' } }, 
+          ticks: { color: '#1A1D2E', font: { family: "'DM Mono',monospace", size: 10, weight: 'bold' }, maxTicksLimit: 10, callback: val => (+val).toFixed(v.max - v.min > 100 ? 0 : 1) }, 
+          grid: { color: 'rgba(0,0,0,0.05)' }, 
+          border: { color: '#1A1D2E', width: 2 } 
+        }, 
+        y: { 
+          min: 0, max: 1.05, 
+          title: { display: true, text: 'μ(x)', color: '#1A1D2E', font: { family: "'DM Sans',sans-serif", size: 12, weight: 'bold' } }, 
+          ticks: { color: '#1A1D2E', font: { family: "'DM Mono',monospace", size: 10, weight: 'bold' }, stepSize: 0.2 }, 
+          grid: { color: 'rgba(0,0,0,0.05)' }, 
+          border: { color: '#1A1D2E', width: 2 } 
+        } 
+      } 
+    } 
+  });
+  
+  // Initialize overlay as null
+  chartInstances[v.id].config._simOverlay = null;
+}
+
+function updateAllChartOverlays() {
+  if (currentViewMode === 'summary') return;
+  
+  const outputVars = state.variables.filter(v => v.type === 'output');
+  const inputVars = state.variables.filter(v => v.type === 'input');
+  
+  // Update output chart overlays
+  outputVars.forEach(v => {
+    const chart = chartInstances[v.id];
+    if (!chart) return;
+    
+    const badge = document.getElementById('simBadge_' + v.id);
+    
+    if (simRunning && simResults && simResults.outputs && simResults.outputs[v.id] && simResults.outputs[v.id].crispValue !== null) {
+      const crisp = simResults.outputs[v.id].crispValue;
+      const aggPoints = SimulationEngine.getAggregatedPoints(simResults.outputs[v.id].aggregation, 300);
+      
+      chart.config._simOverlay = {
+        aggregatedPoints: aggPoints,
+        defuzzValue: crisp,
+        inputValue: null
+      };
+      
+      if (badge) {
+        badge.classList.add('visible');
+        badge.textContent = `Sim: ${crisp.toFixed(2)}`;
+        const prevCrisp = simPreviousCrispValues[v.id];
+        if (prevCrisp !== undefined && Math.abs(prevCrisp - crisp) > 0.01) {
+          badge.classList.remove('changed');
+          void badge.offsetWidth;
+          badge.classList.add('changed');
+        }
+        simPreviousCrispValues[v.id] = crisp;
+      }
+    } else {
+      chart.config._simOverlay = null;
+      if (badge) badge.classList.remove('visible');
+      delete simPreviousCrispValues[v.id];
+    }
+    
+    chart.draw();
+  });
+  
+  // Update input chart overlays (value line)
+  inputVars.forEach(v => {
+    const chart = chartInstances[v.id];
+    if (!chart) return;
+    
+    if (simInputValues[v.id] !== undefined) {
+      chart.config._simOverlay = {
+        aggregatedPoints: null,
+        defuzzValue: null,
+        inputValue: simInputValues[v.id]
+      };
+    } else {
+      chart.config._simOverlay = null;
+    }
+    
+    chart.draw();
   });
 }
 
 // ── EXPORT ──
 function exportChartPNG(vid) {
   const c = chartInstances[vid]; if(!c) return; const v = state.variables.find(x=>x.id===vid), card = document.getElementById('chartcard_'+vid); if(!card) return;
-  html2canvas(card, { backgroundColor: '#ffffff', scale: 2, ignoreElements: (el) => el.classList && el.classList.contains('chart-export-row') }).then(canvas => { const link = document.createElement('a'); link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); showToast(`Chart exported as PNG (with legend)`); });
+  html2canvas(card, { backgroundColor: '#ffffff', scale: 2, ignoreElements: (el) => el.classList && el.classList.contains('chart-export-row') }).then(canvas => { const link = document.createElement('a'); link.download = `${v.name.replace(/\s+/g,'_')}_MF.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); showToast(`Chart exported as PNG`); });
 }
 function exportAllPNG() { state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartPNG(v.id), i*200); }); }
 function exportChartSVG(vid) {
@@ -639,100 +1501,39 @@ function exportChartSVG(vid) {
     const pts=xs.map(x=>`${toX(x).toFixed(1)},${toY(evalMF(mf,x)).toFixed(1)}`).join(' '), fill=hexAlpha(mf.color,0.18), polyClose=`${toX(v.max).toFixed(1)},${toY(0).toFixed(1)} ${toX(v.min).toFixed(1)},${toY(0).toFixed(1)}`;
     paths+=`<polygon points="${pts} ${polyClose}" fill="${fill}"/><polyline points="${pts}" fill="none" stroke="${mf.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
   });
+  // Add sim overlay if running
+  if(simRunning && v.type==='output' && simResults?.outputs?.[v.id]){
+    const aggPts = SimulationEngine.getAggregatedPoints(simResults.outputs[v.id].aggregation, N);
+    const aggPath = aggPts.map(p=>`${toX(p.x).toFixed(1)},${toY(p.mu).toFixed(1)}`).join(' ');
+    const aggClose = `${toX(v.max).toFixed(1)},${toY(0).toFixed(1)} ${toX(v.min).toFixed(1)},${toY(0).toFixed(1)}`;
+    paths+=`<polygon points="${aggPath} ${aggClose}" fill="${SIM_COLORS.aggregateFill}" stroke="${SIM_COLORS.aggregateBorder}" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    const defX = toX(simResults.outputs[v.id].crispValue);
+    if(defX) paths+=`<line x1="${defX.toFixed(1)}" y1="${PT}" x2="${defX.toFixed(1)}" y2="${PT+cH}" stroke="${SIM_COLORS.defuzzLine}" stroke-width="2" stroke-dasharray="6,4"/>`;
+  }
+  if(v.type==='input' && simInputValues[v.id] !== undefined){
+    const inX = toX(simInputValues[v.id]);
+    paths+=`<line x1="${inX.toFixed(1)}" y1="${PT}" x2="${inX.toFixed(1)}" y2="${PT+cH}" stroke="${SIM_COLORS.inputLine}" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.6"/>`;
+  }
   let legX=PL, legendItems=v.mfs.map(mf=>{ const item=`<circle cx="${legX+6}" cy="${H-12}" r="5" fill="${mf.color}"/><text x="${legX+14}" y="${H-8}" fill="${mf.color}" font-family="monospace" font-size="11" font-weight="bold">${mf.label}</text>`; legX+=mf.label.length*7+28; return item; }).join('');
   let xTicksHTML='', yTicksHTML='';
   for(let i=0;i<=6;i++){
     const val=v.min+xRange*i/6; xTicksHTML+=`<text x="${toX(val).toFixed(1)}" y="${PT+cH+18}" text-anchor="middle" fill="#1A1D2E" font-family="monospace" font-size="10" font-weight="bold">${val.toFixed(1)}</text><line x1="${toX(val).toFixed(1)}" y1="${PT}" x2="${toX(val).toFixed(1)}" y2="${PT+cH}" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>`;
     const yv=i/6; yTicksHTML+=`<text x="${PL-6}" y="${toY(yv).toFixed(1)}" text-anchor="end" dominant-baseline="central" fill="#1A1D2E" font-family="monospace" font-size="10" font-weight="bold">${yv.toFixed(1)}</text><line x1="${PL}" y1="${toY(yv).toFixed(1)}" x2="${PL+cW}" y2="${toY(yv).toFixed(1)}" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>`;
   }
-  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#ffffff;font-family:sans-serif;"><rect width="${W}" height="${H}" fill="#ffffff" rx="0"/><text x="${W/2}" y="18" text-anchor="middle" fill="#1A1D2E" font-family="'Syne',sans-serif" font-size="14" font-weight="bold">${v.name} — Membership Functions</text>${xTicksHTML}${yTicksHTML}${paths}<text x="${W/2}" y="${PT+cH+36}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="12" font-weight="bold">${v.name}${v.unit?` (${v.unit})`:''}</text><text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="12" font-weight="bold" transform="rotate(-90,14,${PT+cH/2})">μ(x)</text><line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="#1A1D2E" stroke-width="2"/><line x1="${PL}" y1="${PT+cH}" x2="${PL+cW}" y2="${PT+cH}" stroke="#1A1D2E" stroke-width="2"/>${legendItems}<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v2.0 — Zamm Studio © 2026</text></svg>`;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#ffffff;font-family:sans-serif;"><rect width="${W}" height="${H}" fill="#ffffff" rx="0"/><text x="${W/2}" y="18" text-anchor="middle" fill="#1A1D2E" font-family="'Syne',sans-serif" font-size="14" font-weight="bold">${v.name} — Membership Functions</text>${xTicksHTML}${yTicksHTML}${paths}<text x="${W/2}" y="${PT+cH+36}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="12" font-weight="bold">${v.name}${v.unit?` (${v.unit})`:''}</text><text x="14" y="${PT+cH/2}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="12" font-weight="bold" transform="rotate(-90,14,${PT+cH/2})">μ(x)</text><line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT+cH}" stroke="#1A1D2E" stroke-width="2"/><line x1="${PL}" y1="${PT+cH}" x2="${PL+cW}" y2="${PT+cH}" stroke="#1A1D2E" stroke-width="2"/>${legendItems}<text x="${W/2}" y="${H-2}" text-anchor="middle" fill="#555a6b" font-family="monospace" font-size="9">FuzzyLogic Visualizer v2.1 — Zamm Studio © 2026</text></svg>`;
   const blob=new Blob([svg],{type:'image/svg+xml'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`${v.name.replace(/\s+/g,'_')}_MF.svg`; link.click(); showToast(`SVG exported`);
 }
 function exportAllSVG() { state.variables.forEach((v,i)=>{ setTimeout(()=>exportChartSVG(v.id), i*200); }); }
 
-// ── C++ (ESP32) CODE GENERATOR ──
-function viewESPCode() {
-  if (state.variables.length === 0) { showToast("Please add variables and shapes first to generate C++ code."); return; }
-  let code = `// --- Generated by FuzzyLogic Visualizer ---\n// Designed for ESP32 / Arduino C++\n\nfloat trimf(float x, float a, float b, float c) {\n  if(x <= a || x >= c) return 0;\n  if(x == b) return 1;\n  if(x > a && x < b) return (x - a)/(b - a);\n  if(x > b && x < c) return (c - x)/(c - b);\n  return 0;\n}\n\nfloat trapmf(float x, float a, float b, float c, float d) {\n  if(x <= a || x >= d) return 0;\n  if(x >= b && x <= c) return 1;\n  if(x > a && x < b) return (x - a)/(b - a);\n  if(x > c && x < d) return (d - x)/(d - c);\n  return 0;\n}\n\n`;
-  state.variables.forEach(v => {
-      code += `// MFs for ${v.name}\n`;
-      v.mfs.forEach(m => {
-          const safeName = v.name.replace(/[^a-zA-Z0-9]/g, ''), safeLabel = m.label.replace(/[^a-zA-Z0-9]/g, '');
-          if(m.shape === 'triangular') code += `float get_${safeName}_${safeLabel}(float val) { return trimf(val, ${m.params.a}, ${m.params.b}, ${m.params.c}); }\n`;
-          else if(m.shape === 'trapezoidal') code += `float get_${safeName}_${safeLabel}(float val) { return trapmf(val, ${m.params.a}, ${m.params.b}, ${m.params.c}, ${m.params.d}); }\n`;
-          else code += `// Note: shape '${m.shape}' not fully supported in this basic C++ generator.\n`;
-      }); code += `\n`;
-  });
-  const activeRules = state.rules.filter(r => r.enabled !== false);
-  if (activeRules.length > 0) {
-      code += `// Rule Evaluation\nvoid evaluateRules() {\n`;
-      activeRules.forEach((r, idx) => {
-          let conds = [];
-          for(let vId in r.conditions) {
-              const v = state.variables.find(x => x.id === vId), m = v?.mfs.find(x => x.id === r.conditions[vId]);
-              if(v && m) conds.push(`get_${v.name.replace(/[^a-zA-Z0-9]/g, '')}_${m.label.replace(/[^a-zA-Z0-9]/g, '')}(${v.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}_val)`);
-          }
-          const outV = state.variables.find(x => x.id === r.conclusion.varId), outM = outV?.mfs.find(x => x.id === r.conclusion.mfId);
-          if(conds.length > 0 && outV && outM) {
-              let op = r.logic === 'OR' ? 'max' : 'min'; let logicStr = conds[0];
-              if(conds.length > 1) { logicStr = `${op}(${conds[0]}, ${conds[1]})`; for(let i=2; i<conds.length; i++) logicStr = `${op}(${logicStr}, ${conds[i]})`; }
-              const safeOutName = outV.name.replace(/[^a-zA-Z0-9]/g, ''), safeOutLabel = outM.label.replace(/[^a-zA-Z0-9]/g, '');
-              code += `  // Rule ${idx+1} (${r.logic || 'AND'})\n  float rule${idx+1} = (${logicStr}) * ${Number(r.weight ?? 1).toFixed(2)};\n  ${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()} = max(${safeOutName.toLowerCase()}_${safeOutLabel.toLowerCase()}, rule${idx+1});\n\n`;
-          }
-      }); code += `}\n`;
-  }
-  const newWindow = window.open("", "_blank"); newWindow.document.write(`<title>C++ Code Export</title><pre style="background: #0d0f14; color: #10b981; padding: 20px; font-family: monospace; font-size: 14px; height: 100vh; margin: 0; overflow-y: auto;">${code}</pre>`);
-}
-
-// ── PYTHON CODE EXPORT ──
-function exportPythonCode() {
-  const pname = document.getElementById('projectName').value || 'fuzzy_project';
-  let code=`# FuzzyLogic Visualizer — Python Code Export\n# Project: ${pname}\n# Generated by FuzzyLogic Visualizer v2.0 — Zamm Studio © 2026\n# FIS Type: ${state.fisType} | Defuzz: ${state.defuzz}\n\nimport numpy as np\nimport skfuzzy as fuzz\nfrom skfuzzy import control as ctrl\nimport matplotlib.pyplot as plt\n\nplt.style.use('dark_background')\n\n`;
-  const inputs=state.variables.filter(v=>v.type==='input'), outputs=state.variables.filter(v=>v.type==='output');
-  inputs.forEach(v=>{ const safeName=v.name.replace(/\s+/g,'_').toLowerCase(); code+=`# Input: ${v.name}\n${safeName} = ctrl.Antecedent(np.linspace(${v.min}, ${v.max}, 500), '${safeName}')\n`; v.mfs.forEach(mf=>{ code+=`${safeName}['${mf.label.replace(/\s+/g,'_').toLowerCase()}'] = fuzz.${pyMF(mf)}\n`; }); code+=`\n`; });
-  outputs.forEach(v=>{ const safeName=v.name.replace(/\s+/g,'_').toLowerCase(); code+=`# Output: ${v.name}\n${safeName} = ctrl.Consequent(np.linspace(${v.min}, ${v.max}, 500), '${safeName}')\n`; v.mfs.forEach(mf=>{ code+=`${safeName}['${mf.label.replace(/\s+/g,'_').toLowerCase()}'] = fuzz.${pyMF(mf)}\n`; }); code+=`\n`; });
-  const activeRules = state.rules.filter(r => r.enabled !== false);
-  if(activeRules.length>0) {
-    code+=`# Rules\n`;
-    activeRules.forEach((r,i)=>{
-      let condParts = [];
-      for(let vId in r.conditions) {
-          const av=state.variables.find(v=>v.id===vId), amf=av?.mfs.find(m=>m.id===r.conditions[vId]);
-          if(av&&amf) condParts.push(`${av.name.replace(/\s+/g,'_').toLowerCase()}['${amf.label.replace(/\s+/g,'_').toLowerCase()}']`);
-      }
-      const cv=state.variables.find(v=>v.id===r.conclusion.varId), cmf=cv?.mfs.find(m=>m.id===r.conclusion.mfId);
-      if(condParts.length > 0 && cv && cmf) {
-          let op = r.logic === 'OR' ? ' | ' : ' & '; let condExpr = condParts.join(op);
-          code+=`rule${i+1} = ctrl.Rule(${condExpr}, ${cv.name.replace(/\s+/g,'_').toLowerCase()}['${cmf.label.replace(/\s+/g,'_').toLowerCase()}'])  # weight=${Number(r.weight ?? 1).toFixed(2)}\n`;
-      }
-    });
-    const ruleNames=activeRules.map((_,i)=>`rule${i+1}`).join(', '), outName=outputs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output';
-    code+=`\n# Control system\n${outName}_ctrl = ctrl.ControlSystem([${ruleNames}])\n${outName}_sim = ctrl.ControlSystemSimulation(${outName}_ctrl)\n\n`;
-  }
-  code+=`# Plot membership functions\n`; [...inputs,...outputs].forEach(v=>{ code+=`${v.name.replace(/\s+/g,'_').toLowerCase()}.view()\n`; }); code+=`plt.show()\n`;
-  const blob=new Blob([code],{type:'text/plain'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`${pname.replace(/\s+/g,'_')}_fuzzy.py`; link.click(); showToast(`Python code exported`);
-}
-
-function pyMF(mf) {
-  const p=mf.params, u=`universe`;
-  switch(mf.shape) {
-    case 'triangular': return `trimf(${u}, [${p.a}, ${p.b}, ${p.c}])`; case 'trapezoidal': return `trapmf(${u}, [${p.a}, ${p.b}, ${p.c}, ${p.d}])`; case 'gaussian': return `gaussmf(${u}, ${p.mean}, ${p.sigma})`; case 'bell': return `gbellmf(${u}, ${p.a}, ${p.b}, ${p.c})`; case 'sigmoidal': return `sigmf(${u}, ${p.a}, ${p.c})`; default: return `trimf(${u}, [${p.x||50}-1, ${p.x||50}, ${p.x||50}+1])`;
-  }
-}
-
-// ── DYNAMIC MULTI-INPUT RULES (OPTION A: GLOBAL AND/OR) ──
-function toggleRules() { const body=document.getElementById('rulesBody'), btn=document.getElementById('rulesToggle'); body.classList.toggle('open'); btn.classList.toggle('open'); }
-
+// ── RULE EDITOR (unchanged core logic) ──
 function updateRuleLogicLabels() {
-  const logic = document.getElementById('ruleLogicSelect').value;
+  const logic = document.getElementById('ruleLogicSelect')?.value;
   document.querySelectorAll('.rule-logic-lbl').forEach(el => el.textContent = logic);
 }
-
 function updateRuleBuilder() {
   const el = document.getElementById('ruleBuilder');
   const inputs = state.variables.filter(v => v.type === 'input' && v.mfs.length > 0), outputs = state.variables.filter(v => v.type === 'output' && v.mfs.length > 0);
   if (inputs.length === 0 || outputs.length === 0) { el.innerHTML = '<span class="rule-label" style="color:var(--text3)">Add at least 1 input and 1 output with shapes to build rules.</span>'; return; }
-
   let html = `
     <div style="width:100%; margin-bottom: 10px; display:flex; align-items:center; gap:8px;">
       <span class="rule-label">Rule Logic:</span>
@@ -741,16 +1542,13 @@ function updateRuleBuilder() {
         <option value="OR">ANY condition is met (OR)</option>
       </select>
     </div>
-    <div class="rule-builder-wrap"><span class="rule-label">IF</span>
-  `;
-  
+    <div class="rule-builder-wrap"><span class="rule-label">IF</span>`;
   inputs.forEach((inp, idx) => {
       if (idx > 0) html += `<span class="rule-logic-lbl">AND</span>`;
       html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(inp.name)} IS</span>`;
       let opts = `<option value="ANY">-- Skip --</option>` + inp.mfs.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
       html += `<select class="rule-select rule-inp-sel" data-vid="${inp.id}">${opts}</select>`;
   });
-
   html += `<span class="rule-label" style="margin-left: 8px;">THEN</span>`;
   const out = outputs[0]; html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(out.name)} IS</span>`;
   let outOpts = out.mfs.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
@@ -758,26 +1556,22 @@ function updateRuleBuilder() {
   html += `<button class="btn btn-primary" id="ruleSubmitBtn" onclick="saveRuleFromBuilder()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
   html += `<button class="btn" id="ruleCancelBtn" onclick="cancelRuleEdit()" style="padding:4px 10px; font-size:11px; display:none;">Cancel</button></div>`;
   el.innerHTML = html;
-  
   if(editingRuleId) { const r = state.rules.find(x=>x.id===editingRuleId); if(r && r.logic) { document.getElementById('ruleLogicSelect').value = r.logic; updateRuleLogicLabels(); } }
 }
-
 function saveRuleFromBuilder() {
   const inps = document.querySelectorAll('.rule-inp-sel'), out = document.querySelector('.rule-out-sel'), logic = document.getElementById('ruleLogicSelect').value;
   if(!inps.length || !out) return;
   let conditions = {}; inps.forEach(sel => { if(sel.value !== 'ANY') conditions[sel.dataset.vid] = sel.value; });
   if (Object.keys(conditions).length === 0) { showToast('Please select at least one IF condition.'); return; }
   const conclusion = { varId: out.dataset.vid, mfId: out.value };
-  
   if (editingRuleId) { const r = state.rules.find(x=>x.id===editingRuleId); if(r) { r.logic = logic; r.conditions = conditions; r.conclusion = conclusion; showToast('Rule updated'); } editingRuleId = null; }
   else { state.rules.push({ id: uid('r'), logic: logic, conditions, conclusion, enabled: true, weight: 1.0 }); showToast('Rule added'); }
-  
+  if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); }
   const btn = document.getElementById('ruleSubmitBtn'), cancelBtn = document.getElementById('ruleCancelBtn');
   if(btn) btn.textContent = '+ Add Rule'; if(cancelBtn) cancelBtn.style.display = 'none';
-  updateRuleBuilder(); renderRules();
+  updateRuleBuilder(); renderRules(); buildSimulationPanel();
   setTimeout(() => { const list = document.getElementById('rulesList'); if(list) list.scrollTop = list.scrollHeight; }, 50);
 }
-
 function renderRules() {
   const el = document.getElementById('rulesList'); document.getElementById('ruleCount').textContent = state.rules.length + ' rule' + (state.rules.length !== 1 ? 's' : '');
   el.innerHTML = state.rules.map((r, i) => {
@@ -800,32 +1594,21 @@ function renderRules() {
       </div>`;
   }).join('');
 }
-
-function editRule(id) {
-  const r = state.rules.find(x => x.id === id); if(!r) return; editingRuleId = id;
-  const logicSel = document.getElementById('ruleLogicSelect'); if(logicSel) { logicSel.value = r.logic || 'AND'; updateRuleLogicLabels(); }
-  Object.entries(r.conditions).forEach(([vid, mfid]) => { const sel = document.querySelector(`.rule-inp-sel[data-vid="${vid}"]`); if(sel) sel.value = mfid; });
-  const outSel = document.querySelector('.rule-out-sel'); if(outSel) outSel.value = r.conclusion.mfId;
-  const btn = document.getElementById('ruleSubmitBtn'), cancelBtn = document.getElementById('ruleCancelBtn');
-  if(btn) btn.textContent = 'Update Rule'; if(cancelBtn) cancelBtn.style.display = 'inline-flex';
-  showToast('Edit mode: update selections above then click Update Rule');
-}
-
+function editRule(id) { const r = state.rules.find(x => x.id === id); if(!r) return; editingRuleId = id; const logicSel = document.getElementById('ruleLogicSelect'); if(logicSel) { logicSel.value = r.logic || 'AND'; updateRuleLogicLabels(); } Object.entries(r.conditions).forEach(([vid, mfid]) => { const sel = document.querySelector(`.rule-inp-sel[data-vid="${vid}"]`); if(sel) sel.value = mfid; }); const outSel = document.querySelector('.rule-out-sel'); if(outSel) outSel.value = r.conclusion.mfId; const btn = document.getElementById('ruleSubmitBtn'), cancelBtn = document.getElementById('ruleCancelBtn'); if(btn) btn.textContent = 'Update Rule'; if(cancelBtn) cancelBtn.style.display = 'inline-flex'; showToast('Edit mode: update selections then click Update Rule'); }
 function cancelRuleEdit() { editingRuleId = null; updateRuleBuilder(); showToast('Rule edit cancelled'); }
-function duplicateRule(id) { const r = state.rules.find(x => x.id === id); if(!r) return; state.rules.push({ id: uid('r'), logic: r.logic || 'AND', conditions: JSON.parse(JSON.stringify(r.conditions)), conclusion: JSON.parse(JSON.stringify(r.conclusion)), enabled: r.enabled !== false, weight: Number(r.weight ?? 1) }); renderRules(); showToast('Rule duplicated'); setTimeout(() => { const list = document.getElementById('rulesList'); if(list) list.scrollTop = list.scrollHeight; }, 50); }
-function toggleRuleEnabled(id, checked) { const r = state.rules.find(x=>x.id===id); if(!r) return; r.enabled = !!checked; renderRules(); }
-function setRuleWeight(id, value) { const r = state.rules.find(x=>x.id===id); if(!r) return; const w = Math.max(0, Math.min(1, Number(value))); r.weight = Number.isFinite(w) ? w : 1; }
+function duplicateRule(id) { const r = state.rules.find(x => x.id === id); if(!r) return; state.rules.push({ id: uid('r'), logic: r.logic || 'AND', conditions: JSON.parse(JSON.stringify(r.conditions)), conclusion: JSON.parse(JSON.stringify(r.conclusion)), enabled: r.enabled !== false, weight: Number(r.weight ?? 1) }); if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } renderRules(); buildSimulationPanel(); showToast('Rule duplicated'); }
+function toggleRuleEnabled(id, checked) { const r = state.rules.find(x=>x.id===id); if(!r) return; r.enabled = !!checked; if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } renderRules(); buildSimulationPanel(); }
+function setRuleWeight(id, value) { const r = state.rules.find(x=>x.id===id); if(!r) return; const w = Math.max(0, Math.min(1, Number(value))); r.weight = Number.isFinite(w) ? w : 1; if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } buildSimulationPanel(); }
 function moveRuleUp(id) { const idx = state.rules.findIndex(r=>r.id===id); if(idx <= 0) return; [state.rules[idx-1], state.rules[idx]] = [state.rules[idx], state.rules[idx-1]]; renderRules(); }
 function moveRuleDown(id) { const idx = state.rules.findIndex(r=>r.id===id); if(idx < 0 || idx >= state.rules.length - 1) return; [state.rules[idx+1], state.rules[idx]] = [state.rules[idx], state.rules[idx+1]]; renderRules(); }
-function deleteRule(id) { state.rules = state.rules.filter(r => r.id !== id); renderRules(); }
+function deleteRule(id) { state.rules = state.rules.filter(r => r.id !== id); if (simRunning) { simResults = SimulationEngine.run(simInputValues); updateAllChartOverlays(); } renderRules(); buildSimulationPanel(); }
 
 // ── SAVE / LOAD ──
 function saveProject() {
   syncSettings(); const name=document.getElementById('projectName').value||'project';
-  const data=JSON.stringify({ meta:{ name, fisType:state.fisType, defuzz:document.getElementById('defuzzMethod').value, andMethod:document.getElementById('andMethod').value, orMethod:document.getElementById('orMethod').value, author: state.metadata.author, institution: state.metadata.institution, created:new Date().toISOString(), version:'2.0' }, variables:state.variables, rules:state.rules }, null, 2);
-  const blob=new Blob([data],{type:'application/json'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`${name.replace(/\s+/g,'_')}.fuzzyjson`; link.click(); showToast('Project saved as .fuzzyjson');
+  const data=JSON.stringify({ meta:{ name, fisType:state.fisType, defuzz:document.getElementById('defuzzMethod').value, andMethod:document.getElementById('andMethod').value, orMethod:document.getElementById('orMethod').value, author: state.metadata.author, institution: state.metadata.institution, created:new Date().toISOString(), version:'2.1' }, variables:state.variables, rules:state.rules, testTray: testTray }, null, 2);
+  const blob=new Blob([data],{type:'application/json'}); const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=`${name.replace(/\s+/g,'_')}.fuzzyjson`; link.click(); showToast('Project saved (incl. test tray)');
 }
-
 function loadProject(evt) {
   const file=evt.target.files[0]; if(!file) return; const reader=new FileReader();
   reader.onload=e=>{
@@ -834,9 +1617,13 @@ function loadProject(evt) {
       if(d.meta?.fisType) setFIS(d.meta.fisType); if(d.meta?.defuzz) document.getElementById('defuzzMethod').value=d.meta.defuzz; if(d.meta?.andMethod) document.getElementById('andMethod').value=d.meta.andMethod; if(d.meta?.orMethod) document.getElementById('orMethod').value=d.meta.orMethod;
       state.variables=d.variables||[]; state.metadata.author = d.meta?.author || 'Dr. Zamri'; state.metadata.institution = d.meta?.institution || 'Universiti Malaysia Perlis (UniMAP)';
       state.rules = (d.rules || []).map(r => { if(r.conditions) return { ...r, logic: r.logic || 'AND', enabled: r.enabled !== false, weight: Number(r.weight ?? 1) }; return { id: r.id || uid('r'), logic: 'AND', conditions: r.antVar && r.antMF ? { [r.antVar]: r.antMF } : {}, conclusion: { varId: r.consVar, mfId: r.consMF }, enabled: true, weight: 1.0 }; });
-      activeVarId=null; colorIdx=0; Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; document.getElementById('chartArea').innerHTML='';
-      renderVarLists(); renderMFEditor(); setViewMode('summary'); updateRuleBuilder(); renderRules(); showToast('Project loaded successfully!');
-    } catch(err) { showToast('Error reading file. Make sure it is a valid .fuzzyjson file.'); }
+      testTray = d.testTray || [];
+      activeVarId=null; simInputValues = {}; simResults = null; simPreviousCrispValues = {}; simRunning = false; colorIdx=0;
+      Object.values(chartInstances).forEach(c=>c.destroy()); chartInstances={}; document.getElementById('chartArea').innerHTML='';
+      renderVarLists(); renderMFEditor(); setViewMode('all'); updateRuleBuilder(); renderRules(); buildSimulationPanel();
+      clearAllChartOverlays();
+      showToast('Project loaded successfully!');
+    } catch(err) { showToast('Error reading file.'); }
   };
   reader.readAsText(file); evt.target.value='';
 }
@@ -850,84 +1637,29 @@ function downloadSelected() {
   closeDownloadCenter();
 }
 
+// Export stubs (abbreviated - full versions preserved from original)
 function exportRulesTXT() {
   const name = document.getElementById('projectName').value || 'Project';
-  const lines = [ `FuzzyLogic Visualizer v2.0`, `System: ${name}`, `Author: ${state.metadata.author}`, `Institution: ${state.metadata.institution}`, `Date: ${new Date().toISOString()}`, '' ];
-  state.rules.forEach((r, idx) => {
-    const cond = Object.entries(r.conditions).map(([vid,mfid]) => { const v = state.variables.find(x=>x.id===vid), mf = v?.mfs.find(m=>m.id===mfid); return `${v?.name || vid} IS ${mf?.label || mfid}`; }).join(` ${r.logic || 'AND'} `);
-    const ov = state.variables.find(x=>x.id===r.conclusion.varId), om = ov?.mfs.find(x=>x.id===r.conclusion.mfId);
-    lines.push(`${idx+1}. IF ${cond} THEN ${ov?.name || '?'} IS ${om?.label || '?'} [enabled=${r.enabled!==false}, weight=${Number(r.weight ?? 1).toFixed(2)}]`);
+  const lines = [`FuzzyLogic Visualizer v2.1`,`System: ${name}`,`Author: ${state.metadata.author}`,`Institution: ${state.metadata.institution}`,`Date: ${new Date().toISOString()}`,` `];
+  state.rules.forEach((r,idx)=>{
+    const cond=Object.entries(r.conditions).map(([vid,mfid])=>{const v=state.variables.find(x=>x.id===vid),mf=v?.mfs.find(m=>m.id===mfid);return `${v?.name||vid} IS ${mf?.label||mfid}`;}).join(` ${r.logic||'AND'} `);
+    const ov=state.variables.find(x=>x.id===r.conclusion.varId),om=ov?.mfs.find(x=>x.id===r.conclusion.mfId);
+    lines.push(`${idx+1}. IF ${cond} THEN ${ov?.name||'?'} IS ${om?.label||'?'} [enabled=${r.enabled!==false},weight=${Number(r.weight??1).toFixed(2)}]`);
   });
-  downloadText(lines.join('\n'), `${name.replace(/\s+/g,'_')}_rules.txt`, 'text/plain');
+  downloadText(lines.join('\n'),`${name.replace(/\s+/g,'_')}_rules.txt`,'text/plain');
 }
-
-function exportRulesCSV() {
-  const rows = [['index','if_conditions','then_output','logic_operator','enabled','weight']];
-  state.rules.forEach((r, idx) => {
-    const cond = Object.entries(r.conditions).map(([vid,mfid]) => { const v = state.variables.find(x=>x.id===vid), mf = v?.mfs.find(m=>m.id===mfid); return `${v?.name || vid} IS ${mf?.label || mfid}`; }).join(` ${r.logic || 'AND'} `);
-    const ov = state.variables.find(x=>x.id===r.conclusion.varId), om = ov?.mfs.find(x=>x.id===r.conclusion.mfId);
-    rows.push([idx+1, cond, `${ov?.name || '?'} IS ${om?.label || '?'}`, r.logic || 'AND', r.enabled!==false, Number(r.weight ?? 1).toFixed(2)]);
-  });
-  const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const name = document.getElementById('projectName').value || 'project'; downloadText(csv, `${name.replace(/\s+/g,'_')}_rules.csv`, 'text/csv');
-}
-
-function exportRulesJSON() { const name = document.getElementById('projectName').value || 'project'; downloadText(JSON.stringify(state.rules, null, 2), `${name.replace(/\s+/g,'_')}_rules.json`, 'application/json'); }
-function exportMatlabM() {
-  syncSettings(); const name = document.getElementById('projectName').value || 'fuzzy_project'; const sys = name.replace(/[^a-zA-Z0-9_]/g,'_');
-  let m = `% Generated by FuzzyLogic Visualizer v2.0\n% Author: ${state.metadata.author} | Institution: ${state.metadata.institution}\nfis = mamfis('Name','${sys}');\n`;
-  state.variables.filter(v=>v.type==='input').forEach(v=>{ m += `fis = addInput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`; v.mfs.forEach(mf=>{ m += matlabAddMF('input', v.name, mf); }); });
-  state.variables.filter(v=>v.type==='output').forEach(v=>{ m += `fis = addOutput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`; v.mfs.forEach(mf=>{ m += matlabAddMF('output', v.name, mf); }); });
-  const outVar = state.variables.find(v=>v.type==='output'), outNames = outVar?.mfs.map(x=>x.id) || [], inVars = state.variables.filter(v=>v.type==='input'), activeRules = state.rules.filter(r=>r.enabled!==false);
-  const ruleRows = activeRules.map(r => {
-    const ant = inVars.map(v => { const idx = v.mfs.findIndex(m=>m.id===r.conditions[v.id]); return idx >= 0 ? idx+1 : 0; });
-    const consIdx = outNames.findIndex(id=>id===r.conclusion.mfId) + 1;
-    const operator = r.logic === 'OR' ? 2 : 1; 
-    return [...ant, consIdx>0?consIdx:1, Number(r.weight ?? 1), operator];
-  });
-  if(ruleRows.length) { m += `ruleList = [\n${ruleRows.map(r=>`  ${r.join(' ')}`).join(';\n')}\n];\n`; m += `fis = addRule(fis,ruleList);\n`; }
-  m += `writeFIS(fis,'${sys}.fis');\ndisp('FIS generated and saved');\n`; downloadText(m, `${sys}.m`, 'text/plain');
-}
-function matlabAddMF(varType, varName, mf) {
-  const p = mf.params;
-  if(mf.shape==='triangular') return `fis = addMF(fis,'${varType}','${varName}','trimf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
-  if(mf.shape==='trapezoidal') return `fis = addMF(fis,'${varType}','${varName}','trapmf',[${p.a} ${p.b} ${p.c} ${p.d}],'Name','${mf.label}');\n`;
-  if(mf.shape==='gaussian') return `fis = addMF(fis,'${varType}','${varName}','gaussmf',[${p.sigma} ${p.mean}],'Name','${mf.label}');\n`;
-  if(mf.shape==='bell') return `fis = addMF(fis,'${varType}','${varName}','gbellmf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
-  if(mf.shape==='sigmoidal') return `fis = addMF(fis,'${varType}','${varName}','sigmf',[${p.a} ${p.c}],'Name','${mf.label}');\n`;
-  return `fis = addMF(fis,'${varType}','${varName}','trimf',[${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}],'Name','${mf.label}');\n`;
-}
-function exportMatlabFIS() {
-  syncSettings(); const name = (document.getElementById('projectName').value || 'fuzzy_project').replace(/[^a-zA-Z0-9_]/g,'_');
-  const ins = state.variables.filter(v=>v.type==='input'), outs = state.variables.filter(v=>v.type==='output');
-  let fis = `[System]\nName='${name}'\nType='mamdani'\nNumInputs=${ins.length}\nNumOutputs=${outs.length}\nNumRules=${state.rules.filter(r=>r.enabled!==false).length}\nAndMethod='${state.andMethod}'\nOrMethod='${state.orMethod}'\nDefuzzMethod='${state.defuzz}'\nImpMethod='min'\nAggMethod='max'\n\n`;
-  ins.forEach((v, i) => { fis += `[Input${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`; v.mfs.forEach((mf, j)=>{ fis += `MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`; }); fis += `\n`; });
-  outs.forEach((v, i) => { fis += `[Output${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`; v.mfs.forEach((mf, j)=>{ fis += `MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`; }); fis += `\n`; });
-  fis += `[Rules]\n`; const activeRules = state.rules.filter(r=>r.enabled!==false);
-  activeRules.forEach(r=>{
-    const ants = ins.map(v=>{ const idx = v.mfs.findIndex(m=>m.id===r.conditions[v.id]); return idx >= 0 ? idx+1 : 0; });
-    const c = outs[0] ? (outs[0].mfs.findIndex(m=>m.id===r.conclusion.mfId)+1) : 1;
-    const operator = r.logic === 'OR' ? 2 : 1;
-    fis += `${ants.join(' ')} , ${c>0?c:1} (${Number(r.weight ?? 1).toFixed(2)}) : ${operator}\n`;
-  });
-  downloadText(fis, `${name}.fis`, 'text/plain');
-}
-function fisMfType(shape) {
-  if(shape==='triangular') return 'trimf'; if(shape==='trapezoidal') return 'trapmf'; if(shape==='gaussian') return 'gaussmf'; if(shape==='bell') return 'gbellmf'; if(shape==='sigmoidal') return 'sigmf'; return 'trimf';
-}
-function fisMfParams(mf) {
-  const p = mf.params;
-  if(mf.shape==='triangular') return `${p.a} ${p.b} ${p.c}`; if(mf.shape==='trapezoidal') return `${p.a} ${p.b} ${p.c} ${p.d}`; if(mf.shape==='gaussian') return `${p.sigma} ${p.mean}`; if(mf.shape==='bell') return `${p.a} ${p.b} ${p.c}`; if(mf.shape==='sigmoidal') return `${p.a} ${p.c}`; return `${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}`;
-}
-function exportPDFReport() {
-  html2canvas(document.body, { backgroundColor: '#f3f7ff', scale: 1 }).then(canvas => {
-    const link = document.createElement('a'); const name = (document.getElementById('projectName').value || 'project').replace(/\s+/g,'_');
-    link.download = `${name}_report.png`; link.href = canvas.toDataURL('image/png', 1.0); link.click(); showToast('Report snapshot exported');
-  });
-}
-function downloadText(content, filename, mime) {
-  const blob = new Blob([content], { type: mime || 'text/plain' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click();
-}
+function exportRulesCSV(){const rws=[['index','if_conditions','then_output','logic_operator','enabled','weight']];state.rules.forEach((r,idx)=>{const cond=Object.entries(r.conditions).map(([vid,mfid])=>{const v=state.variables.find(x=>x.id===vid),mf=v?.mfs.find(m=>m.id===mfid);return `${v?.name||vid} IS ${mf?.label||mfid}`;}).join(` ${r.logic||'AND'} `);const ov=state.variables.find(x=>x.id===r.conclusion.varId),om=ov?.mfs.find(x=>x.id===r.conclusion.mfId);rws.push([idx+1,cond,`${ov?.name||'?'} IS ${om?.label||'?'}`,r.logic||'AND',r.enabled!==false,Number(r.weight??1).toFixed(2)]);});downloadText(rws.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n'),`${(document.getElementById('projectName').value||'project').replace(/\s+/g,'_')}_rules.csv`,'text/csv');}
+function exportRulesJSON(){downloadText(JSON.stringify(state.rules,null,2),`${(document.getElementById('projectName').value||'project').replace(/\s+/g,'_')}_rules.json`,'application/json');}
+function exportPDFReport(){html2canvas(document.body,{backgroundColor:'#f3f7ff',scale:1}).then(canvas=>{const l=document.createElement('a'),n=(document.getElementById('projectName').value||'project').replace(/\s+/g,'_');l.download=`${n}_report.png`;l.href=canvas.toDataURL('image/png',1.0);l.click();showToast('Report snapshot exported');});}
+function downloadText(c,f,m){const b=new Blob([c],{type:m||'text/plain'});const l=document.createElement('a');l.href=URL.createObjectURL(b);l.download=f;l.click();}
+function exportPythonCode(){const pn=document.getElementById('projectName').value||'fuzzy_project';let c=`# FuzzyLogic Visualizer v2.1\n# Project: ${pn}\n\nimport numpy as np\nimport skfuzzy as fuzz\nfrom skfuzzy import control as ctrl\nimport matplotlib.pyplot as plt\n\n`;const ins=state.variables.filter(v=>v.type==='input'),outs=state.variables.filter(v=>v.type==='output');ins.forEach(v=>{const sn=v.name.replace(/\s+/g,'_').toLowerCase();c+=`${sn}=ctrl.Antecedent(np.linspace(${v.min},${v.max},500),'${sn}')\n`;v.mfs.forEach(mf=>{c+=`${sn}['${mf.label.replace(/\s+/g,'_').toLowerCase()}']=fuzz.${pyMF(mf)}\n`;});c+='\n';});outs.forEach(v=>{const sn=v.name.replace(/\s+/g,'_').toLowerCase();c+=`${sn}=ctrl.Consequent(np.linspace(${v.min},${v.max},500),'${sn}')\n`;v.mfs.forEach(mf=>{c+=`${sn}['${mf.label.replace(/\s+/g,'_').toLowerCase()}']=fuzz.${pyMF(mf)}\n`;});c+='\n';});const ar=state.rules.filter(r=>r.enabled!==false);if(ar.length>0){ar.forEach((r,i)=>{let cp=[];for(let vid in r.conditions){const av=state.variables.find(v=>v.id===vid),amf=av?.mfs.find(m=>m.id===r.conditions[vid]);if(av&&amf)cp.push(`${av.name.replace(/\s+/g,'_').toLowerCase()}['${amf.label.replace(/\s+/g,'_').toLowerCase()}']`);}const cv=state.variables.find(v=>v.id===r.conclusion.varId),cmf=cv?.mfs.find(m=>m.id===r.conclusion.mfId);if(cp.length>0&&cv&&cmf){c+=`rule${i+1}=ctrl.Rule(${cp.join(r.logic==='OR'?'|':'&')},${cv.name.replace(/\s+/g,'_').toLowerCase()}['${cmf.label.replace(/\s+/g,'_').toLowerCase()}'])\n`;}});c+=`\n${outs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output'}_ctrl=ctrl.ControlSystem([${ar.map((_,i)=>`rule${i+1}`).join(',')}])\n${outs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output'}_sim=ctrl.ControlSystemSimulation(${outs[0]?.name.replace(/\s+/g,'_').toLowerCase()||'output'}_ctrl)\n`;}c+='\n# Plot\n';[...ins,...outs].forEach(v=>{c+=`${v.name.replace(/\s+/g,'_').toLowerCase()}.view()\n`;});c+='plt.show()\n';downloadText(c,`${pn.replace(/\s+/g,'_')}_fuzzy.py`,'text/plain');}
+function pyMF(mf){const p=mf.params;switch(mf.shape){case 'triangular':return `trimf(universe,[${p.a},${p.b},${p.c}])`;case 'trapezoidal':return `trapmf(universe,[${p.a},${p.b},${p.c},${p.d}])`;case 'gaussian':return `gaussmf(universe,${p.mean},${p.sigma})`;case 'bell':return `gbellmf(universe,${p.a},${p.b},${p.c})`;case 'sigmoidal':return `sigmf(universe,${p.a},${p.c})`;default:return `trimf(universe,[${(p.x||50)-1},${p.x||50},${(p.x||50)+1}])`;}}
+function exportMatlabM(){syncSettings();const n=document.getElementById('projectName').value||'fuzzy_project',s=n.replace(/[^a-zA-Z0-9_]/g,'_');let m=`% Generated by FuzzyLogic Visualizer v2.1\nfis=mamfis('Name','${s}');\n`;state.variables.filter(v=>v.type==='input').forEach(v=>{m+=`fis=addInput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;v.mfs.forEach(mf=>{m+=matlabAddMF('input',v.name,mf);});});state.variables.filter(v=>v.type==='output').forEach(v=>{m+=`fis=addOutput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;v.mfs.forEach(mf=>{m+=matlabAddMF('output',v.name,mf);});});const ov=state.variables.find(v=>v.type==='output'),oN=ov?.mfs.map(x=>x.id)||[],iV=state.variables.filter(v=>v.type==='input'),aR=state.rules.filter(r=>r.enabled!==false);const rR=aR.map(r=>{const a=iV.map(v=>{const i=v.mfs.findIndex(m=>m.id===r.conditions[v.id]);return i>=0?i+1:0;});const cI=oN.findIndex(id=>id===r.conclusion.mfId)+1;return[...a,cI>0?cI:1,Number(r.weight??1),r.logic==='OR'?2:1];});if(rR.length){m+=`ruleList=[\n${rR.map(r=>`  ${r.join(' ')}`).join(';\n')}\n];\n`;m+=`fis=addRule(fis,ruleList);\n`;}m+=`writeFIS(fis,'${s}.fis');\ndisp('FIS generated');\n`;downloadText(m,`${s}.m`,'text/plain');}
+function matlabAddMF(vT,vN,mf){const p=mf.params;if(mf.shape==='triangular')return `fis=addMF(fis,'${vT}','${vN}','trimf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;if(mf.shape==='trapezoidal')return `fis=addMF(fis,'${vT}','${vN}','trapmf',[${p.a} ${p.b} ${p.c} ${p.d}],'Name','${mf.label}');\n`;if(mf.shape==='gaussian')return `fis=addMF(fis,'${vT}','${vN}','gaussmf',[${p.sigma} ${p.mean}],'Name','${mf.label}');\n`;if(mf.shape==='bell')return `fis=addMF(fis,'${vT}','${vN}','gbellmf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;if(mf.shape==='sigmoidal')return `fis=addMF(fis,'${vT}','${vN}','sigmf',[${p.a} ${p.c}],'Name','${mf.label}');\n`;return `fis=addMF(fis,'${vT}','${vN}','trimf',[${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}],'Name','${mf.label}');\n`;}
+function exportMatlabFIS(){syncSettings();const n=(document.getElementById('projectName').value||'fuzzy_project').replace(/[^a-zA-Z0-9_]/g,'_');const ins=state.variables.filter(v=>v.type==='input'),outs=state.variables.filter(v=>v.type==='output');let f=`[System]\nName='${n}'\nType='mamdani'\nNumInputs=${ins.length}\nNumOutputs=${outs.length}\nNumRules=${state.rules.filter(r=>r.enabled!==false).length}\nAndMethod='${state.andMethod}'\nOrMethod='${state.orMethod}'\nDefuzzMethod='${state.defuzz}'\nImpMethod='min'\nAggMethod='max'\n\n`;ins.forEach((v,i)=>{f+=`[Input${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;v.mfs.forEach((mf,j)=>{f+=`MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`;});f+='\n';});outs.forEach((v,i)=>{f+=`[Output${i+1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;v.mfs.forEach((mf,j)=>{f+=`MF${j+1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`;});f+='\n';});f+=`[Rules]\n`;state.rules.filter(r=>r.enabled!==false).forEach(r=>{const a=ins.map(v=>{const i=v.mfs.findIndex(m=>m.id===r.conditions[v.id]);return i>=0?i+1:0;});const c=outs[0]?(outs[0].mfs.findIndex(m=>m.id===r.conclusion.mfId)+1):1;f+=`${a.join(' ')},${c>0?c:1}(${Number(r.weight??1).toFixed(2)}):${r.logic==='OR'?2:1}\n`;});downloadText(f,`${n}.fis`,'text/plain');}
+function fisMfType(s){return{triangular:'trimf',trapezoidal:'trapmf',gaussian:'gaussmf',bell:'gbellmf',sigmoidal:'sigmf'}[s]||'trimf';}
+function fisMfParams(mf){const p=mf.params;switch(mf.shape){case 'triangular':return `${p.a} ${p.b} ${p.c}`;case 'trapezoidal':return `${p.a} ${p.b} ${p.c} ${p.d}`;case 'gaussian':return `${p.sigma} ${p.mean}`;case 'bell':return `${p.a} ${p.b} ${p.c}`;case 'sigmoidal':return `${p.a} ${p.c}`;default:return `${(p.x||50)-1} ${p.x||50} ${(p.x||50)+1}`;}}
+function viewESPCode(){if(state.variables.length===0){showToast("Add variables first.");return;}let c=`// FuzzyLogic Visualizer v2.1\n// ESP32/Arduino C++\n\nfloat trimf(float x,float a,float b,float c){if(x<=a||x>=c)return 0;if(x==b)return 1;if(x>a&&x<b)return(x-a)/(b-a);if(x>b&&x<c)return(c-x)/(c-b);return 0;}\nfloat trapmf(float x,float a,float b,float c,float d){if(x<=a||x>=d)return 0;if(x>=b&&x<=c)return 1;if(x>a&&x<b)return(x-a)/(b-a);if(x>c&&x<d)return(d-x)/(d-c);return 0;}\n\n`;state.variables.forEach(v=>{c+=`// MFs for ${v.name}\n`;v.mfs.forEach(m=>{const sn=v.name.replace(/[^a-zA-Z0-9]/g,''),sl=m.label.replace(/[^a-zA-Z0-9]/g,'');if(m.shape==='triangular')c+=`float get_${sn}_${sl}(float v){return trimf(v,${m.params.a},${m.params.b},${m.params.c});}\n`;else if(m.shape==='trapezoidal')c+=`float get_${sn}_${sl}(float v){return trapmf(v,${m.params.a},${m.params.b},${m.params.c},${m.params.d});}\n`;else c+=`// shape '${m.shape}' not fully supported\n`;});c+='\n';});const nw=window.open("","_blank");nw.document.write(`<title>C++ Code</title><pre style="background:#0d0f14;color:#10b981;padding:20px;font-family:monospace;font-size:14px;height:100vh;margin:0;overflow-y:auto;">${c}</pre>`);}
 
 // ── TOAST ──
 let toastTimer;
@@ -938,7 +1670,7 @@ function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function hexAlpha(hex,a) { const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16); return `rgba(${r},${g},${b},${a})`; }
 
 // ── INIT ──
-renderVarLists(); renderMFEditor(); setFIS(state.fisType); setViewMode('summary');
+renderVarLists(); renderMFEditor(); setFIS(state.fisType); setViewMode('summary'); buildSimulationPanel();
 </script>
 </body>
 </html>
