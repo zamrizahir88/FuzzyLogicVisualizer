@@ -191,6 +191,13 @@
                 gap: 16px;
                 width: 25%;
             }
+            #btnDarkMode {
+                position: absolute;
+                right: 80px;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+            }
             .nav-author {
                 font-size: 13px;
                 font-weight: 500;
@@ -1024,6 +1031,15 @@
             }
             .field-input:focus {
                 border-color: var(--accent);
+            }
+            .field-input:invalid {
+                border-color: var(--border) !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+            input[type="number"]:invalid {
+                box-shadow: none !important;
+                outline: none !important;
             }
             .mf-card {
                 background: var(--surface2);
@@ -2272,6 +2288,7 @@
                 .nav-right {
                     display: none;
                 }
+                #btnDarkMode { right: 8px; }
                 .nav-center {
                     position: static;
                     transform: none;
@@ -2624,29 +2641,12 @@
                     >
                 </div>
             </div>
+            <button class="icon-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Toggle dark/light theme" style="margin-right:4px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="darkModeIcon">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
             <div class="nav-right">
-                <button
-                    class="icon-btn"
-                    id="btnDarkMode"
-                    onclick="toggleDarkMode()"
-                    title="Toggle dark/light theme"
-                    style="margin-right: 4px"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        id="darkModeIcon"
-                    >
-                        <path
-                            d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
-                        />
-                    </svg>
-                </button>
-            </div>
         </header>
 
         <div class="defuzz-row" id="projectRow">
@@ -3856,12 +3856,6 @@
                 </svg>
                 Rules
             </button>
-            <button id="tabSim" onclick="switchMobileTab('sim')">
-                <svg viewBox="0 0 24 24">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                Sim
-            </button>
         </div>
 
         <footer class="footer">
@@ -4126,45 +4120,39 @@
             }
 
             // ── MOBILE TAB SWITCHING ──
+            function $(id) {
+                return document.getElementById(id);
+            }
             function switchMobileTab(tab) {
-                document
-                    .getElementById("panelLeft")
-                    .classList.remove("mobile-active");
-                document
-                    .getElementById("panelCenter")
-                    .classList.remove("mobile-active");
-                document
-                    .getElementById("panelRight")
-                    .classList.remove("mobile-active");
-                document.getElementById("tabVars").classList.remove("active");
-                document.getElementById("tabGraphs").classList.remove("active");
-                document.getElementById("tabRules").classList.remove("active");
-                document.getElementById("tabSim").classList.remove("active");
+                var pL = $("panelLeft"),
+                    pC = $("panelCenter"),
+                    pR = $("panelRight");
+                var tV = $("tabVars"),
+                    tG = $("tabGraphs"),
+                    tR = $("tabRules"),
+                    tS = $("tabSim");
+                if (pL) pL.classList.remove("mobile-active");
+                if (pC) pC.classList.remove("mobile-active");
+                if (pR) pR.classList.remove("mobile-active");
+                if (tV) tV.classList.remove("active");
+                if (tG) tG.classList.remove("active");
+                if (tR) tR.classList.remove("active");
+                if (tS) tS.classList.remove("active");
 
                 if (tab === "vars") {
-                    document
-                        .getElementById("panelLeft")
-                        .classList.add("mobile-active");
-                    document.getElementById("tabVars").classList.add("active");
+                    if (pL) pL.classList.add("mobile-active");
+                    if (tV) tV.classList.add("active");
                 } else if (tab === "graphs") {
-                    document
-                        .getElementById("panelCenter")
-                        .classList.add("mobile-active");
-                    document
-                        .getElementById("tabGraphs")
-                        .classList.add("active");
+                    if (pC) pC.classList.add("mobile-active");
+                    if (tG) tG.classList.add("active");
                     refreshAllCharts();
                 } else if (tab === "rules") {
-                    document
-                        .getElementById("panelRight")
-                        .classList.add("mobile-active");
-                    document.getElementById("tabRules").classList.add("active");
+                    if (pR) pR.classList.add("mobile-active");
+                    if (tR) tR.classList.add("active");
                 } else if (tab === "sim") {
-                    document
-                        .getElementById("panelRight")
-                        .classList.add("mobile-active");
-                    document.getElementById("tabSim").classList.add("active");
-                    const simBody = document.getElementById("simulationBody");
+                    if (pR) pR.classList.add("mobile-active");
+                    if (tS) tS.classList.add("active");
+                    const simBody = $("simulationBody");
                     if (simBody && simBody.classList.contains("collapsed")) {
                         simBody.classList.remove("collapsed");
                         simBody.previousElementSibling?.classList.remove(
@@ -4178,7 +4166,7 @@
                             (v) => v.type === "output",
                         );
                         if (outputVars.length > 0) {
-                            const outputCard = document.getElementById(
+                            const outputCard = $(
                                 "chartcard_" + outputVars[0].id,
                             );
                             if (outputCard)
@@ -5492,8 +5480,8 @@
         </div>
         <div class="mf-editor-inline" style="display:${isExpanded ? "flex" : "none"};flex-direction:column;gap:8px;padding:8px 0 0 24px;" onclick="event.stopPropagation()">
           <div class="mf-var-header" style="display:flex;flex-direction:row;gap:6px;">
-            <div class="field-group" style="flex:1;min-width:55px;"><span class="field-label">MIN</span><input class="field-input" type="number" value="${v.min}" oninput="updateVarProp('${v.id}','min',+this.value)"></div>
-            <div class="field-group" style="flex:1;min-width:55px;"><span class="field-label">MAX</span><input class="field-input" type="number" value="${v.max}" oninput="updateVarProp('${v.id}','max',+this.value)"></div>
+            <div class="field-group" style="flex:1;min-width:55px;"><span class="field-label">MIN</span><input class="field-input" type="number" step="any" inputmode="decimal" value="${v.min}" oninput="updateVarProp('${v.id}','min',+this.value)"></div>
+            <div class="field-group" style="flex:1;min-width:55px;"><span class="field-label">MAX</span><input class="field-input" type="number" step="any" inputmode="decimal" value="${v.max}" oninput="updateVarProp('${v.id}','max',+this.value)"></div>
             <div class="field-group" style="flex:1;"><span class="field-label">UNIT</span><input class="field-input" value="${esc(v.unit)}" placeholder="°C, kg…" oninput="updateVarProp('${v.id}','unit',this.value)"></div>
           </div>
           ${mfCardsHTML}
@@ -5543,7 +5531,7 @@
                 const paramHTML = params
                     .map(
                         (p) =>
-                            `<div class="mf-param"><span class="mf-param-label">${p.key.toUpperCase()}</span><input class="${inputClass}" type="number" step="any" value="${mf.params[p.key] ?? p.default}" oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)" title="${isValid ? "" : "Invalid geometry!"}"></div>`,
+                            `<div class="mf-param"><span class="mf-param-label">${p.key.toUpperCase()}</span><input class="${inputClass}" type="number" step="any" inputmode="decimal" value="${mf.params[p.key] ?? p.default}" oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)" title="${isValid ? "" : "Invalid geometry!"}"></div>`,
                     )
                     .join("");
                 return `<div class="mf-card" id="mfcard_${mf.id}"><div class="mf-card-header"><div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)" title="Click to change color"></div><input type="color" id="cp_${mf.id}" value="${mf.color}" class="mf-color-input-hidden" oninput="updateMFColor('${v.id}','${mf.id}',this.value)"><input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)" placeholder="MF label" title="Edit label"><select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();refreshAllCharts();buildSimulationPanel();" title="Select shape">${shapeOpts}</select><button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">${trashIcon}</button></div><div class="mf-params">${paramHTML}</div></div>`;
@@ -5592,6 +5580,10 @@
             }
             function updateVarProp(id, prop, val) {
                 if (simRunning) return;
+                if (prop === "min" || prop === "max") {
+                    if (isNaN(val) || val === null) return;
+                    val = Number(val);
+                }
                 const v = state.variables.find((x) => x.id === id);
                 if (v) {
                     v[prop] = val;
@@ -5600,7 +5592,8 @@
                     simRunning = false;
                     markDirty();
                     refreshAllCharts();
-                    renderVarLists();
+                    // Only re-render list for name/label changes, not numeric
+                    if (prop === "name" || prop === "unit") renderVarLists();
                     updateRuleBuilder();
                     renderRules();
                     buildSimulationPanel();
@@ -5623,6 +5616,8 @@
             }
             function updateMFParam(vid, mfid, key, val) {
                 if (simRunning) return;
+                if (isNaN(val) || val === null) return;
+                val = Number(val);
                 const v = state.variables.find((x) => x.id === vid);
                 if (!v) return;
                 const mf = v.mfs.find((m) => m.id === mfid);
@@ -5630,7 +5625,7 @@
                     mf.params[key] = val;
                     markDirty();
                     refreshAllCharts();
-                    renderMFEditor();
+                    // Don't re-render editor for numeric input — it kills focus
                     buildSimulationPanel();
                 }
             }
@@ -5652,9 +5647,9 @@
                     shape: "triangular",
                     color,
                     params: {
-                        a: Math.max(v.min, b - span / 4),
-                        b,
-                        c: Math.min(v.max, b + span / 4),
+                        a: Math.round(Math.max(v.min, b - span / 4) * 10) / 10,
+                        b: Math.round(b * 10) / 10,
+                        c: Math.round(Math.min(v.max, b + span / 4) * 10) / 10,
                     },
                 });
                 simResults = null;
@@ -6420,7 +6415,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="sim-input-label">${esc(v.name)}</span>
           <input type="range" class="sim-input-slider" min="${v.min}" max="${v.max}" step="${(v.max - v.min) / 200}" value="${val}" oninput="updateSimInput('${v.id}', parseFloat(this.value))">
-          <input type="number" class="sim-input-value" value="${val.toFixed(2)}" onchange="updateSimInput('${v.id}', parseFloat(this.value))">
+          <input type="number" class="sim-input-value" step="any" inputmode="decimal" value="${val.toFixed(2)}" onchange="updateSimInput('${v.id}', parseFloat(this.value))">
           <span class="sim-input-unit">${esc(v.unit)}</span>
         </div>
         <div class="sim-input-mf-row" style="padding:0;flex-wrap:wrap;gap:4px;" id="muRow_${v.id}">${activeMFHTML}</div>
@@ -8461,11 +8456,13 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 el.setAttribute("data-theme", isDark ? "" : "dark");
                 localStorage.setItem("flv_theme", isDark ? "light" : "dark");
                 const icon = document.getElementById("darkModeIcon");
-                if (icon) {
-                    icon.innerHTML = isDark
-                        ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
-                        : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-                }
+                const iconMob = document.getElementById("darkModeIconMobile");
+                const moon =
+                    '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+                const sun =
+                    '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+                if (icon) icon.innerHTML = isDark ? moon : sun;
+                if (iconMob) iconMob.innerHTML = isDark ? moon : sun;
                 refreshAllCharts(); // Refresh axis colors for dark/light theme
             }
 
@@ -8879,19 +8876,25 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         "touchstart",
                         function (e) {
                             d = true;
-                            btn.classList.add("dragging");
-                            sx = e.touches[0].clientX;
-                            sy = e.touches[0].clientY;
+                            var t = e.touches[0];
+                            sx = t.clientX;
+                            sy = t.clientY;
                             ol = parseInt(btn.style.left) || 24;
                             ob = parseInt(btn.style.bottom) || 24;
-                            e.preventDefault();
+                            // Don't preventDefault here — it blocks click!
                         },
-                        { passive: false },
+                        { passive: true },
                     );
                     document.addEventListener(
                         "touchmove",
                         function (e) {
                             if (!d) return;
+                            var t = e.touches[0];
+                            var dx = t.clientX - sx,
+                                dy = t.clientY - sy;
+                            if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return; // dead zone
+                            e.preventDefault(); // block scroll only when actually dragging
+                            btn.classList.add("dragging");
                             var nl = Math.max(
                                 8,
                                 Math.min(
