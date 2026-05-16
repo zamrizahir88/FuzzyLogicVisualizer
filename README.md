@@ -27,10 +27,8 @@
 
 ## 📸 Screenshots
 
-*(Drag and drop a screenshot of your main workspace here)*
 > **Figure 1:** The main workspace showing variables, live graphs, and the rule editor.
 
-*(Drag and drop a screenshot of the Simulation Trace here)*
 > **Figure 2:** Real-time simulation trace showing rule firing strengths and defuzzification.
 
 ---
@@ -39,14 +37,14 @@
 
 This project is built with a **"Vibe Coded" Serverless Architecture**. 
 * **Frontend:** A single `index.html` file using vanilla JavaScript, CSS3, and [Chart.js](https://www.chartjs.org/) for rendering graphs.
-* **Backend / AI:** A [Cloudflare Worker](https://workers.cloudflare.com/) acts as a secure, serverless proxy to connect the web app to the Groq LLM API without exposing API keys.
-* **Database / Auth:** [Firebase v9](https://firebase.google.com/) provides Google Authentication and Firestore for saving user projects to the cloud.
+* **Backend / AI:** A [Cloudflare Worker](https://workers.cloudflare.com/) 
+* **Database / Auth:** [Firebase v9](https://firebase.google.com/)
 
 ---
 
 ## 🚦 Quick Start for Users
 
-1. Open the [Live Web App](https://zamrizahir.github.io/YOUR_REPO_NAME/).
+1. Open the [Live Web App](https://zamrizahir88.github.io/FuzzyLogicVisualizer/main.html).
 2. Click **💡 Examples** in the top menu to load a pre-built system (e.g., *Auto Braking System* or *Smart Fan Controller*).
 3. Open the **🔬 SIMULATION** panel on the right side.
 4. Click **▶️ RUN SIMULATION** and adjust the sliders to see the fuzzy logic in action!
