@@ -8771,9 +8771,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             let aiChatHistory = [];
             const GROQ_MODEL = "llama-3.3-70b-versatile";
             const GROQ_API_URL =
-                "https://api.groq.com/openai/v1/chat/completions";
-            const GROQ_API_KEY =
-                "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";
+                "https://fuzzy-ai-proxy.zamrizahir.workers.dev/";
 
             document.addEventListener("DOMContentLoaded", function () {
                 function positionPanel(bl, bb) {
@@ -9257,7 +9255,6 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            Authorization: "Bearer " + GROQ_API_KEY,
                         },
                         body: JSON.stringify({
                             model: GROQ_MODEL,
