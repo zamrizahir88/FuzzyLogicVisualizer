@@ -14,6 +14,9 @@
         />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
         <style>
             :root {
                 --bg: #f3f7ff;
@@ -109,11 +112,18 @@
                 justify-content: space-between;
                 padding: 0 24px;
                 height: 80px;
-                background: var(--surface);
-                border-bottom: 1px solid var(--border);
                 position: relative;
                 z-index: 100;
                 flex-shrink: 0;
+                background-color: transparent !important;
+                background-image: repeating-linear-gradient(
+                    -45deg,
+                    rgba(128, 128, 128, 0.05),
+                    rgba(128, 128, 128, 0.05) 2px,
+                    transparent 2px,
+                    transparent 8px
+                ) !important;
+                border-bottom: 1px solid var(--border);
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
             }
             .nav-left {
@@ -191,12 +201,10 @@
                 gap: 16px;
                 width: 25%;
             }
-            #btnDarkMode {
-                position: absolute;
-                right: 80px;
-                top: 50%;
-                transform: translateY(-50%);
-                z-index: 10;
+            #authContainer {
+                display: flex;
+                align-items: center;
+                gap: 12px;
             }
             .nav-author {
                 font-size: 13px;
@@ -231,6 +239,41 @@
                 background: var(--surface);
                 flex-shrink: 0;
             }
+            .toolbar-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                align-items: flex-end;
+                margin-bottom: 8px;
+                background: rgba(128, 128, 128, 0.03);
+                padding: 12px 16px;
+                border-radius: 8px;
+                border: 1px solid rgba(128, 128, 128, 0.08);
+            }
+            .toolbar-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .toolbar-group-label {
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--text3);
+                font-weight: 600;
+                padding-left: 2px;
+            }
+            .toolbar-group-buttons {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            .toolbar-group-buttons input[type="text"] {
+                height: 36px;
+                border-radius: 6px;
+                padding: 0 12px;
+            }
             .nav-project-name {
                 font-family: var(--mono);
                 font-size: 12px;
@@ -250,23 +293,30 @@
             .btn {
                 display: inline-flex;
                 align-items: center;
+                justify-content: center;
                 gap: 6px;
-                font-size: 12px;
-                font-family: var(--sans);
+                font-family: inherit !important;
                 font-weight: 600;
-                padding: 6px 14px;
-                border-radius: 7px;
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                border-radius: 6px;
                 cursor: pointer;
-                border: 1px solid var(--border2);
-                background: var(--surface);
-                color: var(--text2);
-                transition: all 0.15s;
+                border: 1px solid rgba(128, 128, 128, 0.2);
+                background-color: rgba(128, 128, 128, 0.05);
+                color: var(--text);
+                transition: all 0.2s ease-in-out;
                 white-space: nowrap;
+                min-height: 36px;
             }
             .btn:hover {
-                background: var(--surface2);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                border-color: rgba(128, 128, 128, 0.4);
+                background-color: rgba(128, 128, 128, 0.1);
                 color: var(--text);
-                border-color: var(--border2);
+            }
+            .btn:active {
+                transform: translateY(0);
             }
             .btn svg {
                 width: 14px;
@@ -276,38 +326,55 @@
                 stroke-width: 2;
                 stroke-linecap: round;
                 stroke-linejoin: round;
+                flex-shrink: 0;
             }
             .btn-primary {
-                background: var(--accent);
-                border-color: var(--accent);
+                background: linear-gradient(135deg, #0ea5e9, #0284c7);
+                border-color: #0ea5e9;
                 color: #fff;
             }
             .btn-primary:hover {
-                background: var(--accent2);
-                border-color: var(--accent2);
+                background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+                border-color: #38bdf8;
                 color: #fff;
             }
             .btn-success {
-                background: var(--success);
-                border-color: var(--success);
+                background: linear-gradient(135deg, #10b981, #059669);
+                border-color: #10b981;
                 color: #fff;
             }
             .btn-success:hover {
-                background: #0f6636;
+                background: linear-gradient(135deg, #34d399, #10b981);
+                border-color: #34d399;
                 color: #fff;
             }
             .btn-warn {
-                background: var(--warn);
-                border-color: var(--warn);
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                border-color: #f59e0b;
                 color: #fff;
             }
             .btn-warn:hover {
-                background: #9e6300;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                border-color: #fbbf24;
                 color: #fff;
             }
             .btn-outline {
                 background: transparent;
-                border: 1px solid var(--border2);
+                border: 1px solid rgba(128, 128, 128, 0.2);
+            }
+            .btn-outline:hover {
+                background-color: rgba(128, 128, 128, 0.1);
+                border-color: rgba(128, 128, 128, 0.4);
+            }
+            .btn-danger {
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                border-color: #ef4444;
+                color: #fff;
+            }
+            .btn-danger:hover {
+                background: linear-gradient(135deg, #f87171, #ef4444);
+                border-color: #f87171;
+                color: #fff;
             }
             .btn-sim-run {
                 background: linear-gradient(135deg, #7c3aed, #a855f7);
@@ -374,7 +441,7 @@
                 display: flex;
                 flex: 1;
                 gap: 12px;
-                padding: 12px;
+                padding: 8px 12px 12px 12px;
                 min-height: 0;
                 overflow: hidden;
             }
@@ -1595,6 +1662,31 @@
                 font-weight: 500;
             }
 
+            #projectDescInput {
+                font-family: inherit !important;
+                font-size: 0.95rem;
+                line-height: 1.6;
+                color: var(--text);
+                background-color: rgba(128, 128, 128, 0.03);
+                border: 1px solid rgba(128, 128, 128, 0.2);
+                border-radius: 8px;
+                padding: 16px;
+                transition: all 0.2s ease;
+                width: 100%;
+                height: 100px;
+                resize: vertical;
+                min-height: 80px;
+                max-height: 300px;
+            }
+            #projectDescInput::placeholder {
+                color: var(--text3);
+            }
+            #projectDescInput:focus {
+                border-color: #0ea5e9;
+                background-color: rgba(14, 165, 233, 0.02);
+                outline: none;
+            }
+
             /* ── FOOTER & MOBILE NAV ── */
             .footer {
                 height: 36px;
@@ -2284,11 +2376,18 @@
                     flex-direction: column;
                     gap: 8px;
                 }
-                .nav-left,
-                .nav-right {
+                .nav-left {
                     display: none;
                 }
-                #btnDarkMode { right: 8px; }
+                .nav-right {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    width: 100%;
+                    gap: 12px;
+                    padding-top: 8px;
+                }
+                #themeToggle { align-self: center; }
                 .nav-center {
                     position: static;
                     transform: none;
@@ -2313,20 +2412,30 @@
                     margin-top: 4px;
                 }
 
-                .defuzz-row {
+                .toolbar-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 14px;
+                    padding: 10px;
+                    margin-bottom: 6px;
+                }
+                .toolbar-group {
+                    width: 100%;
+                }
+                .toolbar-group-buttons {
+                    display: flex;
                     flex-wrap: wrap;
-                    justify-content: center;
-                    padding: 8px 6px;
-                    gap: 6px;
+                    justify-content: flex-start;
+                    gap: 8px;
                 }
-                .defuzz-row .btn {
-                    font-size: 10px;
-                    padding: 5px 10px;
-                    gap: 4px;
+                .toolbar-group-buttons button,
+                .toolbar-group-buttons .btn {
+                    font-size: 0.82rem;
+                    padding: 10px 14px;
+                    min-height: 44px;
                 }
-                .defuzz-row .btn svg {
-                    width: 12px;
-                    height: 12px;
+                .toolbar-group-buttons input[type="text"] {
+                    width: 100%;
                 }
                 .nav-project-name {
                     width: 100%;
@@ -2587,9 +2696,11 @@
 
             /* Extra small phones */
             @media (max-width: 400px) {
-                .defuzz-row .btn {
-                    font-size: 9px;
-                    padding: 4px 7px;
+                .toolbar-group-buttons .btn,
+                .toolbar-group-buttons button {
+                    font-size: 0.75rem;
+                    padding: 8px 12px;
+                    min-height: 40px;
                 }
                 .sim-input-slider {
                     min-width: 60px;
@@ -2641,185 +2752,190 @@
                     >
                 </div>
             </div>
-            <button class="icon-btn" id="btnDarkMode" onclick="toggleDarkMode()" title="Toggle dark/light theme" style="margin-right:4px">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="darkModeIcon">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-            </button>
             <div class="nav-right">
+                <div id="authContainer"></div>
+                <button class="icon-btn" id="themeToggle" onclick="toggleDarkMode()" title="Toggle dark/light theme">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="darkModeIcon">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
         </header>
 
-        <div class="defuzz-row" id="projectRow">
-            <input
-                class="nav-project-name"
-                id="projectName"
-                type="text"
-                value="Untitled Project"
-                placeholder="Project name"
-                oninput="markDirty()"
-            />
-            <span
-                id="dirtyDot"
-                style="
-                    display: none;
-                    width: 8px;
-                    height: 8px;
-                    background: var(--warn);
-                    border-radius: 50%;
-                    flex-shrink: 0;
-                    margin-left: -8px;
-                    margin-right: 8px;
-                "
-                title="Unsaved changes"
-            ></span>
-            <select
-                id="recentSelect"
-                onchange="loadRecentProject(this.value)"
-                style="
-                    font-size: 11px;
-                    font-family: var(--mono);
-                    background: var(--surface);
-                    border: 1px solid var(--border);
-                    border-radius: 6px;
-                    color: var(--text);
-                    padding: 5px 8px;
-                    outline: none;
-                    cursor: pointer;
-                    max-width: 180px;
-                    display: none;
-                "
-                id="recentList"
-            >
-                <option value="">— Recent —</option>
-            </select>
-            <label
-                class="btn btn-warn"
-                style="cursor: pointer"
-                title="Load project file"
-            >
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                Load
-                <input
-                    type="file"
-                    id="loadFile"
-                    accept=".fuzzyjson,.json"
-                    style="display: none"
-                    onchange="loadProject(event)"
-                />
-            </label>
-            <button class="btn btn-success" onclick="saveProject()">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Save
-            </button>
-            <button
-                class="btn btn-outline"
-                onclick="generateShareHash()"
-                title="Generate shareable link"
-                style="color: var(--accent); font-size: 11px"
-            >
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    style="width: 14px; height: 14px"
-                >
-                    <path
-                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+        <div class="toolbar-container" id="projectRow">
+            <div class="toolbar-group">
+                <span class="toolbar-group-label">📁 Project Title</span>
+                <div class="toolbar-group-buttons">
+                    <input
+                        class="nav-project-name"
+                        id="projectName"
+                        type="text"
+                        value="Untitled Project"
+                        placeholder="Project name"
+                        oninput="markDirty()"
                     />
-                    <path
-                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                    />
-                </svg>
-                Share
-            </button>
-            <button class="btn btn-primary" onclick="openDownloadCenter()">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path
-                        d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 1 2-2V8z"
-                    ></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                Export
-            </button>
-            <div style="flex: 1"></div>
-            <button
-                type="button"
-                class="btn btn-outline"
-                id="btnUndo"
-                onclick="undoWorkspace()"
-                title="Undo (Ctrl+Z)"
-                style="padding: 6px 12px"
-            >
-                Undo
-            </button>
-            <button
-                type="button"
-                class="btn btn-outline"
-                id="btnRedo"
-                onclick="redoWorkspace()"
-                title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-                style="padding: 6px 12px"
-            >
-                Redo
-            </button>
-            <button
-                class="btn btn-outline"
-                onclick="openExamplePicker()"
-                style="color: var(--accent)"
-            >
-                💡 Examples
-            </button>
-            <button
-                class="btn btn-outline"
-                onclick="resetWorkspace()"
-                style="color: var(--danger); border-color: var(--danger)"
-            >
-                🗑️ Reset
-            </button>
-        </div>
-
-        <div
-            style="
-                background: rgba(217, 53, 69, 0.08);
-                border-bottom: 1px solid rgba(217, 53, 69, 0.2);
-                padding: 5px 24px;
-                font-size: 11px;
-                color: var(--danger);
-                text-align: center;
-                font-family: var(--sans);
-                font-weight: 600;
-                flex-shrink: 0;
-            "
-        >
-            💾 This is not a cloud-based system. Please save your work locally
-            using the Save button.
+                    <span
+                        id="dirtyDot"
+                        style="
+                            display: none;
+                            width: 8px;
+                            height: 8px;
+                            background: var(--warn);
+                            border-radius: 50%;
+                            flex-shrink: 0;
+                            margin-left: -4px;
+                        "
+                        title="Unsaved changes"
+                    ></span>
+                    <select
+                        id="recentSelect"
+                        onchange="loadRecentProject(this.value)"
+                        style="
+                            font-size: 11px;
+                            font-family: var(--mono);
+                            background: var(--surface);
+                            border: 1px solid var(--border);
+                            border-radius: 6px;
+                            color: var(--text);
+                            padding: 5px 8px;
+                            outline: none;
+                            cursor: pointer;
+                            max-width: 180px;
+                            display: none;
+                        "
+                        id="recentList"
+                    >
+                        <option value="">— Recent —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-group-label">☁️ Cloud Platform</span>
+                <div class="toolbar-group-buttons">
+                    <button class="btn btn-outline" style="color: #0ea5e9; border-color: #0ea5e9;" onclick="saveToCloud()">☁️ Cloud Save</button>
+                    <button class="btn btn-outline" style="color: #0ea5e9; border-color: #0ea5e9;" onclick="openCloudProjects()">☁️ My Projects</button>
+                </div>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-group-label">💻 Local Workspace</span>
+                <div class="toolbar-group-buttons">
+                    <label
+                        class="btn btn-warn"
+                        style="cursor: pointer"
+                        title="Load project file"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        Load
+                        <input
+                            type="file"
+                            id="loadFile"
+                            accept=".fuzzyjson,.json"
+                            style="display: none"
+                            onchange="loadProject(event)"
+                        />
+                    </label>
+                    <button class="btn btn-success" onclick="saveProject()">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Save
+                    </button>
+                </div>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-group-label">🛠️ Utilities</span>
+                <div class="toolbar-group-buttons">
+                    <button
+                        class="btn btn-outline"
+                        onclick="openShareModal()"
+                        title="Generate shareable link"
+                        style="color: var(--accent); font-size: 11px"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            style="width: 14px; height: 14px"
+                        >
+                            <path
+                                d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                            />
+                            <path
+                                d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                            />
+                        </svg>
+                        Share
+                    </button>
+                    <button class="btn btn-primary" onclick="openDownloadCenter()">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 1 2-2V8z"
+                            ></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Export
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        id="btnUndo"
+                        onclick="undoWorkspace()"
+                        title="Undo (Ctrl+Z)"
+                        style="padding: 6px 12px"
+                    >
+                        Undo
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        id="btnRedo"
+                        onclick="redoWorkspace()"
+                        title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
+                        style="padding: 6px 12px"
+                    >
+                        Redo
+                    </button>
+                    <button
+                        class="btn btn-outline"
+                        onclick="openExamplePicker()"
+                        style="color: var(--accent)"
+                    >
+                        💡 Examples
+                    </button>
+                    <button
+                        class="btn btn-outline"
+                        onclick="resetWorkspace()"
+                        style="color: var(--danger); border-color: var(--danger)"
+                    >
+                        🗑️ Reset
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="main">
@@ -3868,7 +3984,51 @@
             <span id="toastMsg"></span>
         </div>
 
+        <!-- Share Modal -->
+        <div id="shareModal" class="modal-backdrop" style="display: none">
+            <div class="modal-card" style="max-width: 500px">
+                <div class="modal-header">
+                    <h3>🔗 Share Project</h3>
+                    <button class="icon-btn" onclick="document.getElementById('shareModal').style.display='none'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Share your fuzzy logic design with colleagues.</p>
+                    <div style="display:flex;gap:8px;margin-bottom:16px">
+                        <input type="text" id="shareUrlInput" readonly style="flex:1;font-family:var(--mono);font-size:12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text2);outline:none" placeholder="Generating link..." />
+                        <button class="btn btn-primary" onclick="copyShareLink()" style="white-space:nowrap">📋 Copy</button>
+                    </div>
+                    <p id="shareStatus" style="font-size:11px;color:var(--text3);margin-bottom:12px"></p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button class="btn btn-outline" onclick="shareWhatsApp()" style="color:#25D366;border-color:#25D366;font-size:12px">📱 WhatsApp</button>
+                        <button class="btn btn-outline" onclick="shareTelegram()" style="color:#0088cc;border-color:#0088cc;font-size:12px">✈️ Telegram</button>
+                        <button class="btn btn-outline" onclick="shareEmail()" style="color:var(--accent);font-size:12px">📧 Email</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" onclick="document.getElementById('shareModal').style.display='none'">Close</button>
+                </div>
+            </div>
+        </div>
+
         <script>
+            const firebaseConfig = {
+                apiKey: "AIzaSyD9CJonJVQ0mtr6GGjFcRBP-0RD0UpF0DY",
+                authDomain: "fuzzylogic-visualizer.firebaseapp.com",
+                projectId: "fuzzylogic-visualizer",
+                storageBucket: "fuzzylogic-visualizer.firebasestorage.app",
+                messagingSenderId: "280830398824",
+                appId: "1:280830398824:web:ec163db0d4793c149d46dd",
+                measurementId: "G-SSKQXWDQ59"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+
             const COLORS = [
                 "#7c6dfa",
                 "#3ecf8e",
@@ -3957,6 +4117,7 @@
             let trayExpanded = true;
             let inferenceTraceStepOpen = [true, true, true, true];
             let testTray = [];
+            let _pendingDescValue = "";
 
             const HISTORY_MAX = 20;
             let undoStack = [];
@@ -3977,6 +4138,7 @@
                     defuzz: document.getElementById("defuzzMethod")?.value,
                     andMethod: document.getElementById("andMethod")?.value,
                     orMethod: document.getElementById("orMethod")?.value,
+                    description: document.getElementById("projectDescInput")?.value || "",
                 });
             }
             function applyWorkspace(s) {
@@ -4000,6 +4162,13 @@
                     document.getElementById("andMethod").value = d.andMethod;
                 if (d.orMethod)
                     document.getElementById("orMethod").value = d.orMethod;
+                const descEl = document.getElementById("projectDescInput");
+                if (descEl) {
+                    descEl.value = (d.description !== undefined) ? d.description : "";
+                }
+                _pendingDescValue = (d.description !== undefined) ? d.description : "";
+                const descStatus = document.getElementById("descSaveStatus");
+                if (descStatus) descStatus.textContent = "";
                 setFIS(state.fisType);
                 simInputValues = {};
                 simResults = null;
@@ -4543,6 +4712,13 @@
                 renderRules();
                 buildSimulationPanel();
                 clearAllChartOverlays();
+                _pendingDescValue = data.description || "";
+                const descEl = document.getElementById("projectDescInput");
+                if (descEl) {
+                    descEl.value = data.description || "";
+                }
+                const descStatus = document.getElementById("descSaveStatus");
+                if (descStatus) descStatus.textContent = "";
                 closeExamplePicker();
                 historyIgnore = false;
                 showToast("Example Loaded — Click RUN to simulate");
@@ -4667,6 +4843,7 @@
                             defuzzMethod: "centroid",
                         },
                     ],
+                    description: "A single-input Mamdani fuzzy controller that maps ambient temperature to a variable fan speed output using triangular membership functions. Ideal for demonstrating basic fuzzy inference with Cold, Warm, and Hot linguistic terms.",
                 });
             }
 
@@ -4789,6 +4966,7 @@
                             defuzzMethod: "centroid",
                         },
                     ],
+                    description: "An automated fuzzy system designed to dynamically control water pump duration based on real-time soil moisture inputs to optimize water usage. Uses Dry, Moist, and Wet linguistic terms.",
                 });
             }
 
@@ -4939,6 +5117,7 @@
                             defuzzMethod: "centroid",
                         },
                     ],
+                    description: "A classic dual-input fuzzy inference system for restaurant tip calculation. Combines Service Quality and Food Quality using AND/OR logic to determine an appropriate Tip Percentage.",
                 });
             }
 
@@ -5110,6 +5289,7 @@
                             defuzzMethod: "centroid",
                         },
                     ],
+                    description: "A smart energy-saving streetlight controller with two inputs — Ambient Light and Motion Level — that determines Lamp Brightness using four AND-based fuzzy rules for adaptive illumination.",
                 });
             }
 
@@ -5304,6 +5484,7 @@
                             defuzzMethod: "centroid",
                         },
                     ],
+                    description: "A safety-critical three-input fuzzy braking controller that processes Distance to Car, Vehicle Speed, and Road Condition to compute Brake Force using four conditional rules.",
                 });
             }
 
@@ -7164,24 +7345,89 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         outs = state.variables.filter(
                             (v) => v.type === "output",
                         );
-                    let lis = "";
-                    ins.forEach((v, i) => {
-                        const labels =
-                            v.mfs.map((m) => m.label).join(", ") ||
-                            "No MF added";
-                        lis += `<li><strong style="color: var(--accent2);">Input ${i + 1}:</strong> ${esc(v.name)} <span style="color:var(--text3);">(${esc(labels)})</span></li>`;
+                    const ruleCount = state.rules.filter(function(r){return r.enabled!==false}).length;
+                    const defuzzKey = document.getElementById("defuzzMethod")?.value || "centroid";
+                    const defuzzLabel = DEFUZZ_TRACE_INFO[defuzzKey] ? DEFUZZ_TRACE_INFO[defuzzKey].label : defuzzKey;
+                    let sumHtml = '<div id="summaryCard" style="width: 100%; text-align: left; padding: 24px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">';
+
+                    // --- PROJECT DESCRIPTION (top) ---
+                    sumHtml += '<div class="project-description-block" style="margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border);">';
+                    sumHtml += '<h3 style="margin-bottom:12px;font-family:var(--display);color:var(--accent);font-size:18px;display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Project Description</h3>';
+                    sumHtml += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:0.75rem;color:var(--text3);">Describe your fuzzy system — objectives, design rationale, or implementation notes</span><span id="descSaveStatus" style="font-size:0.75rem;color:var(--text3);transition:all 0.3s;"></span></div>';
+                    sumHtml += '<textarea id="projectDescInput" placeholder="✍️ Click here to add notes, project objectives, or descriptions for this fuzzy system..."></textarea>';
+                    sumHtml += '</div>';
+
+                    // --- SYSTEM LINGUISTIC SUMMARY ---
+                    sumHtml += '<h3 style="margin-bottom:20px;font-family:var(--display);color:var(--accent);font-size:18px;display:flex;align-items:center;gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>System Linguistic Summary</h3>';
+
+                    // --- GRID STATS ---
+                    sumHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;background:rgba(128,128,128,0.05);padding:20px;border-radius:8px;border:1px solid rgba(128,128,128,0.1);margin-bottom:32px;font-family:inherit;">';
+                    sumHtml += '<div><span style="color:var(--text3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">Total Inputs:</span> <span style="font-weight:600;margin-left:6px;">'+ins.length+'</span></div>';
+                    sumHtml += '<div><span style="color:var(--text3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">Total Outputs:</span> <span style="font-weight:600;margin-left:6px;">'+outs.length+'</span></div>';
+                    sumHtml += '<div><span style="color:var(--text3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">Total Rules:</span> <span style="font-weight:600;margin-left:6px;">'+ruleCount+'</span></div>';
+                    sumHtml += '<div><span style="color:var(--text3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">FIS Type:</span> <span style="font-weight:600;margin-left:6px;">'+state.fisType.toUpperCase()+'</span></div>';
+                    sumHtml += '<div style="grid-column:1/-1;"><span style="color:var(--text3);font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">Defuzzification:</span> <span style="font-weight:600;margin-left:6px;">'+esc(defuzzLabel.toUpperCase())+'</span></div>';
+                    sumHtml += '</div>';
+
+                    // --- INPUTS ---
+                    sumHtml += '<h4 style="font-size:1.1rem;font-weight:600;border-bottom:2px solid rgba(128,128,128,0.15);padding-bottom:8px;margin-bottom:16px;font-family:inherit;">Inputs</h4>';
+                    ins.forEach(function(v,i){
+                        var labels = v.mfs.map(function(m){return m.label}).join(", ") || "No MF added";
+                        sumHtml += '<div style="margin-bottom:16px;font-family:inherit;">';
+                        sumHtml += '<div style="font-size:0.85rem;color:var(--text3);margin-bottom:4px;">Input '+(i+1)+' ('+v.mfs.length+' membership functions)</div>';
+                        sumHtml += '<div style="font-size:0.95rem;padding-left:12px;border-left:3px solid #0ea5e9;">';
+                        sumHtml += '<span style="color:var(--text);margin-right:4px;">'+esc(v.name)+':</span> <span style="color:var(--text3);">'+esc(labels)+'</span>';
+                        sumHtml += '</div></div>';
                     });
-                    outs.forEach((v, i) => {
-                        const labels =
-                            v.mfs.map((m) => m.label).join(", ") ||
-                            "No MF added";
-                        lis += `<li><strong style="color: var(--success);">Output${outs.length > 1 ? " " + (i + 1) : ""}:</strong> ${esc(v.name)} <span style="color:var(--text3);">(${esc(labels)})</span></li>`;
+
+                    // --- OUTPUTS ---
+                    sumHtml += '<h4 style="font-size:1.1rem;font-weight:600;border-bottom:2px solid rgba(128,128,128,0.15);padding-bottom:8px;margin-bottom:16px;font-family:inherit;">Outputs</h4>';
+                    outs.forEach(function(v,i){
+                        var labels = v.mfs.map(function(m){return m.label}).join(", ") || "No MF added";
+                        sumHtml += '<div style="margin-bottom:16px;font-family:inherit;">';
+                        sumHtml += '<div style="font-size:0.85rem;color:var(--text3);margin-bottom:4px;">Output'+(outs.length>1?" "+(i+1):"")+' ('+v.mfs.length+' membership functions)</div>';
+                        sumHtml += '<div style="font-size:0.95rem;padding-left:12px;border-left:3px solid #8b5cf6;">';
+                        sumHtml += '<span style="color:var(--text);margin-right:4px;">'+esc(v.name)+':</span> <span style="color:var(--text3);">'+esc(labels)+'</span>';
+                        sumHtml += '</div></div>';
                     });
-                    area.innerHTML = `<div style="width: 100%; text-align: left; padding: 24px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02);"><h3 style="margin-bottom: 16px; font-family: var(--display); color: var(--accent); font-size: 18px; display:flex; align-items:center; gap:8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>System Linguistic Summary</h3><ul style="list-style: none; padding: 0; font-family: var(--mono); font-size: 14px; line-height: 2.2; color: var(--text2);">${lis}</ul></div>`;
+
+                    // --- RULES ---
+                    sumHtml += '<h4 style="font-size:1.1rem;font-weight:600;border-bottom:2px solid rgba(128,128,128,0.15);padding-bottom:8px;margin-bottom:16px;font-family:inherit;">Rules</h4>';
+                    var activeRules = state.rules.filter(function(r){return r.enabled!==false});
+                    if (activeRules.length===0){
+                        sumHtml += '<div style="color:var(--text3);font-size:0.85rem;font-family:inherit;">No rules defined.</div>';
+                    } else {
+                        activeRules.forEach(function(r,ri){
+                            var condParts=[];
+                            for(var vid in r.conditions){
+                                var av=state.variables.find(function(v){return v.id===vid});
+                                var amf=av?av.mfs.find(function(m){return m.id===r.conditions[vid]}):null;
+                                if(av&&amf)condParts.push(esc(av.name)+' is '+esc(amf.label));
+                            }
+                            var cv=state.variables.find(function(v){return v.id===r.conclusion.varId});
+                            var cmf=cv?cv.mfs.find(function(m){return m.id===r.conclusion.mfId}):null;
+                            var thenStr=(cv&&cmf)?(esc(cv.name)+' is '+esc(cmf.label)):'';
+                            sumHtml += '<div style="margin-bottom:8px;line-height:1.6;font-size:0.95rem;color:var(--text);font-family:inherit;">';
+                            sumHtml += '<span style="color:var(--text3);margin-right:6px;">'+(ri+1)+'.</span>IF '+condParts.join(' <span style="color:var(--accent);">'+r.logic+'</span> ')+' THEN '+thenStr;
+                            sumHtml += '</div>';
+                        });
+                    }
+
+                    sumHtml += '</div>';
+                    area.innerHTML = sumHtml;
+                    setupDescInputListener();
+                    const pendingDesc = (typeof _pendingDescValue !== "undefined") ? _pendingDescValue : "";
+                    const descEl = document.getElementById("projectDescInput");
+                    if (descEl && pendingDesc) descEl.value = pendingDesc;
+                    const descSt = document.getElementById("descSaveStatus");
+                    if (descSt) descSt.textContent = "";
                     Object.values(chartInstances).forEach((c) => c.destroy());
                     chartInstances = {};
                     return;
                 }
+
+                const sc = document.getElementById("summaryCard");
+                if (sc) sc.remove();
 
                 let targetVars =
                     currentViewMode === "all"
@@ -8022,6 +8268,15 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         renderRules();
                         buildSimulationPanel();
                         clearAllChartOverlays();
+                        const descEl = document.getElementById("projectDescInput");
+                        if (descEl && d.description !== undefined) {
+                            descEl.value = d.description;
+                        } else if (descEl) {
+                            descEl.value = "";
+                        }
+                        _pendingDescValue = (d.description !== undefined) ? d.description : "";
+                        const descStatus = document.getElementById("descSaveStatus");
+                        if (descStatus) descStatus.textContent = "";
                         addRecentProject(d.meta?.name || "Loaded Project");
                         showToast("Project loaded successfully!");
                     } catch (err) {
@@ -8451,6 +8706,9 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
 
             // ── DARK MODE ──
             function toggleDarkMode() {
+                const temporaryDescBackup = document.getElementById("projectDescInput")
+                    ? document.getElementById("projectDescInput").value
+                    : "";
                 const el = document.documentElement;
                 const isDark = el.getAttribute("data-theme") === "dark";
                 el.setAttribute("data-theme", isDark ? "" : "dark");
@@ -8463,7 +8721,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
                 if (icon) icon.innerHTML = isDark ? moon : sun;
                 if (iconMob) iconMob.innerHTML = isDark ? moon : sun;
-                refreshAllCharts(); // Refresh axis colors for dark/light theme
+                refreshAllCharts();
+                if (document.getElementById("projectDescInput")) {
+                    document.getElementById("projectDescInput").value = temporaryDescBackup;
+                }
             }
 
             // ── AUTO-SAVE ──
@@ -8494,6 +8755,34 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 } catch (e) {
                     /* quota exceeded — silently skip */
                 }
+            }
+
+            let descDebounceTimer = null;
+            function setupDescInputListener() {
+                const el = document.getElementById("projectDescInput");
+                if (!el) return;
+                el.oninput = function () {
+                    const status = document.getElementById("descSaveStatus");
+                    if (status) status.textContent = "✍️ Typing...";
+                    clearTimeout(descDebounceTimer);
+                    descDebounceTimer = setTimeout(function () {
+                        const user = auth.currentUser;
+                        if (user) {
+                            const desc = el.value;
+                            const name = document.getElementById("projectName")?.value || "Untitled";
+                            db.collection("users").doc(user.uid).collection("projects").doc(name).set(
+                                { description: desc, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+                                { merge: true }
+                            ).then(function () {
+                                if (status) status.textContent = "☁️ Saved to cloud";
+                            }).catch(function () {
+                                if (status) status.textContent = "";
+                            });
+                        } else {
+                            if (status) status.textContent = "";
+                        }
+                    }, 1000);
+                };
             }
             function autoSaveLoad() {
                 try {
@@ -8597,6 +8886,299 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     }
                 } catch (e) {
                     /* invalid hash — ignore */
+                }
+            }
+
+            // ── FIREBASE AUTH ──
+            auth.onAuthStateChanged(function (user) {
+                const c = document.getElementById("authContainer");
+                if (!c) return;
+                if (user) {
+                    const photo = user.photoURL
+                        ? '<img src="' +
+                          user.photoURL +
+                          '" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--accent)" referrerpolicy="no-referrer" />'
+                        : "";
+                    const firstName = (user.displayName || "User").split(" ")[0];
+                    c.innerHTML =
+                        photo +
+                        '<span style="font-size:13px;color:var(--text);font-weight:500">👋 Hello, ' +
+                        firstName +
+                        '</span>' +
+                        '<button class="btn btn-outline" onclick="logout()" style="font-size:11px">Sign Out</button>';
+                } else {
+                    c.innerHTML =
+                        '<button class="btn btn-primary" onclick="loginWithGoogle()">👤 Log In</button>';
+                }
+            });
+
+            function loginWithGoogle() {
+                auth
+                    .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+                    .catch(function (e) {
+                        showToast("Login failed: " + e.message);
+                    });
+            }
+
+            function logout() {
+                auth
+                    .signOut()
+                    .then(function () {
+                        showToast("Signed out");
+                    })
+                    .catch(function (e) {
+                        showToast("Sign out failed: " + e.message);
+                    });
+            }
+
+            // ── CLOUD SAVE (FIREBASE) ──
+            async function saveToCloud() {
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast("Please log in to save to cloud");
+                    return;
+                }
+                try {
+                    syncSettings();
+                    const snap = cloneWorkspace();
+                    const name =
+                        document.getElementById("projectName")?.value ||
+                        "Untitled";
+                    const existingDoc = await db
+                        .collection("users")
+                        .doc(user.uid)
+                        .collection("projects")
+                        .doc(name)
+                        .get();
+                    if (existingDoc.exists) {
+                        if (!confirm(`A cloud project named "${name}" already exists. Do you want to overwrite it and replace your previous design?`)) return;
+                    }
+                    await db
+                        .collection("users")
+                        .doc(user.uid)
+                        .collection("projects")
+                        .doc(name)
+                        .set({
+                            data: snap,
+                            name: name,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        });
+                    showToast("☁️ Saved to cloud: " + name);
+                } catch (e) {
+                    showToast("Cloud save failed: " + e.message);
+                }
+            }
+
+            async function openCloudProjects() {
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast("Please log in to view cloud projects");
+                    return;
+                }
+                var existing = document.getElementById("cloudProjectsModal");
+                if (existing) existing.remove();
+                var backdrop = document.createElement("div");
+                backdrop.className = "modal-backdrop";
+                backdrop.id = "cloudProjectsModal";
+                backdrop.style.display = "flex";
+                backdrop.innerHTML =
+                    '<div class="modal-card" style="max-width:560px">' +
+                    '<div class="modal-header"><h3>☁️ My Cloud Projects</h3><button class="icon-btn" onclick="document.getElementById(\'cloudProjectsModal\').remove()"><svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><line x1=\'18\' y1=\'6\' x2=\'6\' y2=\'18\'/><line x1=\'6\' y1=\'6\' x2=\'18\' y2=\'18\'/></svg></button></div>' +
+                    '<div class="modal-body" id="cloudProjectsBody" style="max-height:50vh;overflow-y:auto"><p style="color:var(--text3);font-size:13px">Loading...</p></div>' +
+                    '<div class="modal-footer"><button class="btn" onclick="document.getElementById(\'cloudProjectsModal\').remove()">Close</button></div>' +
+                    "</div>";
+                document.body.appendChild(backdrop);
+                backdrop.addEventListener("click", function (e) {
+                    if (e.target === backdrop) backdrop.remove();
+                });
+                try {
+                    var snap = await db
+                        .collection("users")
+                        .doc(user.uid)
+                        .collection("projects")
+                        .orderBy("updatedAt", "desc")
+                        .get();
+                    var body = document.getElementById("cloudProjectsBody");
+                    if (snap.empty) {
+                        body.innerHTML =
+                            '<p style="color:var(--text3);font-size:13px">No cloud projects yet. Use ☁️ Cloud Save first.</p>';
+                        return;
+                    }
+                    var html = "";
+                    snap.forEach(function (doc) {
+                        var d = doc.data();
+                        var ts = d.updatedAt
+                            ? new Date(d.updatedAt.toDate()).toLocaleString()
+                            : "";
+                        html +=
+                            '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border);gap:12px">' +
+                            '<div><div style="font-weight:600;color:var(--text)">' +
+                            (d.name || doc.id) +
+                            '</div><div style="font-size:11px;color:var(--text3)">' +
+                            ts +
+                            "</div></div>" +
+                            '<div style="display:flex;gap:6px;flex-shrink:0">' +
+                            '<button class="btn btn-primary" style="font-size:11px;padding:5px 12px" onclick="loadCloudProject(\'' +
+                            doc.id +
+                            "','" +
+                            user.uid +
+                            '\')">Load</button>' +
+                            '<button class="btn" style="font-size:11px;padding:5px 10px;color:#ef4444;border-color:#ef4444" onclick="deleteCloudProject(\'' +
+                            doc.id +
+                            '\')">🗑️ Delete</button>' +
+                            "</div>" +
+                            "</div>";
+                    });
+                    body.innerHTML = html;
+                } catch (e) {
+                    document.getElementById("cloudProjectsBody").innerHTML =
+                        '<p style="color:var(--danger)">Error: ' +
+                        e.message +
+                        "</p>";
+                }
+            }
+
+            async function loadCloudProject(docId, uid) {
+                try {
+                    var doc = await db
+                        .collection("users")
+                        .doc(uid)
+                        .collection("projects")
+                        .doc(docId)
+                        .get();
+                    if (!doc.exists) {
+                        showToast("Project not found");
+                        return;
+                    }
+                    var d = doc.data();
+                    clearHistoryStacks();
+                    applyWorkspace(d.data);
+                    document.getElementById("projectName").value = d.name || docId;
+                    var modal = document.getElementById("cloudProjectsModal");
+                    if (modal) modal.remove();
+                    showToast("☁️ Cloud project loaded: " + (d.name || docId));
+                } catch (e) {
+                    showToast("Load failed: " + e.message);
+                }
+            }
+
+            async function deleteCloudProject(projectId) {
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast("Please log in");
+                    return;
+                }
+                if (!confirm(`Are you sure you want to permanently delete "${projectId}" from the cloud?`)) return;
+                try {
+                    await db
+                        .collection("users")
+                        .doc(user.uid)
+                        .collection("projects")
+                        .doc(projectId)
+                        .delete();
+                    showToast("🗑️ Cloud project deleted");
+                    openCloudProjects();
+                } catch (e) {
+                    showToast("Delete failed: " + e.message);
+                }
+            }
+
+            // ── PROFESSIONAL SHARE (FIREBASE) ──
+            var currentShareUrl = "";
+            function openShareModal() {
+                var modal = document.getElementById("shareModal");
+                modal.style.display = "flex";
+                var status = document.getElementById("shareStatus");
+                var input = document.getElementById("shareUrlInput");
+                status.textContent = "Generating link...";
+                input.value = "";
+                syncSettings();
+                var snap = cloneWorkspace();
+                db.collection("shared_links")
+                    .add({
+                        data: snap,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    })
+                    .then(function (docRef) {
+                        var shortUrl =
+                            window.location.origin +
+                            window.location.pathname +
+                            "?share=" +
+                            docRef.id;
+                        currentShareUrl = shortUrl;
+                        input.value = shortUrl;
+                        status.textContent = "";
+                    })
+                    .catch(function (e) {
+                        status.textContent =
+                            "Failed to generate link: " + e.message;
+                    });
+            }
+
+            function copyShareLink() {
+                var input = document.getElementById("shareUrlInput");
+                if (!input.value) {
+                    showToast("No link to copy yet");
+                    return;
+                }
+                navigator.clipboard
+                    .writeText(input.value)
+                    .then(function () {
+                        showToast("Link copied to clipboard!");
+                    })
+                    .catch(function () {
+                        input.select();
+                        document.execCommand("copy");
+                        showToast("Link copied!");
+                    });
+            }
+
+            function shareWhatsApp() {
+                if (!currentShareUrl) return;
+                window.open(
+                    "https://wa.me/?text=" +
+                        encodeURIComponent(
+                            "Check out my Fuzzy Logic design: " + currentShareUrl,
+                        ),
+                    "_blank",
+                );
+            }
+
+            function shareTelegram() {
+                if (!currentShareUrl) return;
+                window.open(
+                    "https://t.me/share/url?url=" +
+                        encodeURIComponent(currentShareUrl) +
+                        "&text=" +
+                        encodeURIComponent("Check out my Fuzzy Logic design!"),
+                    "_blank",
+                );
+            }
+
+            function shareEmail() {
+                if (!currentShareUrl) return;
+                window.location.href =
+                    "mailto:?subject=Fuzzy Logic Project&body=" +
+                    encodeURIComponent(
+                        "Check out my design: " + currentShareUrl,
+                    );
+            }
+
+            async function loadSharedLink() {
+                var shareId = new URLSearchParams(window.location.search).get(
+                    "share",
+                );
+                if (!shareId) return;
+                try {
+                    var doc = await db.collection("shared_links").doc(shareId).get();
+                    if (doc.exists) {
+                        var d = doc.data();
+                        clearHistoryStacks();
+                        applyWorkspace(d.data);
+                        showToast("📎 Shared project loaded");
+                    }
+                } catch (e) {
+                    showToast("Failed to load shared project");
                 }
             }
 
@@ -8765,6 +9347,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 updateLiveIndicator();
                 autoSaveLoad();
                 loadUrlHash();
+                loadSharedLink();
             })();
 
             // ── AI ASSISTANT (Ask Dr. Zamri) ──
