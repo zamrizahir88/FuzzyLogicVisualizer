@@ -2413,29 +2413,43 @@
                 }
 
                 .toolbar-container {
-                    flex-direction: column;
-                    align-items: stretch;
-                    gap: 14px;
-                    padding: 10px;
-                    margin-bottom: 6px;
+                    display: flex;
+                    flex-wrap: nowrap !important;
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    -webkit-overflow-scrolling: touch;
+                    padding: 8px 10px 12px 10px;
+                    gap: 16px;
+                    margin-bottom: 4px;
+                }
+                .toolbar-container::-webkit-scrollbar {
+                    display: none;
                 }
                 .toolbar-group {
-                    width: 100%;
+                    flex: 0 0 auto;
+                    display: flex;
+                    align-items: center;
+                    width: auto;
                 }
                 .toolbar-group-buttons {
                     display: flex;
-                    flex-wrap: wrap;
+                    flex-wrap: nowrap !important;
                     justify-content: flex-start;
                     gap: 8px;
                 }
                 .toolbar-group-buttons button,
                 .toolbar-group-buttons .btn {
-                    font-size: 0.82rem;
-                    padding: 10px 14px;
-                    min-height: 44px;
+                    font-size: 0.78rem;
+                    padding: 6px 12px;
+                    min-height: 36px;
+                }
+                .toolbar-group-label {
+                    font-size: 0.68rem;
+                    margin-bottom: 4px;
                 }
                 .toolbar-group-buttons input[type="text"] {
                     width: 100%;
+                    min-width: 100px;
                 }
                 .nav-project-name {
                     width: 100%;
@@ -2696,11 +2710,18 @@
 
             /* Extra small phones */
             @media (max-width: 400px) {
+                .toolbar-container {
+                    gap: 8px;
+                    padding: 6px 6px 10px 6px;
+                }
                 .toolbar-group-buttons .btn,
                 .toolbar-group-buttons button {
-                    font-size: 0.75rem;
-                    padding: 8px 12px;
-                    min-height: 40px;
+                    font-size: 0.7rem;
+                    padding: 5px 8px;
+                    min-height: 32px;
+                }
+                .toolbar-group-buttons {
+                    gap: 4px;
                 }
                 .sim-input-slider {
                     min-width: 60px;
