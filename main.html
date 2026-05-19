@@ -5696,12 +5696,15 @@
                 });
             }
 
-            // ── MF EDITOR ──
-            function validateMFParams(shape, p) {
-                if (shape === "triangular") return p.a <= p.b && p.b <= p.c;
-                if (shape === "trapezoidal")
-                    return p.a <= p.b && p.b <= p.c && p.c <= p.d;
-                if (shape === "gaussian") return p.sigma > 0;
+           function validateMFParams(shape, p) {
+                const s = shape.toLowerCase();
+                const a = Number(p.a);
+                const b = Number(p.b);
+                const c = Number(p.c);
+                const d = Number(p.d);
+                if (s === "triangular") return a <= b && b <= c;
+                if (s === "trapezoidal") return a <= b && b <= c && c <= d;
+                if (s === "gaussian") return Number(p.sigma) > 0;
                 return true;
             }
 
@@ -9270,9 +9273,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 state.variables.forEach((v) => {
                     v.mfs.forEach((mf) => {
                         if (!validateMFParams(mf.shape, mf.params)) {
+                            const formatStr = mf.shape.toLowerCase() === 'trapezoidal' ? '(a > b > c > d)' : '(a > b > c)';
                             warnings.push({
                                 type: "mf",
-                                msg: `"${esc(mf.label)}" in "${esc(v.name)}" has invalid parameters (a > b > c)`,
+                                msg: `"${esc(mf.label)}" in "${esc(v.name)}" has invalid parameters ${formatStr}`,
                             });
                         }
                     });
