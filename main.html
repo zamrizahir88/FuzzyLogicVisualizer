@@ -4708,6 +4708,7 @@
                     logic: r.logic || "AND",
                     conditions: r.conditions || {},
                     conclusion: r.conclusion || { varId: "", mfId: "" },
+                    conclusions: r.conclusions || (r.conclusion ? { [r.conclusion.varId]: r.conclusion.mfId } : {}),
                     enabled: r.enabled !== false,
                     weight: Number(r.weight ?? 1),
                 }));
@@ -5545,12 +5546,14 @@
             // ── VIEW MODES ──
             function setViewMode(mode) {
                 currentViewMode = mode;
+                if (mode !== "selected") activeVarId = null;
                 document.getElementById("btnViewAll").className =
                     mode === "all" ? "btn btn-primary" : "btn";
                 document.getElementById("btnViewSelected").className =
                     mode === "selected" ? "btn btn-primary" : "btn";
                 document.getElementById("btnViewSummary").className =
                     mode === "summary" ? "btn btn-primary" : "btn";
+                renderVarLists();
                 refreshAllCharts();
             }
 
@@ -5592,7 +5595,7 @@
                 state.rules = state.rules.filter(
                     (r) =>
                         r.conditions[id] === undefined &&
-                        r.conclusion.varId !== id,
+                        !(id in getRuleConclusions(r)),
                 );
                 if (activeVarId === id) {
                     activeVarId = null;
@@ -5616,8 +5619,14 @@
                 renderVarLists();
             }
             function selectVarInline(id) {
-                activeVarId = activeVarId === id ? null : id;
+                const wasActive = activeVarId === id;
+                activeVarId = wasActive ? null : id;
                 renderVarLists();
+                if (!wasActive && activeVarId) {
+                    setViewMode("selected");
+                } else if (wasActive) {
+                    setViewMode("summary");
+                }
             }
 
             function moveVariable(varId, delta) {
@@ -5702,10 +5711,39 @@
                 const b = Number(p.b);
                 const c = Number(p.c);
                 const d = Number(p.d);
-                if (s === "triangular") return a <= b && b <= c;
-                if (s === "trapezoidal") return a <= b && b <= c && c <= d;
-                if (s === "gaussian") return Number(p.sigma) > 0;
+                if (s === "triangular") {
+                    if (isNaN(a) || isNaN(b) || isNaN(c)) return false;
+                    return a <= b && b <= c;
+                }
+                if (s === "trapezoidal") {
+                    if (isNaN(a) || isNaN(b) || isNaN(c) || isNaN(d)) return false;
+                    return a <= b && b <= c && c <= d;
+                }
+                if (s === "gaussian") {
+                    if (isNaN(Number(p.mean)) || isNaN(Number(p.sigma))) return false;
+                    return Number(p.sigma) > 0;
+                }
                 return true;
+            }
+
+            function revalidateMFInputs(vid, mfid) {
+                const v = state.variables.find((x) => x.id === vid);
+                if (!v) return;
+                const mf = v.mfs.find((m) => m.id === mfid);
+                if (!mf) return;
+                const card = document.getElementById("mfcard_" + mfid);
+                if (!card) return;
+                const isValid = validateMFParams(mf.shape, mf.params);
+                const inputs = card.querySelectorAll(".mf-param-input");
+                inputs.forEach((input) => {
+                    if (isValid) {
+                        input.classList.remove("invalid");
+                        input.title = "";
+                    } else {
+                        input.classList.add("invalid");
+                        input.title = "Invalid geometry!";
+                    }
+                });
             }
 
             function renderMFEditor() {
@@ -5812,6 +5850,12 @@
                 if (mf) {
                     if (prop === "shape") recordBeforeChange();
                     mf[prop] = val;
+                    if (prop === "shape") {
+                        const defs = getMFParamDefs(val);
+                        defs.forEach((d) => {
+                            if (!(d.key in mf.params)) mf.params[d.key] = d.default;
+                        });
+                    }
                     markDirty();
                     refreshAllCharts();
                     updateRuleBuilder();
@@ -5830,6 +5874,7 @@
                     mf.params[key] = val;
                     markDirty();
                     refreshAllCharts();
+                    revalidateMFInputs(vid, mfid);
                     // Don't re-render editor for numeric input — it kills focus
                     buildSimulationPanel();
                 }
@@ -5884,7 +5929,12 @@
                     for (let k in r.conditions) {
                         if (r.conditions[k] === mfid) isAntMatch = true;
                     }
-                    return !isAntMatch && r.conclusion.mfId !== mfid;
+                    const allConcs = getRuleConclusions(r);
+                    let isConcMatch = false;
+                    for (let vid in allConcs) {
+                        if (allConcs[vid] === mfid) isConcMatch = true;
+                    }
+                    return !isAntMatch && !isConcMatch;
                 });
                 simResults = null;
                 simRunning = false;
@@ -5989,7 +6039,7 @@
                         firingStrength *= rule.weight ?? 1;
                         results.push({
                             ruleId: rule.id,
-                            conclusion: rule.conclusion,
+                            conclusions: getRuleConclusions(rule),
                             firingStrength: Math.max(
                                 0,
                                 Math.min(1, firingStrength),
@@ -6008,13 +6058,11 @@
                     outputVariables.forEach((outVar) => {
                         const clips = [];
                         ruleResults.forEach((result) => {
-                            if (
-                                result.conclusion.varId === outVar.id &&
-                                result.firingStrength > 0
-                            ) {
-                                const mf = outVar.mfs.find(
-                                    (m) => m.id === result.conclusion.mfId,
-                                );
+                            if (result.firingStrength <= 0) return;
+                            for (let cVarId in result.conclusions) {
+                                if (cVarId !== outVar.id) continue;
+                                const mfId = result.conclusions[cVarId];
+                                const mf = outVar.mfs.find((m) => m.id === mfId);
                                 if (mf)
                                     clips.push({
                                         mf,
@@ -6295,6 +6343,12 @@
                 });
             }
 
+            function getRuleConclusions(rule) {
+                if (rule.conclusions && Object.keys(rule.conclusions).length > 0) return rule.conclusions;
+                if (rule.conclusion && rule.conclusion.varId) return { [rule.conclusion.varId]: rule.conclusion.mfId };
+                return {};
+            }
+
             function ruleConditionsOrdered(rule) {
                 const arr = [];
                 for (let varId in rule.conditions) {
@@ -6489,16 +6543,17 @@
                             return `<div class="trace-antecedent-row"><span style="flex:1;min-width:0;">${lbl}</span><span class="trace-mu-pill">μ=${mu.toFixed(3)}</span></div>`;
                         })
                         .join("");
-                    const outV = state.variables.find(
-                        (x) => x.id === r.conclusion.varId,
-                    );
-                    const outMF = outV?.mfs.find(
-                        (m) => m.id === r.conclusion.mfId,
-                    );
-                    const thenLine =
-                        outV && outMF
-                            ? `THEN <strong>${esc(outV.name)}</strong> IS <strong>${esc(outMF.label)}</strong>`
-                            : "THEN …";
+                    const allConcs = getRuleConclusions(r);
+                    let thenParts = [];
+                    for (let cvid in allConcs) {
+                        const outV = state.variables.find((x) => x.id === cvid);
+                        const outMF = outV?.mfs.find((m) => m.id === allConcs[cvid]);
+                        if (outV && outMF)
+                            thenParts.push(`<strong>${esc(outV.name)}</strong> IS <strong>${esc(outMF.label)}</strong>`);
+                    }
+                    const thenLine = thenParts.length > 0
+                        ? "THEN " + thenParts.join(" AND ")
+                        : "THEN …";
                     const barPct = Math.min(100, fs * 100);
                     const preLine =
                         mus
@@ -7428,9 +7483,14 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                 var amf=av?av.mfs.find(function(m){return m.id===r.conditions[vid]}):null;
                                 if(av&&amf)condParts.push(esc(av.name)+' is '+esc(amf.label));
                             }
-                            var cv=state.variables.find(function(v){return v.id===r.conclusion.varId});
-                            var cmf=cv?cv.mfs.find(function(m){return m.id===r.conclusion.mfId}):null;
-                            var thenStr=(cv&&cmf)?(esc(cv.name)+' is '+esc(cmf.label)):'';
+                            var allConcs = getRuleConclusions(r);
+                            var thenParts = [];
+                            for (var cvid in allConcs) {
+                                var cv = state.variables.find(function(v){return v.id===cvid});
+                                var cmf = cv ? cv.mfs.find(function(m){return m.id===allConcs[cvid]}) : null;
+                                if (cv && cmf) thenParts.push(esc(cv.name)+' is '+esc(cmf.label));
+                            }
+                            var thenStr = thenParts.length > 0 ? thenParts.join(' and ') : '';
                             sumHtml += '<div style="margin-bottom:8px;line-height:1.6;font-size:0.95rem;color:var(--text);font-family:inherit;">';
                             sumHtml += '<span style="color:var(--text3);margin-right:6px;">'+(ri+1)+'.</span>IF '+condParts.join(' <span style="color:var(--accent);">'+r.logic+'</span> ')+' THEN '+thenStr;
                             sumHtml += '</div>';
@@ -7964,15 +8024,18 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     html += `<select class="rule-select rule-inp-sel" data-vid="${inp.id}">${opts}</select>`;
                 });
                 html += `<span class="rule-label" style="margin-left: 8px;">THEN</span>`;
-                const out = outputs[0];
-                html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(out.name)} IS</span>`;
-                let outOpts = out.mfs
-                    .map(
-                        (m) =>
-                            `<option value="${m.id}">${esc(m.label)}</option>`,
-                    )
-                    .join("");
-                html += `<select class="rule-select rule-out-sel" data-vid="${out.id}">${outOpts}</select>`;
+                outputs.forEach((out, idx) => {
+                    if (idx > 0) html += `<span class="rule-label">AND</span>`;
+                    html += `<span class="rule-label" style="color:var(--text); font-weight:400;">${esc(out.name)} IS</span>`;
+                    let outOpts = `<option value="NONE">-- None --</option>` +
+                        out.mfs
+                            .map(
+                                (m) =>
+                                    `<option value="${m.id}">${esc(m.label)}</option>`,
+                            )
+                            .join("");
+                    html += `<select class="rule-select rule-out-sel" data-vid="${out.id}">${outOpts}</select>`;
+                });
                 html += `<button class="btn btn-primary" id="ruleSubmitBtn" onclick="saveRuleFromBuilder()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
                 html += `<button class="btn" id="ruleCancelBtn" onclick="cancelRuleEdit()" style="padding:4px 10px; font-size:11px; display:none;">Cancel</button></div>`;
                 el.innerHTML = html;
@@ -7987,9 +8050,9 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             }
             function saveRuleFromBuilder() {
                 const inps = document.querySelectorAll(".rule-inp-sel"),
-                    out = document.querySelector(".rule-out-sel"),
+                    outs = document.querySelectorAll(".rule-out-sel"),
                     logic = document.getElementById("ruleLogicSelect").value;
-                if (!inps.length || !out) return;
+                if (!inps.length || !outs.length) return;
                 let conditions = {};
                 inps.forEach((sel) => {
                     if (sel.value !== "ANY")
@@ -7999,14 +8062,25 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     showToast("Please select at least one IF condition.");
                     return;
                 }
+                let conclusions = {};
+                outs.forEach((sel) => {
+                    if (sel.value !== "NONE")
+                        conclusions[sel.dataset.vid] = sel.value;
+                });
+                if (Object.keys(conclusions).length === 0) {
+                    showToast("Please select at least one THEN output.");
+                    return;
+                }
                 recordBeforeChange();
-                const conclusion = { varId: out.dataset.vid, mfId: out.value };
+                const firstOutId = Object.keys(conclusions)[0];
+                const legacyConclusion = { varId: firstOutId, mfId: conclusions[firstOutId] };
                 if (editingRuleId) {
                     const r = state.rules.find((x) => x.id === editingRuleId);
                     if (r) {
                         r.logic = logic;
                         r.conditions = conditions;
-                        r.conclusion = conclusion;
+                        r.conclusion = legacyConclusion;
+                        r.conclusions = conclusions;
                         showToast("Rule updated");
                     }
                     editingRuleId = null;
@@ -8015,7 +8089,8 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         id: uid("r"),
                         logic: logic,
                         conditions,
-                        conclusion,
+                        conclusion: legacyConclusion,
+                        conclusions,
                         enabled: true,
                         weight: 1.0,
                     });
@@ -8056,16 +8131,19 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                     `<b>${esc(v.name)}</b> IS <b>${esc(mf.label)}</b>`,
                                 );
                         }
-                        const outV = state.variables.find(
-                                (x) => x.id === r.conclusion.varId,
-                            ),
-                            outMF = outV?.mfs.find(
-                                (x) => x.id === r.conclusion.mfId,
-                            );
+                        const allConclusions = getRuleConclusions(r);
+                        let conStrs = [];
+                        for (let vid in allConclusions) {
+                            const v = state.variables.find((x) => x.id === vid),
+                                mf = v?.mfs.find((m) => m.id === allConclusions[vid]);
+                            if (v && mf)
+                                conStrs.push(`<b>${esc(v.name)}</b> IS <b>${esc(mf.label)}</b>`);
+                        }
+                        const thenStr = conStrs.length > 0 ? conStrs.join(" AND ") : "?";
                         const logicWord = r.logic === "OR" ? "OR" : "AND";
                         return `
       <div class="rule-chip">
-          <span style="${r.enabled === false ? "opacity:.5;" : ""}">${i + 1}. IF ${condStrs.join(` <i style="color:var(--text3); font-weight:normal;">${logicWord}</i> `)} THEN <b>${esc(outV?.name || "?")}</b> IS <b>${esc(outMF?.label || "?")}</b></span>
+          <span style="${r.enabled === false ? "opacity:.5;" : ""}">${i + 1}. IF ${condStrs.join(` <i style="color:var(--text3); font-weight:normal;">${logicWord}</i> `)} THEN ${thenStr}</span>
           <div class="rule-chip-controls">
             <label style="font-size:10px; display:flex; align-items:center; gap:2px; cursor:pointer;"><input type="checkbox" style="cursor:pointer;" ${r.enabled === false ? "" : "checked"} onchange="toggleRuleEnabled('${r.id}', this.checked)"> ON</label>
             <input type="number" step="0.1" min="0" max="1" value="${Number(r.weight ?? 1).toFixed(1)}" onchange="setRuleWeight('${r.id}', this.value)" title="Rule Weight">
@@ -8094,8 +8172,13 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     );
                     if (sel) sel.value = mfid;
                 });
-                const outSel = document.querySelector(".rule-out-sel");
-                if (outSel) outSel.value = r.conclusion.mfId;
+                const allConclusions = getRuleConclusions(r);
+                Object.entries(allConclusions).forEach(([vid, mfid]) => {
+                    const sel = document.querySelector(
+                        `.rule-out-sel[data-vid="${vid}"]`,
+                    );
+                    if (sel) sel.value = mfid;
+                });
                 const btn = document.getElementById("ruleSubmitBtn"),
                     cancelBtn = document.getElementById("ruleCancelBtn");
                 if (btn) btn.textContent = "Update Rule";
@@ -8118,6 +8201,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     logic: r.logic || "AND",
                     conditions: JSON.parse(JSON.stringify(r.conditions)),
                     conclusion: JSON.parse(JSON.stringify(r.conclusion)),
+                    conclusions: r.conclusions ? JSON.parse(JSON.stringify(r.conclusions)) : JSON.parse(JSON.stringify(getRuleConclusions(r))),
                     enabled: r.enabled !== false,
                     weight: Number(r.weight ?? 1),
                 });
@@ -8365,12 +8449,16 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                             return `${v?.name || vid} IS ${mf?.label || mfid}`;
                         })
                         .join(` ${r.logic || "AND"} `);
-                    const ov = state.variables.find(
-                            (x) => x.id === r.conclusion.varId,
-                        ),
-                        om = ov?.mfs.find((x) => x.id === r.conclusion.mfId);
+                    const allConcs = getRuleConclusions(r);
+                    const conStr = Object.entries(allConcs)
+                        .map(([vid, mfid]) => {
+                            const ov = state.variables.find((x) => x.id === vid),
+                                om = ov?.mfs.find((x) => x.id === mfid);
+                            return `${ov?.name || "?"} IS ${om?.label || "?"}`;
+                        })
+                        .join(" AND ");
                     lines.push(
-                        `${idx + 1}. IF ${cond} THEN ${ov?.name || "?"} IS ${om?.label || "?"} [enabled=${r.enabled !== false},weight=${Number(r.weight ?? 1).toFixed(2)}]`,
+                        `${idx + 1}. IF ${cond} THEN ${conStr || "?"} [enabled=${r.enabled !== false},weight=${Number(r.weight ?? 1).toFixed(2)}]`,
                     );
                 });
                 downloadText(
@@ -8398,14 +8486,18 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                             return `${v?.name || vid} IS ${mf?.label || mfid}`;
                         })
                         .join(` ${r.logic || "AND"} `);
-                    const ov = state.variables.find(
-                            (x) => x.id === r.conclusion.varId,
-                        ),
-                        om = ov?.mfs.find((x) => x.id === r.conclusion.mfId);
+                    const allConcs = getRuleConclusions(r);
+                    const conStr = Object.entries(allConcs)
+                        .map(([vid, mfid]) => {
+                            const ov = state.variables.find((x) => x.id === vid),
+                                om = ov?.mfs.find((x) => x.id === mfid);
+                            return `${ov?.name || "?"} IS ${om?.label || "?"}`;
+                        })
+                        .join(" AND ");
                     rws.push([
                         idx + 1,
                         cond,
-                        `${ov?.name || "?"} IS ${om?.label || "?"}`,
+                        conStr || "?",
                         r.logic || "AND",
                         r.enabled !== false,
                         Number(r.weight ?? 1).toFixed(2),
@@ -8494,12 +8586,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                     `${av.name.replace(/\s+/g, "_").toLowerCase()}['${amf.label.replace(/\s+/g, "_").toLowerCase()}']`,
                                 );
                         }
-                        const cv = state.variables.find(
-                                (v) => v.id === r.conclusion.varId,
-                            ),
-                            cmf = cv?.mfs.find(
-                                (m) => m.id === r.conclusion.mfId,
-                            );
+                        const allConcs = getRuleConclusions(r);
+                        const firstCid = Object.keys(allConcs)[0];
+                        const cv = state.variables.find((v) => v.id === firstCid),
+                            cmf = cv?.mfs.find((m) => m.id === allConcs[firstCid]);
                         if (cp.length > 0 && cv && cmf) {
                             c += `rule${i + 1}=ctrl.Rule(${cp.join(r.logic === "OR" ? "|" : "&")},${cv.name.replace(/\s+/g, "_").toLowerCase()}['${cmf.label.replace(/\s+/g, "_").toLowerCase()}'])\n`;
                         }
@@ -8568,8 +8658,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         );
                         return i >= 0 ? i + 1 : 0;
                     });
+                    const allConcs = getRuleConclusions(r);
+                    const firstMfId = Object.values(allConcs)[0];
                     const cI =
-                        oN.findIndex((id) => id === r.conclusion.mfId) + 1;
+                        oN.findIndex((id) => id === firstMfId) + 1;
                     return [
                         ...a,
                         cI > 0 ? cI : 1,
@@ -8631,9 +8723,11 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                             );
                             return i >= 0 ? i + 1 : 0;
                         });
+                        const allConcs = getRuleConclusions(r);
+                        const firstMfId = Object.values(allConcs)[0];
                         const c = outs[0]
                             ? outs[0].mfs.findIndex(
-                                  (m) => m.id === r.conclusion.mfId,
+                                  (m) => m.id === firstMfId,
                               ) + 1
                             : 1;
                         f += `${a.join(" ")},${c > 0 ? c : 1}(${Number(r.weight ?? 1).toFixed(2)}):${r.logic === "OR" ? 2 : 1}\n`;
@@ -9310,7 +9404,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 ) {
                     const mfIds = state.rules
                         .filter((r) => r.enabled !== false)
-                        .map((r) => r.conclusion.mfId);
+                        .flatMap((r) => Object.values(getRuleConclusions(r)));
                     if (mfIds.length > 0 && new Set(mfIds).size === 1) {
                         warnings.push({
                             type: "samemf",
@@ -9789,23 +9883,20 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                     );
                                 })
                                 .join(" " + r.logic + " ");
-                            var ov = state.variables.find(function (x) {
-                                return x.id === r.conclusion.varId;
-                            });
-                            var om = ov
-                                ? ov.mfs.find(function (m) {
-                                      return m.id === r.conclusion.mfId;
-                                  })
-                                : null;
+                            var allConcs = getRuleConclusions(r);
+                            var conParts = [];
+                            for (var cvid in allConcs) {
+                                var ov = state.variables.find(function (x) { return x.id === cvid; });
+                                var om = ov ? ov.mfs.find(function (m) { return m.id === allConcs[cvid]; }) : null;
+                                if (ov && om) conParts.push(ov.name + " IS " + om.label);
+                            }
                             return (
                                 "R" +
                                 (i + 1) +
                                 ": IF " +
                                 conds +
                                 " THEN " +
-                                (ov ? ov.name : "?") +
-                                " IS " +
-                                (om ? om.label : "?")
+                                (conParts.length > 0 ? conParts.join(" AND ") : "?")
                             );
                         })
                         .join(" | ") +
