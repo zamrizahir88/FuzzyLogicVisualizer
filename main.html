@@ -1142,7 +1142,7 @@
                 border-radius: 5px;
                 color: var(--text);
                 font-family: var(--sans);
-                font-size: 12px;
+                font-size: 13px;
                 font-weight: 600;
                 outline: none;
                 padding: 4px 8px;
@@ -1172,8 +1172,11 @@
                 padding: 4px 8px;
                 outline: none;
                 cursor: pointer;
-                min-width: 108px;
-                flex-shrink: 0;
+                width: 100%;
+            }
+            .mf-card-shape-row {
+                padding: 6px 10px;
+                border-bottom: 1px solid var(--border);
             }
             .mf-del-btn {
                 width: 24px;
@@ -2687,7 +2690,7 @@
                     flex-wrap: wrap;
                 }
                 .mf-label-input {
-                    font-size: 11px;
+                    font-size: 12px;
                     padding: 3px 6px;
                     min-width: 60px;
                     flex: 1 1 auto;
@@ -2695,8 +2698,7 @@
                 .mf-shape-select {
                     font-size: 10px;
                     padding: 3px 6px;
-                    min-width: 95px;
-                    flex-shrink: 1;
+                    width: 100%;
                 }
                 .mf-color-dot {
                     width: 14px;
@@ -5777,7 +5779,7 @@
                             `<div class="mf-param"><span class="mf-param-label">${p.key.toUpperCase()}</span><input class="${inputClass}" type="number" step="any" inputmode="decimal" value="${mf.params[p.key] ?? p.default}" oninput="updateMFParam('${v.id}','${mf.id}','${p.key}',+this.value)" title="${isValid ? "" : "Invalid geometry!"}"></div>`,
                     )
                     .join("");
-                return `<div class="mf-card" id="mfcard_${mf.id}"><div class="mf-card-header"><div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)" title="Click to change color"></div><input type="color" id="cp_${mf.id}" value="${mf.color}" class="mf-color-input-hidden" oninput="updateMFColor('${v.id}','${mf.id}',this.value)"><input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)" placeholder="MF label" title="Edit label"><select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();refreshAllCharts();buildSimulationPanel();" title="Select shape">${shapeOpts}</select><button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">${trashIcon}</button></div><div class="mf-params">${paramHTML}</div></div>`;
+                return `<div class="mf-card" id="mfcard_${mf.id}"><div class="mf-card-header"><div class="mf-color-dot" style="background:${mf.color}" onclick="pickColor('${v.id}','${mf.id}',this)" title="Click to change color"></div><input type="color" id="cp_${mf.id}" value="${mf.color}" class="mf-color-input-hidden" oninput="updateMFColor('${v.id}','${mf.id}',this.value)"><input class="mf-label-input" value="${esc(mf.label)}" oninput="updateMFProp('${v.id}','${mf.id}','label',this.value)" placeholder="MF label" title="Edit label"><button class="mf-del-btn" onclick="deleteMF('${v.id}','${mf.id}')" title="Delete MF">${trashIcon}</button></div><div class="mf-card-shape-row"><select class="mf-shape-select" onchange="updateMFProp('${v.id}','${mf.id}','shape',this.value);renderMFEditor();refreshAllCharts();buildSimulationPanel();" title="Select shape">${shapeOpts}</select></div><div class="mf-params">${paramHTML}</div></div>`;
             }
 
             function getMFParamDefs(shape) {
@@ -5835,8 +5837,6 @@
                     simRunning = false;
                     markDirty();
                     refreshAllCharts();
-                    // Only re-render list for name/label changes, not numeric
-                    if (prop === "name" || prop === "unit") renderVarLists();
                     updateRuleBuilder();
                     renderRules();
                     buildSimulationPanel();
