@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta
             name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+            content="width=device-width, initial-scale=1.0"
         />
         <title>FuzzyLogic Visualizer v2.5 - UniMAP</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -168,6 +168,7 @@
                 z-index: 1;
             }
             .nav-logo-text {
+                white-space: nowrap;
                 font-family: var(--display);
                 font-size: 22px;
                 font-weight: 800;
@@ -207,6 +208,7 @@
                 gap: 12px;
             }
             .nav-author {
+                white-space: nowrap;
                 font-size: 13px;
                 font-weight: 500;
                 color: var(--text2);
@@ -2738,6 +2740,135 @@
                     font-size: 10px;
                 }
             }
+            /* ── v2.5 layout fixes ── */
+            .toast {
+                z-index: 1200;
+            }
+            /* Compact header on laptops/desktops */
+            @media (min-width: 901px) {
+                .navbar {
+                    height: 60px;
+                }
+                .nav-center {
+                    flex-direction: row;
+                    gap: 14px;
+                }
+                .nav-logo-text {
+                    font-size: 20px;
+                }
+                .nav-author {
+                    padding: 4px 12px;
+                    font-size: 12px;
+                }
+                .toolbar-container {
+                    padding: 8px 14px;
+                    gap: 16px;
+                }
+            }
+            /* Phones/tablets: one compact header row, toolbar wraps instead of scrolling off-screen */
+            @media (max-width: 900px) {
+                .navbar {
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 12px;
+                    gap: 6px;
+                }
+                .nav-center {
+                    width: auto;
+                    align-items: flex-start;
+                    text-align: left;
+                    gap: 2px;
+                }
+                .nav-logo-group {
+                    justify-content: flex-start;
+                    flex-wrap: nowrap;
+                    gap: 8px;
+                }
+                .nav-logo-icon {
+                    width: 30px;
+                    height: 30px;
+                }
+                .nav-logo-text {
+                    font-size: 16px;
+                }
+                .nav-author {
+                    width: auto;
+                    justify-content: flex-start;
+                    margin-top: 0;
+                    padding: 0;
+                    font-size: 11px;
+                }
+                .nav-right {
+                    width: auto;
+                    padding-top: 0;
+                    gap: 8px;
+                    flex-wrap: nowrap;
+                }
+                .toolbar-container {
+                    flex-wrap: wrap !important;
+                    overflow-x: visible;
+                    justify-content: center;
+                    gap: 10px;
+                }
+                .toolbar-group {
+                    flex: 1 1 100%;
+                    align-items: stretch;
+                }
+                .toolbar-group-label {
+                    text-align: center;
+                    margin-bottom: 0;
+                }
+                .toolbar-group-buttons {
+                    flex-wrap: wrap !important;
+                    justify-content: center;
+                    gap: 6px;
+                }
+            }
+            /* ── Rule checker ── */
+            .rc-badge {
+                font-size: 10px;
+                padding: 1px 7px;
+                border-radius: 10px;
+                margin-left: 4px;
+                background: var(--surface3);
+                color: var(--text3);
+            }
+            .rc-badge-ok { background: rgba(18, 122, 65, 0.15); color: var(--success); }
+            .rc-badge-warn { background: rgba(184, 116, 0, 0.15); color: var(--warn); }
+            .rc-badge-err { background: var(--danger-bg); color: var(--danger); }
+            .rc-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+            .rc-empty, .rc-tip { font-size: 11px; color: var(--text3); padding: 4px 2px; }
+            .rc-summary { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+            .rc-meter { height: 6px; border-radius: 4px; background: var(--surface3); overflow: hidden; margin-top: 6px; }
+            .rc-meter > div { height: 100%; border-radius: 4px; transition: width 0.3s; }
+            .rc-item {
+                display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.4;
+                padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
+            }
+            .rc-item .rc-text { flex: 1; min-width: 0; }
+            .rc-error { border-color: rgba(217, 53, 69, 0.35); }
+            .rc-warn { border-color: rgba(184, 116, 0, 0.35); }
+            .rc-info { opacity: 0.85; }
+            .rc-ok { border-color: rgba(18, 122, 65, 0.35); }
+            .rc-btn { font-size: 11px !important; padding: 3px 8px !important; flex-shrink: 0; }
+            .rc-highlight { outline: 2px solid var(--warn); outline-offset: 1px; }
+            /* ── Control surface ── */
+            .surface-body { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+            .surface-controls { display: flex; flex-wrap: wrap; gap: 8px; font-size: 11px; color: var(--text2); }
+            .surface-controls label { display: flex; align-items: center; gap: 4px; }
+            .surface-controls select {
+                font-size: 11px; background: var(--surface); color: var(--text);
+                border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; max-width: 130px;
+            }
+            .surface-canvas { width: 100%; height: 300px; border-radius: 10px; background: var(--surface2); cursor: grab; touch-action: none; }
+            .surface-canvas:active { cursor: grabbing; }
+            .surface-canvas-large { height: min(70vh, 640px); }
+            .surface-modal-card { width: min(1000px, 96vw); }
+            .surface-note { font-size: 11px; color: var(--text3); line-height: 1.4; }
+            .surface-actions { display: flex; gap: 8px; justify-content: flex-end; }
+            .surface-actions .btn { font-size: 11px; padding: 4px 10px; }
         </style>
     </head>
     <body>
@@ -3243,6 +3374,32 @@
                         </div>
                     </div>
 
+                    <!-- Rule-base checker -->
+                    <div class="panel-right-section">
+                        <button
+                            class="collapsible-toggle collapsed"
+                            onclick="toggleCollapsible('ruleCheck')"
+                        >
+                            <svg
+                                viewBox="0 0 12 12"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <polyline points="2 4 6 8 10 4" />
+                            </svg>
+                            ✅ RULE CHECK
+                            <span id="ruleCheckBadge" class="rc-badge">–</span>
+                        </button>
+                        <div
+                            class="collapsible-body collapsible-body-scrollable collapsed"
+                            id="ruleCheckBody"
+                            style="max-height: 0"
+                        >
+                            <div class="rc-body" id="ruleCheckContent"></div>
+                        </div>
+                    </div>
+
                     <!-- Simulation Section -->
                     <div class="panel-right-section">
                         <button
@@ -3315,7 +3472,50 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Control surface -->
+                    <div class="panel-right-section">
+                        <button
+                            class="collapsible-toggle collapsed"
+                            onclick="toggleCollapsible('surface')"
+                        >
+                            <svg
+                                viewBox="0 0 12 12"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <polyline points="2 4 6 8 10 4" />
+                            </svg>
+                            🗻 CONTROL SURFACE
+                        </button>
+                        <div
+                            class="collapsible-body collapsible-body-scrollable collapsed"
+                            id="surfaceBody"
+                            style="max-height: 0"
+                        >
+                            <div class="surface-body">
+                                <div class="surface-controls" id="surfaceControls"></div>
+                                <canvas id="surfaceCanvas" class="surface-canvas"></canvas>
+                                <div class="surface-note" id="surfaceNote"></div>
+                                <div class="surface-actions">
+                                    <button class="btn btn-outline" onclick="openSurfaceModal()">⤢ Enlarge</button>
+                                    <button class="btn btn-outline" onclick="exportSurfacePNG()">PNG</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="surfaceModal" class="modal-backdrop" style="display: none" onclick="if (event.target === this) closeSurfaceModal()">
+            <div class="modal-card surface-modal-card">
+                <div class="modal-header">
+                    <h3>🗻 Control Surface</h3>
+                    <button class="icon-btn" onclick="closeSurfaceModal()" title="Close">✕</button>
+                </div>
+                <canvas id="surfaceCanvasLarge" class="surface-canvas surface-canvas-large"></canvas>
+                <div class="surface-note">Drag to rotate. Change X/Y/Output in the Control Surface panel.</div>
             </div>
         </div>
 
@@ -3366,7 +3566,7 @@
                                     class="dl-item"
                                     value="pdf_report"
                                 />
-                                PDF Report</label
+                                PDF Report (full)</label
                             >
                         </div>
                         <div>
@@ -3434,7 +3634,7 @@
                                     class="dl-item"
                                     value="cpp"
                                 />
-                                C++/ESP32</label
+                                C++ Arduino/ESP32 (.ino)</label
                             >
                         </div>
                     </div>
@@ -4165,26 +4365,28 @@
                 });
             }
             function applyWorkspace(s) {
-                const d = JSON.parse(s);
+                const d = typeof s === "string" ? JSON.parse(s) : s || {};
+                const clean = sanitizeProjectData(d);
                 historyIgnore = true;
-                state.variables = d.variables || [];
+                state.variables = clean.variables;
                 state.variables.forEach(ensureAnnotations);
-                state.rules = d.rules;
-                testTray = d.testTray || [];
-                state.fisType = d.fisType || "mamdani";
-                state.metadata = d.metadata || {
-                    author: "Dr. Zamri",
-                    institution: "Universiti Malaysia Perlis (UniMAP)",
+                state.rules = clean.rules;
+                testTray = clean.testTray;
+                state.fisType = "mamdani";
+                state.metadata = {
+                    author: String(d.metadata?.author ?? "Dr. Zamri").slice(0, 100),
+                    institution: String(
+                        d.metadata?.institution ??
+                            "Universiti Malaysia Perlis (UniMAP)",
+                    ).slice(0, 150),
                 };
                 if (d.projectName !== undefined)
-                    document.getElementById("projectName").value =
-                        d.projectName;
-                if (d.defuzz)
-                    document.getElementById("defuzzMethod").value = d.defuzz;
-                if (d.andMethod)
-                    document.getElementById("andMethod").value = d.andMethod;
-                if (d.orMethod)
-                    document.getElementById("orMethod").value = d.orMethod;
+                    document.getElementById("projectName").value = String(
+                        d.projectName,
+                    ).slice(0, 120);
+                if (d.defuzz) pickOption("defuzzMethod", d.defuzz);
+                if (d.andMethod) pickOption("andMethod", d.andMethod);
+                if (d.orMethod) pickOption("orMethod", d.orMethod);
                 const descEl = document.getElementById("projectDescInput");
                 if (descEl) {
                     descEl.value = (d.description !== undefined) ? d.description : "";
@@ -4239,6 +4441,183 @@
             function clearHistoryStacks() {
                 undoStack = [];
                 redoStack = [];
+            }
+
+            // ── SECURITY: clean any project data that comes from outside ──
+            // (shared links, cloud, .fuzzyjson files). IDs and colours are
+            // inserted into HTML/onclick handlers, so they must be safe.
+            const SAFE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+            const SAFE_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
+            const MF_SHAPES = [
+                "triangular",
+                "trapezoidal",
+                "gaussian",
+                "bell",
+                "sigmoidal",
+                "singleton",
+            ];
+            function sanitizeProjectData(d) {
+                d = d && typeof d === "object" ? d : {};
+                const idMap = {};
+                const safeId = (id, prefix) => {
+                    const key = String(id ?? "");
+                    if (idMap[key]) return idMap[key];
+                    const out = SAFE_ID_RE.test(key) ? key : uid(prefix);
+                    idMap[key] = out;
+                    return out;
+                };
+                const num = (x, def = 0) => {
+                    const n = Number(x);
+                    return Number.isFinite(n) ? n : def;
+                };
+                const str = (x, max = 200) =>
+                    String(x ?? "").slice(0, max);
+                const color = (c, i) =>
+                    SAFE_COLOR_RE.test(String(c || "").trim())
+                        ? String(c).trim()
+                        : COLORS[i % COLORS.length];
+
+                const variables = (Array.isArray(d.variables) ? d.variables : [])
+                    .filter((v) => v && typeof v === "object")
+                    .map((v, vi) => {
+                        const mfIdMap = {};
+                        const min = num(v.min, 0);
+                        let max = num(v.max, 100);
+                        if (max <= min) max = min + 1;
+                        const mfs = (Array.isArray(v.mfs) ? v.mfs : [])
+                            .filter((m) => m && typeof m === "object")
+                            .map((m, mi) => {
+                                const params = {};
+                                if (m.params && typeof m.params === "object")
+                                    for (const k of Object.keys(m.params))
+                                        if (/^[a-z]{1,10}$/i.test(k))
+                                            params[k] = num(m.params[k]);
+                                const newId = SAFE_ID_RE.test(String(m.id))
+                                    ? String(m.id)
+                                    : uid("mf");
+                                mfIdMap[String(m.id)] = newId;
+                                return {
+
+                                    id: newId,
+                                    label: str(m.label, 60) || "MF" + (mi + 1),
+                                    shape: MF_SHAPES.includes(m.shape)
+                                        ? m.shape
+                                        : "triangular",
+                                    color: color(m.color, mi),
+                                    params,
+                                };
+                            });
+                        const annotations = (
+                            Array.isArray(v.annotations) ? v.annotations : []
+                        )
+                            .filter((a) => a && typeof a === "object")
+                            .map((a) => ({
+                                id: SAFE_ID_RE.test(String(a.id))
+                                    ? String(a.id)
+                                    : uid("a"),
+                                text: str(a.text, 200),
+                                x: num(a.x),
+                                y: num(a.y),
+                            }));
+                        const out = {
+                            id: safeId(v.id, "v"),
+                            name: str(v.name, 60) || "Variable " + (vi + 1),
+                            type: v.type === "output" ? "output" : "input",
+                            min,
+                            max,
+                            unit: str(v.unit, 20),
+                            mfs,
+                            annotations,
+                        };
+                        out._mfIdMap = mfIdMap;
+                        return out;
+                    });
+
+                const varById = {};
+                variables.forEach((v) => (varById[v.id] = v));
+                const mapPair = (vid, mfid) => {
+                    const v = varById[idMap[String(vid)]];
+                    if (!v) return null;
+                    const m = v._mfIdMap[String(mfid)];
+                    return m ? [v.id, m] : null;
+                };
+                const mapPairs = (obj) => {
+                    const res = {};
+                    if (obj && typeof obj === "object")
+                        for (const [vid, mfid] of Object.entries(obj)) {
+                            const p = mapPair(vid, mfid);
+                            if (p) res[p[0]] = p[1];
+                        }
+                    return res;
+                };
+
+                const rules = (Array.isArray(d.rules) ? d.rules : [])
+                    .filter((r) => r && typeof r === "object")
+                    .map((r) => {
+                        const conditions = mapPairs(r.conditions);
+                        let conclusions = mapPairs(r.conclusions);
+                        if (
+                            !Object.keys(conclusions).length &&
+                            r.conclusion &&
+                            r.conclusion.varId
+                        ) {
+                            const p = mapPair(
+                                r.conclusion.varId,
+                                r.conclusion.mfId,
+                            );
+                            if (p) conclusions = { [p[0]]: p[1] };
+                        }
+                        const firstOut = Object.keys(conclusions)[0];
+                        return {
+                            id: SAFE_ID_RE.test(String(r.id))
+                                ? String(r.id)
+                                : uid("r"),
+                            logic: r.logic === "OR" ? "OR" : "AND",
+                            conditions,
+                            conclusion: firstOut
+                                ? { varId: firstOut, mfId: conclusions[firstOut] }
+                                : {},
+                            conclusions,
+                            enabled: r.enabled !== false,
+                            weight: Math.max(0, Math.min(1, num(r.weight, 1))),
+                        };
+                    });
+
+                const remapValues = (obj) => {
+                    const res = {};
+                    if (obj && typeof obj === "object")
+                        for (const [vid, val] of Object.entries(obj)) {
+                            const nv = idMap[String(vid)];
+                            if (nv && varById[nv])
+                                res[nv] = val === null ? null : num(val);
+                        }
+                    return res;
+                };
+                const testTrayClean = (Array.isArray(d.testTray) ? d.testTray : [])
+                    .filter((tc) => tc && typeof tc === "object")
+                    .map((tc) => ({
+                        inputs: remapValues(tc.inputs),
+                        outputs: remapValues(tc.outputs),
+                        defuzzMethod: [
+                            "centroid",
+                            "bisector",
+                            "mom",
+                            "som",
+                            "lom",
+                        ].includes(tc.defuzzMethod)
+                            ? tc.defuzzMethod
+                            : "centroid",
+                        timestamp: str(tc.timestamp, 40),
+                    }));
+
+                variables.forEach((v) => delete v._mfIdMap);
+                return { variables, rules, testTray: testTrayClean };
+            }
+            function pickOption(selectId, value) {
+                const sel = document.getElementById(selectId);
+                if (!sel) return;
+                if ([...sel.options].some((o) => o.value === value))
+                    sel.value = value;
             }
 
             const trashIcon = `<svg class="svg-trash" viewBox="0 0 24 24"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
@@ -5687,7 +6066,7 @@
             <button type="button" class="var-reorder-btn" ${canDown ? "" : "disabled"} onclick="moveVariable('${v.id}',1)" title="Move down">▼</button>
           </div>
           <div class="var-type-dot dot-${type}"></div>
-          <input class="var-name-input" value="${esc(v.name)}" oninput="updateVarProp('${v.id}','name',this.value)" onclick="event.stopPropagation()" style="flex:1;min-width:0;">
+          <input class="var-name-input" value="${esc(v.name)}" title="${esc(v.name)}" oninput="this.title=this.value;updateVarProp('${v.id}','name',this.value)" onclick="event.stopPropagation()" style="flex:1;min-width:0;">
           <span class="var-mf-count">${v.mfs.length} MF</span>
           <button class="var-del" onclick="deleteVariable('${v.id}',event)" title="Delete Variable">${trashIcon}</button>
         </div>
@@ -5949,28 +6328,17 @@
             function evalMF(mf, x) {
                 const p = mf.params;
                 switch (mf.shape) {
+                    // Shoulder shapes (e.g. a = b at the range edge) must give 1 at the peak
                     case "triangular":
-                        return x <= p.a || x >= p.c
-                            ? 0
-                            : x <= p.b
-                              ? p.b === p.a
-                                  ? 1
-                                  : (x - p.a) / (p.b - p.a)
-                              : p.c === p.b
-                                ? 1
-                                : (p.c - x) / (p.c - p.b);
+                        if (x < p.a || x > p.c) return 0;
+                        if (x === p.b) return 1;
+                        if (x < p.b) return (x - p.a) / (p.b - p.a);
+                        return (p.c - x) / (p.c - p.b);
                     case "trapezoidal":
-                        return x <= p.a || x >= p.d
-                            ? 0
-                            : x >= p.b && x <= p.c
-                              ? 1
-                              : x < p.b
-                                ? p.b === p.a
-                                    ? 1
-                                    : (x - p.a) / (p.b - p.a)
-                                : p.d === p.c
-                                  ? 1
-                                  : (p.d - x) / (p.d - p.c);
+                        if (x < p.a || x > p.d) return 0;
+                        if (x >= p.b && x <= p.c) return 1;
+                        if (x < p.b) return (x - p.a) / (p.b - p.a);
+                        return (p.d - x) / (p.d - p.c);
                     case "gaussian":
                         return Math.exp(
                             -0.5 * Math.pow((x - p.mean) / p.sigma, 2),
@@ -7722,6 +8090,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                     },
                                     stepSize: 0.2,
                                 },
+                                // Axis goes slightly above 1 so the peak line is visible, but ticks stop at 1.0
+                                afterBuildTicks: (axis) => {
+                                    axis.ticks = [0, 0.2, 0.4, 0.6, 0.8, 1].map((v) => ({ value: v }));
+                                },
                                 grid: { color: getAxisGridColor() },
                                 border: { color: getAxisColor(), width: 2 },
                             },
@@ -7868,6 +8240,15 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             function exportChartSVG(vid) {
                 const v = state.variables.find((x) => x.id === vid);
                 if (!v) return;
+                const svg = buildChartSVG(v);
+                downloadText(
+                    svg,
+                    `${v.name.replace(/[^\w-]+/g, "_")}_MF.svg`,
+                    "image/svg+xml",
+                );
+                showToast(`SVG exported`);
+            }
+            function buildChartSVG(v) {
                 const W = 780,
                     H = 400,
                     PL = 70,
@@ -7949,7 +8330,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 let legX = PL,
                     legendItems = v.mfs
                         .map((mf) => {
-                            const item = `<circle cx="${legX + 7}" cy="${H - 12}" r="6" fill="${mf.color}"/><text x="${legX + 16}" y="${H - 6}" fill="${mf.color}" font-family="sans-serif" font-size="13" font-weight="bold">${mf.label}</text>`;
+                            const item = `<circle cx="${legX + 7}" cy="${H - 12}" r="6" fill="${mf.color}"/><text x="${legX + 16}" y="${H - 6}" fill="${mf.color}" font-family="sans-serif" font-size="13" font-weight="bold">${esc(mf.label)}</text>`;
                             legX += mf.label.length * 8 + 32;
                             return item;
                         })
@@ -7966,13 +8347,8 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 const wmX = PL + cW / 2,
                     wmY = PT + cH / 2;
                 const watermarkSvg = `<text x="${wmX.toFixed(1)}" y="${wmY.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="#999" font-family="sans-serif" font-size="22" font-weight="600" opacity="0.07" transform="rotate(-22,${wmX.toFixed(1)},${wmY.toFixed(1)})">FuzzyLogic Visualizer v2.5 — Zamm Studio</text>`;
-                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#ffffff;font-family:sans-serif;"><rect width="${W}" height="${H}" fill="#ffffff" rx="0"/><text x="${W / 2}" y="20" text-anchor="middle" fill="#1A1D2E" font-family="'Syne',sans-serif" font-size="16" font-weight="bold">${v.name} — Membership Functions</text>${xTicksHTML}${yTicksHTML}${paths}${watermarkSvg}<text x="${W / 2}" y="${PT + cH + 40}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold">${v.name}${v.unit ? ` (${v.unit})` : ""}</text><text x="14" y="${PT + cH / 2}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold" transform="rotate(-90,14,${PT + cH / 2})">μ(x)</text><line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/><line x1="${PL}" y1="${PT + cH}" x2="${PL + cW}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/>${legendItems}</svg>`;
-                const blob = new Blob([svg], { type: "image/svg+xml" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = `${v.name.replace(/\s+/g, "_")}_MF.svg`;
-                link.click();
-                showToast(`SVG exported`);
+                const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#ffffff;font-family:sans-serif;"><rect width="${W}" height="${H}" fill="#ffffff" rx="0"/><text x="${W / 2}" y="20" text-anchor="middle" fill="#1A1D2E" font-family="'Syne',sans-serif" font-size="16" font-weight="bold">${esc(v.name)} — Membership Functions</text>${xTicksHTML}${yTicksHTML}${paths}${watermarkSvg}<text x="${W / 2}" y="${PT + cH + 40}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold">${esc(v.name)}${v.unit ? ` (${esc(v.unit)})` : ""}</text><text x="14" y="${PT + cH / 2}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold" transform="rotate(-90,14,${PT + cH / 2})">μ(x)</text><line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/><line x1="${PL}" y1="${PT + cH}" x2="${PL + cW}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/>${legendItems}</svg>`;
+                return svg;
             }
             function exportAllSVG() {
                 state.variables.forEach((v, i) => {
@@ -8314,49 +8690,46 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 reader.onload = (e) => {
                     try {
                         const d = JSON.parse(e.target.result);
-                        document.getElementById("projectName").value =
-                            d.meta?.name || "Loaded Project";
-                        if (d.meta?.fisType) setFIS(d.meta.fisType);
-                        if (d.meta?.defuzz)
-                            document.getElementById("defuzzMethod").value =
-                                d.meta.defuzz;
-                        if (d.meta?.andMethod)
-                            document.getElementById("andMethod").value =
-                                d.meta.andMethod;
-                        if (d.meta?.orMethod)
-                            document.getElementById("orMethod").value =
-                                d.meta.orMethod;
+                        document.getElementById("projectName").value = String(
+                            d.meta?.name || "Loaded Project",
+                        ).slice(0, 120);
+                        if (d.meta?.defuzz) pickOption("defuzzMethod", d.meta.defuzz);
+                        if (d.meta?.andMethod) pickOption("andMethod", d.meta.andMethod);
+                        if (d.meta?.orMethod) pickOption("orMethod", d.meta.orMethod);
                         clearHistoryStacks();
-                        state.variables = d.variables || [];
-                        state.variables.forEach(ensureAnnotations);
-                        state.metadata.author = d.meta?.author || "Dr. Zamri";
-                        state.metadata.institution =
-                            d.meta?.institution ||
-                            "Universiti Malaysia Perlis (UniMAP)";
-                        state.rules = (d.rules || []).map((r) => {
-                            if (r.conditions)
-                                return {
-                                    ...r,
-                                    logic: r.logic || "AND",
-                                    enabled: r.enabled !== false,
-                                    weight: Number(r.weight ?? 1),
-                                };
-                            return {
-                                id: r.id || uid("r"),
-                                logic: "AND",
-                                conditions:
-                                    r.antVar && r.antMF
-                                        ? { [r.antVar]: r.antMF }
-                                        : {},
-                                conclusion: {
-                                    varId: r.consVar,
-                                    mfId: r.consMF,
-                                },
-                                enabled: true,
-                                weight: 1.0,
-                            };
+                        // Convert very old rule format, then sanitize everything
+                        const legacyRules = (d.rules || []).map((r) =>
+                            r && !r.conditions
+                                ? {
+                                      id: r.id,
+                                      logic: "AND",
+                                      conditions:
+                                          r.antVar && r.antMF
+                                              ? { [r.antVar]: r.antMF }
+                                              : {},
+                                      conclusion: {
+                                          varId: r.consVar,
+                                          mfId: r.consMF,
+                                      },
+                                  }
+                                : r,
+                        );
+                        const clean = sanitizeProjectData({
+                            variables: d.variables,
+                            rules: legacyRules,
+                            testTray: d.testTray,
                         });
-                        testTray = d.testTray || [];
+                        state.variables = clean.variables;
+                        state.variables.forEach(ensureAnnotations);
+                        state.metadata.author = String(
+                            d.meta?.author || "Dr. Zamri",
+                        ).slice(0, 100);
+                        state.metadata.institution = String(
+                            d.meta?.institution ||
+                                "Universiti Malaysia Perlis (UniMAP)",
+                        ).slice(0, 150);
+                        state.rules = clean.rules;
+                        testTray = clean.testTray;
                         activeVarId = null;
                         simInputValues = {};
                         simResults = null;
@@ -8429,312 +8802,390 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 closeDownloadCenter();
             }
 
-            // Export stubs (abbreviated - full versions preserved from original)
+            // ============================================================
+            //  EXPORTS (rules, Python, MATLAB, FIS, C++, PDF report)
+            // ============================================================
+            function getProjectName() {
+                return (
+                    (document.getElementById("projectName")?.value || "").trim() ||
+                    "fuzzy_project"
+                );
+            }
+            function fileBase() {
+                return (
+                    getProjectName()
+                        .replace(/[^\w-]+/g, "_")
+                        .replace(/^_+|_+$/g, "") || "fuzzy_project"
+                );
+            }
+            const RESERVED_IDENTS = new Set(
+                "and or not if else elif for while in is end function return class def lambda import from as pass none true false int float double void const struct switch case break continue do char long short static input output fis rule rules".split(
+                    " ",
+                ),
+            );
+            // Turn any name into a safe, unique code identifier
+            function makeIdent(s, used, fallback) {
+                let id = String(s || "")
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "_")
+                    .replace(/^_+|_+$/g, "");
+                if (!id) id = fallback;
+                if (/^[0-9]/.test(id)) id = "v_" + id;
+                if (RESERVED_IDENTS.has(id)) id += "_";
+                const base = id;
+                let k = 2;
+                while (used.has(id)) id = base + "_" + k++;
+                used.add(id);
+                return id;
+            }
+            function fmtN(n) {
+                const x = Number(n);
+                return Number.isFinite(x) ? String(+x.toFixed(6)) : "0";
+            }
+            function oneLine(s) {
+                return String(s ?? "").replace(/[\r\n]+/g, " ");
+            }
+            // Readable "IF ... THEN ..." text for a rule
+            function ruleText(r) {
+                const cond = Object.entries(r.conditions || {})
+                    .map(([vid, mfid]) => {
+                        const v = state.variables.find((x) => x.id === vid),
+                            mf = v?.mfs.find((m) => m.id === mfid);
+                        return `${v?.name || "?"} IS ${mf?.label || "?"}`;
+                    })
+                    .join(` ${r.logic || "AND"} `);
+                const conStr = Object.entries(getRuleConclusions(r))
+                    .map(([vid, mfid]) => {
+                        const v = state.variables.find((x) => x.id === vid),
+                            mf = v?.mfs.find((m) => m.id === mfid);
+                        return `${v?.name || "?"} IS ${mf?.label || "?"}`;
+                    })
+                    .join(" AND ");
+                return `IF ${cond || "?"} THEN ${conStr || "?"}`;
+            }
+
+            // One shared model for every code export, so they all agree
+            function buildExportModel() {
+                syncSettings();
+                const usedVar = new Set();
+                const vars = state.variables.map((v, i) => {
+                    const usedMf = new Set();
+                    return {
+                        id: v.id,
+                        name: v.name,
+                        type: v.type,
+                        min: Number(v.min),
+                        max: Number(v.max),
+                        unit: v.unit || "",
+                        ident: makeIdent(v.name, usedVar, "var" + (i + 1)),
+                        mfs: v.mfs.map((m, j) => ({
+                            id: m.id,
+                            label: m.label,
+                            shape: m.shape,
+                            p: m.params || {},
+                            ident: makeIdent(m.label, usedMf, "mf" + (j + 1)),
+                        })),
+                    };
+                });
+                const ins = vars.filter((x) => x.type === "input"),
+                    outs = vars.filter((x) => x.type === "output");
+                const byId = Object.fromEntries(vars.map((x) => [x.id, x]));
+                const skipped = [];
+                const rules = [];
+                state.rules.forEach((r, idx) => {
+                    if (r.enabled === false) return;
+                    const conds = [],
+                        concs = [];
+                    for (const [vid, mfid] of Object.entries(r.conditions || {})) {
+                        const xv = byId[vid],
+                            xm = xv?.mfs.find((m) => m.id === mfid);
+                        if (xv && xm && xv.type === "input")
+                            conds.push({ v: xv, m: xm });
+                    }
+                    for (const [vid, mfid] of Object.entries(
+                        getRuleConclusions(r),
+                    )) {
+                        const xv = byId[vid],
+                            xm = xv?.mfs.find((m) => m.id === mfid);
+                        if (xv && xm && xv.type === "output")
+                            concs.push({ v: xv, m: xm });
+                    }
+                    if (!conds.length || !concs.length) {
+                        skipped.push(idx + 1);
+                        return;
+                    }
+                    rules.push({
+                        index: idx + 1,
+                        text: ruleText(r),
+                        logic: r.logic === "OR" ? "OR" : "AND",
+                        weight: Math.max(0, Math.min(1, Number(r.weight ?? 1))),
+                        conds,
+                        concs,
+                    });
+                });
+                // Example inputs = current simulation sliders (or mid-range)
+                const sample = {};
+                ins.forEach((x) => {
+                    const sv = Number(simInputValues[x.id]);
+                    sample[x.id] = Number.isFinite(sv) ? sv : (x.min + x.max) / 2;
+                });
+                let appResult = {};
+                try {
+                    const res = SimulationEngine.run(sample);
+                    if (res && res.outputs)
+                        for (const id in res.outputs)
+                            appResult[id] = res.outputs[id].crispValue;
+                } catch (e) {}
+                return {
+                    vars,
+                    ins,
+                    outs,
+                    rules,
+                    skipped,
+                    sample,
+                    appResult,
+                    defuzz: state.defuzz || "centroid",
+                    andMethod: state.andMethod || "min",
+                    orMethod: state.orMethod || "max",
+                };
+            }
+            function checkExportable(model) {
+                if (!model.ins.length || !model.outs.length) {
+                    showToast("Add at least 1 input and 1 output first.");
+                    return false;
+                }
+                if (!model.rules.length) {
+                    showToast("Add at least 1 complete rule first.");
+                    return false;
+                }
+                if (model.skipped.length)
+                    showToast(
+                        `Note: skipped incomplete rule(s) ${model.skipped.join(", ")}`,
+                    );
+                return true;
+            }
+            function exportHeaderLines(prefix) {
+                return [
+                    `${prefix} Generated by FuzzyLogic Visualizer v2.5`,
+                    `${prefix} Project: ${oneLine(getProjectName())}`,
+                    `${prefix} Author: ${oneLine(state.metadata.author)} (${oneLine(state.metadata.institution)})`,
+                    `${prefix} Date: ${new Date().toISOString().slice(0, 10)}`,
+                ];
+            }
+
+            // ── Rule exports ──
             function exportRulesTXT() {
-                const name =
-                    document.getElementById("projectName").value || "Project";
                 const lines = [
                     `FuzzyLogic Visualizer v2.5`,
-                    `System: ${name}`,
+                    `System: ${getProjectName()}`,
                     `Author: ${state.metadata.author}`,
                     `Institution: ${state.metadata.institution}`,
                     `Date: ${new Date().toISOString()}`,
-                    ` `,
+                    ``,
                 ];
                 state.rules.forEach((r, idx) => {
-                    const cond = Object.entries(r.conditions)
-                        .map(([vid, mfid]) => {
-                            const v = state.variables.find((x) => x.id === vid),
-                                mf = v?.mfs.find((m) => m.id === mfid);
-                            return `${v?.name || vid} IS ${mf?.label || mfid}`;
-                        })
-                        .join(` ${r.logic || "AND"} `);
-                    const allConcs = getRuleConclusions(r);
-                    const conStr = Object.entries(allConcs)
-                        .map(([vid, mfid]) => {
-                            const ov = state.variables.find((x) => x.id === vid),
-                                om = ov?.mfs.find((x) => x.id === mfid);
-                            return `${ov?.name || "?"} IS ${om?.label || "?"}`;
-                        })
-                        .join(" AND ");
                     lines.push(
-                        `${idx + 1}. IF ${cond} THEN ${conStr || "?"} [enabled=${r.enabled !== false},weight=${Number(r.weight ?? 1).toFixed(2)}]`,
+                        `${idx + 1}. ${ruleText(r)} [enabled=${r.enabled !== false}, weight=${Number(r.weight ?? 1).toFixed(2)}]`,
                     );
                 });
-                downloadText(
-                    lines.join("\n"),
-                    `${name.replace(/\s+/g, "_")}_rules.txt`,
-                    "text/plain",
-                );
+                downloadText(lines.join("\n"), `${fileBase()}_rules.txt`, "text/plain");
             }
             function exportRulesCSV() {
                 const rws = [
-                    [
-                        "index",
-                        "if_conditions",
-                        "then_output",
-                        "logic_operator",
-                        "enabled",
-                        "weight",
-                    ],
+                    ["index", "if_conditions", "then_output", "logic_operator", "enabled", "weight"],
                 ];
                 state.rules.forEach((r, idx) => {
-                    const cond = Object.entries(r.conditions)
-                        .map(([vid, mfid]) => {
-                            const v = state.variables.find((x) => x.id === vid),
-                                mf = v?.mfs.find((m) => m.id === mfid);
-                            return `${v?.name || vid} IS ${mf?.label || mfid}`;
-                        })
-                        .join(` ${r.logic || "AND"} `);
-                    const allConcs = getRuleConclusions(r);
-                    const conStr = Object.entries(allConcs)
-                        .map(([vid, mfid]) => {
-                            const ov = state.variables.find((x) => x.id === vid),
-                                om = ov?.mfs.find((x) => x.id === mfid);
-                            return `${ov?.name || "?"} IS ${om?.label || "?"}`;
-                        })
-                        .join(" AND ");
+                    const t = ruleText(r);
+                    const [ifPart, thenPart] = t.slice(3).split(" THEN ");
                     rws.push([
                         idx + 1,
-                        cond,
-                        conStr || "?",
+                        ifPart,
+                        thenPart,
                         r.logic || "AND",
                         r.enabled !== false,
                         Number(r.weight ?? 1).toFixed(2),
                     ]);
                 });
                 downloadText(
-                    rws
-                        .map((r) =>
-                            r
-                                .map(
-                                    (x) => `"${String(x).replace(/"/g, '""')}"`,
-                                )
-                                .join(","),
-                        )
-                        .join("\n"),
-                    `${(document.getElementById("projectName").value || "project").replace(/\s+/g, "_")}_rules.csv`,
+                    "\ufeff" +
+                        rws
+                            .map((r) =>
+                                r.map((x) => `"${String(x).replace(/"/g, '""')}"`).join(","),
+                            )
+                            .join("\r\n"),
+                    `${fileBase()}_rules.csv`,
                     "text/csv",
                 );
             }
             function exportRulesJSON() {
+                syncSettings();
+                const nameOf = (vid, mfid) => {
+                    const v = state.variables.find((x) => x.id === vid);
+                    return {
+                        variable: v?.name ?? "?",
+                        is: v?.mfs.find((m) => m.id === mfid)?.label ?? "?",
+                    };
+                };
+                const data = {
+                    generator: "FuzzyLogic Visualizer v2.5",
+                    project: getProjectName(),
+                    exported: new Date().toISOString(),
+                    settings: {
+                        type: "mamdani",
+                        and: state.andMethod,
+                        or: state.orMethod,
+                        implication: "min",
+                        aggregation: "max",
+                        defuzzification: state.defuzz,
+                    },
+                    variables: state.variables.map((v) => ({
+                        name: v.name,
+                        type: v.type,
+                        range: [v.min, v.max],
+                        unit: v.unit || "",
+                        mfs: v.mfs.map((m) => ({
+                            label: m.label,
+                            shape: m.shape,
+                            params: m.params,
+                        })),
+                    })),
+                    rules: state.rules.map((r, i) => ({
+                        number: i + 1,
+                        text: ruleText(r),
+                        if: Object.entries(r.conditions || {}).map(([a, b]) => nameOf(a, b)),
+                        logic: r.logic || "AND",
+                        then: Object.entries(getRuleConclusions(r)).map(([a, b]) => nameOf(a, b)),
+                        weight: Number(r.weight ?? 1),
+                        enabled: r.enabled !== false,
+                    })),
+                };
                 downloadText(
-                    JSON.stringify(state.rules, null, 2),
-                    `${(document.getElementById("projectName").value || "project").replace(/\s+/g, "_")}_rules.json`,
+                    JSON.stringify(data, null, 2),
+                    `${fileBase()}_rules.json`,
                     "application/json",
                 );
             }
-            function exportPDFReport() {
-                html2canvas(document.body, {
-                    backgroundColor: "#f3f7ff",
-                    scale: 1,
-                }).then((canvas) => {
-                    const l = document.createElement("a"),
-                        n = (
-                            document.getElementById("projectName").value ||
-                            "project"
-                        ).replace(/\s+/g, "_");
-                    l.download = `${n}_report.png`;
-                    l.href = canvas.toDataURL("image/png", 1.0);
-                    l.click();
-                    showToast("Report snapshot exported");
-                });
-            }
+
             function downloadText(c, f, m) {
                 const b = new Blob([c], { type: m || "text/plain" });
+                downloadBlob(b, f);
+            }
+            function downloadBlob(b, f) {
                 const l = document.createElement("a");
                 l.href = URL.createObjectURL(b);
                 l.download = f;
+                document.body.appendChild(l);
                 l.click();
+                l.remove();
+                setTimeout(() => URL.revokeObjectURL(l.href), 10000);
+            }
+
+            // ── Python (scikit-fuzzy) ──
+            function pyMF(f, uni) {
+                const p = f.p;
+                switch (f.shape) {
+                    case "triangular":
+                        return `fuzz.trimf(${uni}, [${fmtN(p.a)}, ${fmtN(p.b)}, ${fmtN(p.c)}])`;
+                    case "trapezoidal":
+                        return `fuzz.trapmf(${uni}, [${fmtN(p.a)}, ${fmtN(p.b)}, ${fmtN(p.c)}, ${fmtN(p.d)}])`;
+                    case "gaussian":
+                        return `fuzz.gaussmf(${uni}, ${fmtN(p.mean)}, ${fmtN(p.sigma)})`;
+                    case "bell":
+                        return `fuzz.gbellmf(${uni}, ${fmtN(p.a)}, ${fmtN(p.b)}, ${fmtN(p.c)})`;
+                    case "sigmoidal":
+                        // skfuzzy.sigmf(x, center, slope)
+                        return `fuzz.sigmf(${uni}, ${fmtN(p.c)}, ${fmtN(p.a)})`;
+                    case "singleton":
+                        return `np.where(np.abs(${uni} - ${fmtN(p.x)}) < 0.5, 1.0, 0.0)`;
+                    default:
+                        return `np.zeros_like(${uni})`;
+                }
             }
             function exportPythonCode() {
-                const pn =
-                    document.getElementById("projectName").value ||
-                    "fuzzy_project";
-                let c = `# FuzzyLogic Visualizer v2.5\n# Project: ${pn}\n\nimport numpy as np\nimport skfuzzy as fuzz\nfrom skfuzzy import control as ctrl\nimport matplotlib.pyplot as plt\n\n`;
-                const ins = state.variables.filter((v) => v.type === "input"),
-                    outs = state.variables.filter((v) => v.type === "output");
-                ins.forEach((v) => {
-                    const sn = v.name.replace(/\s+/g, "_").toLowerCase();
-                    c += `${sn}=ctrl.Antecedent(np.linspace(${v.min},${v.max},500),'${sn}')\n`;
-                    v.mfs.forEach((mf) => {
-                        c += `${sn}['${mf.label.replace(/\s+/g, "_").toLowerCase()}']=fuzz.${pyMF(mf)}\n`;
+                const m = buildExportModel();
+                if (!checkExportable(m)) return;
+                const L = [
+                    ...exportHeaderLines("#"),
+                    "#",
+                    "# Install once:  pip install scikit-fuzzy numpy matplotlib networkx scipy",
+                    "# Run:           python " + fileBase() + "_fuzzy.py",
+                    "",
+                    "import numpy as np",
+                    "import skfuzzy as fuzz",
+                    "from skfuzzy import control as ctrl",
+                    "import matplotlib.pyplot as plt",
+                    "",
+                    "# ---- Inference settings (same as the website) ----",
+                    m.andMethod === "prod"
+                        ? "AND_FUNC = np.multiply          # AND = prod"
+                        : "AND_FUNC = np.fmin              # AND = min",
+                    m.orMethod === "probor"
+                        ? "OR_FUNC = lambda a, b: a + b - a * b   # OR = probor"
+                        : "OR_FUNC = np.fmax               # OR = max",
+                    "",
+                ];
+                const resolution = 1001;
+                const varLine = (x) => {
+                    L.push(`# ${x.type === "input" ? "Input" : "Output"}: ${oneLine(x.name)}${x.unit ? " (" + oneLine(x.unit) + ")" : ""}, range [${fmtN(x.min)}, ${fmtN(x.max)}]`);
+                    if (x.type === "input")
+                        L.push(`${x.ident} = ctrl.Antecedent(np.linspace(${fmtN(x.min)}, ${fmtN(x.max)}, ${resolution}), '${x.ident}')`);
+                    else
+                        L.push(`${x.ident} = ctrl.Consequent(np.linspace(${fmtN(x.min)}, ${fmtN(x.max)}, ${resolution}), '${x.ident}', defuzzify_method='${m.defuzz}')`);
+                    x.mfs.forEach((f) => {
+                        L.push(`${x.ident}['${f.ident}'] = ${pyMF(f, x.ident + ".universe")}   # ${oneLine(f.label)}`);
                     });
-                    c += "\n";
+                    L.push("");
+                };
+                L.push("# ---- Variables and membership functions ----");
+                m.ins.forEach(varLine);
+                m.outs.forEach(varLine);
+
+                L.push("# ---- Rules ----");
+                m.rules.forEach((r, i) => {
+                    const op = r.logic === "OR" ? " | " : " & ";
+                    const ante = r.conds.map((c) => `${c.v.ident}['${c.m.ident}']`).join(op);
+                    const cons = r.concs.map((c) =>
+                        r.weight !== 1
+                            ? `${c.v.ident}['${c.m.ident}'] % ${fmtN(r.weight)}`
+                            : `${c.v.ident}['${c.m.ident}']`,
+                    );
+                    L.push(`# Rule ${r.index}: ${oneLine(r.text)}`);
+                    L.push(
+                        `rule${i + 1} = ctrl.Rule(${r.conds.length > 1 ? "(" + ante + ")" : ante}, ${cons.length > 1 ? "[" + cons.join(", ") + "]" : cons[0]}, and_func=AND_FUNC, or_func=OR_FUNC)`,
+                    );
                 });
-                outs.forEach((v) => {
-                    const sn = v.name.replace(/\s+/g, "_").toLowerCase();
-                    c += `${sn}=ctrl.Consequent(np.linspace(${v.min},${v.max},500),'${sn}')\n`;
-                    v.mfs.forEach((mf) => {
-                        c += `${sn}['${mf.label.replace(/\s+/g, "_").toLowerCase()}']=fuzz.${pyMF(mf)}\n`;
-                    });
-                    c += "\n";
+                L.push("");
+                L.push(`system = ctrl.ControlSystem([${m.rules.map((_, i) => "rule" + (i + 1)).join(", ")}])`);
+                L.push("sim = ctrl.ControlSystemSimulation(system)");
+                L.push("");
+
+                // Only inputs that appear in a rule can be given to the simulation
+                const usedIns = m.ins.filter((x) => m.rules.some((r) => r.conds.some((c) => c.v.id === x.id)));
+                const usedOuts = m.outs.filter((x) => m.rules.some((r) => r.concs.some((c) => c.v.id === x.id)));
+                L.push("# ---- Try it with example inputs (change these values) ----");
+                usedIns.forEach((x) => L.push(`sim.input['${x.ident}'] = ${fmtN(m.sample[x.id])}`));
+                L.push("");
+                L.push("try:");
+                L.push("    sim.compute()");
+                usedOuts.forEach((x) => {
+                    const app = m.appResult[x.id];
+                    L.push(
+                        `    print('${x.ident} =', round(sim.output['${x.ident}'], 3))   # website gave: ${app === null || app === undefined ? "no output" : fmtN(+app.toFixed(3))}`,
+                    );
                 });
-                const ar = state.rules.filter((r) => r.enabled !== false);
-                if (ar.length > 0) {
-                    ar.forEach((r, i) => {
-                        let cp = [];
-                        for (let vid in r.conditions) {
-                            const av = state.variables.find(
-                                    (v) => v.id === vid,
-                                ),
-                                amf = av?.mfs.find(
-                                    (m) => m.id === r.conditions[vid],
-                                );
-                            if (av && amf)
-                                cp.push(
-                                    `${av.name.replace(/\s+/g, "_").toLowerCase()}['${amf.label.replace(/\s+/g, "_").toLowerCase()}']`,
-                                );
-                        }
-                        const allConcs = getRuleConclusions(r);
-                        const firstCid = Object.keys(allConcs)[0];
-                        const cv = state.variables.find((v) => v.id === firstCid),
-                            cmf = cv?.mfs.find((m) => m.id === allConcs[firstCid]);
-                        if (cp.length > 0 && cv && cmf) {
-                            c += `rule${i + 1}=ctrl.Rule(${cp.join(r.logic === "OR" ? "|" : "&")},${cv.name.replace(/\s+/g, "_").toLowerCase()}['${cmf.label.replace(/\s+/g, "_").toLowerCase()}'])\n`;
-                        }
-                    });
-                    c += `\n${outs[0]?.name.replace(/\s+/g, "_").toLowerCase() || "output"}_ctrl=ctrl.ControlSystem([${ar.map((_, i) => `rule${i + 1}`).join(",")}])\n${outs[0]?.name.replace(/\s+/g, "_").toLowerCase() || "output"}_sim=ctrl.ControlSystemSimulation(${outs[0]?.name.replace(/\s+/g, "_").toLowerCase() || "output"}_ctrl)\n`;
-                }
-                c += "\n# Plot\n";
-                [...ins, ...outs].forEach((v) => {
-                    c += `${v.name.replace(/\s+/g, "_").toLowerCase()}.view()\n`;
-                });
-                c += "plt.show()\n";
-                downloadText(
-                    c,
-                    `${pn.replace(/\s+/g, "_")}_fuzzy.py`,
-                    "text/plain",
-                );
+                L.push("except (ValueError, KeyError) as e:");
+                L.push("    print('No rule fired for these inputs:', e)");
+                L.push("");
+                L.push("# ---- Plots ----");
+                m.ins.forEach((x) => L.push(`${x.ident}.view()`));
+                usedOuts.forEach((x) => L.push(`${x.ident}.view(sim=sim)`));
+                L.push("plt.show()");
+                L.push("");
+                downloadText(L.join("\n"), `${fileBase()}_fuzzy.py`, "text/x-python");
             }
-            function pyMF(mf) {
-                const p = mf.params;
-                switch (mf.shape) {
-                    case "triangular":
-                        return `trimf(universe,[${p.a},${p.b},${p.c}])`;
-                    case "trapezoidal":
-                        return `trapmf(universe,[${p.a},${p.b},${p.c},${p.d}])`;
-                    case "gaussian":
-                        return `gaussmf(universe,${p.mean},${p.sigma})`;
-                    case "bell":
-                        return `gbellmf(universe,${p.a},${p.b},${p.c})`;
-                    case "sigmoidal":
-                        return `sigmf(universe,${p.a},${p.c})`;
-                    default:
-                        return `trimf(universe,[${(p.x || 50) - 1},${p.x || 50},${(p.x || 50) + 1}])`;
-                }
-            }
-            function exportMatlabM() {
-                syncSettings();
-                const n =
-                        document.getElementById("projectName").value ||
-                        "fuzzy_project",
-                    s = n.replace(/[^a-zA-Z0-9_]/g, "_");
-                let m = `% Generated by FuzzyLogic Visualizer v2.5\nfis=mamfis('Name','${s}');\n`;
-                state.variables
-                    .filter((v) => v.type === "input")
-                    .forEach((v) => {
-                        m += `fis=addInput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;
-                        v.mfs.forEach((mf) => {
-                            m += matlabAddMF("input", v.name, mf);
-                        });
-                    });
-                state.variables
-                    .filter((v) => v.type === "output")
-                    .forEach((v) => {
-                        m += `fis=addOutput(fis,[${v.min} ${v.max}],'Name','${v.name}');\n`;
-                        v.mfs.forEach((mf) => {
-                            m += matlabAddMF("output", v.name, mf);
-                        });
-                    });
-                const ov = state.variables.find((v) => v.type === "output"),
-                    oN = ov?.mfs.map((x) => x.id) || [],
-                    iV = state.variables.filter((v) => v.type === "input"),
-                    aR = state.rules.filter((r) => r.enabled !== false);
-                const rR = aR.map((r) => {
-                    const a = iV.map((v) => {
-                        const i = v.mfs.findIndex(
-                            (m) => m.id === r.conditions[v.id],
-                        );
-                        return i >= 0 ? i + 1 : 0;
-                    });
-                    const allConcs = getRuleConclusions(r);
-                    const firstMfId = Object.values(allConcs)[0];
-                    const cI =
-                        oN.findIndex((id) => id === firstMfId) + 1;
-                    return [
-                        ...a,
-                        cI > 0 ? cI : 1,
-                        Number(r.weight ?? 1),
-                        r.logic === "OR" ? 2 : 1,
-                    ];
-                });
-                if (rR.length) {
-                    m += `ruleList=[\n${rR.map((r) => `  ${r.join(" ")}`).join(";\n")}\n];\n`;
-                    m += `fis=addRule(fis,ruleList);\n`;
-                }
-                m += `writeFIS(fis,'${s}.fis');\ndisp('FIS generated');\n`;
-                downloadText(m, `${s}.m`, "text/plain");
-            }
-            function matlabAddMF(vT, vN, mf) {
-                const p = mf.params;
-                if (mf.shape === "triangular")
-                    return `fis=addMF(fis,'${vT}','${vN}','trimf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
-                if (mf.shape === "trapezoidal")
-                    return `fis=addMF(fis,'${vT}','${vN}','trapmf',[${p.a} ${p.b} ${p.c} ${p.d}],'Name','${mf.label}');\n`;
-                if (mf.shape === "gaussian")
-                    return `fis=addMF(fis,'${vT}','${vN}','gaussmf',[${p.sigma} ${p.mean}],'Name','${mf.label}');\n`;
-                if (mf.shape === "bell")
-                    return `fis=addMF(fis,'${vT}','${vN}','gbellmf',[${p.a} ${p.b} ${p.c}],'Name','${mf.label}');\n`;
-                if (mf.shape === "sigmoidal")
-                    return `fis=addMF(fis,'${vT}','${vN}','sigmf',[${p.a} ${p.c}],'Name','${mf.label}');\n`;
-                return `fis=addMF(fis,'${vT}','${vN}','trimf',[${(p.x || 50) - 1} ${p.x || 50} ${(p.x || 50) + 1}],'Name','${mf.label}');\n`;
-            }
-            function exportMatlabFIS() {
-                syncSettings();
-                const n = (
-                    document.getElementById("projectName").value ||
-                    "fuzzy_project"
-                ).replace(/[^a-zA-Z0-9_]/g, "_");
-                const ins = state.variables.filter((v) => v.type === "input"),
-                    outs = state.variables.filter((v) => v.type === "output");
-                let f = `[System]\nName='${n}'\nType='mamdani'\nNumInputs=${ins.length}\nNumOutputs=${outs.length}\nNumRules=${state.rules.filter((r) => r.enabled !== false).length}\nAndMethod='${state.andMethod}'\nOrMethod='${state.orMethod}'\nDefuzzMethod='${state.defuzz}'\nImpMethod='min'\nAggMethod='max'\n\n`;
-                ins.forEach((v, i) => {
-                    f += `[Input${i + 1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;
-                    v.mfs.forEach((mf, j) => {
-                        f += `MF${j + 1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`;
-                    });
-                    f += "\n";
-                });
-                outs.forEach((v, i) => {
-                    f += `[Output${i + 1}]\nName='${v.name}'\nRange=[${v.min} ${v.max}]\nNumMFs=${v.mfs.length}\n`;
-                    v.mfs.forEach((mf, j) => {
-                        f += `MF${j + 1}='${mf.label}':'${fisMfType(mf.shape)}',[${fisMfParams(mf)}]\n`;
-                    });
-                    f += "\n";
-                });
-                f += `[Rules]\n`;
-                state.rules
-                    .filter((r) => r.enabled !== false)
-                    .forEach((r) => {
-                        const a = ins.map((v) => {
-                            const i = v.mfs.findIndex(
-                                (m) => m.id === r.conditions[v.id],
-                            );
-                            return i >= 0 ? i + 1 : 0;
-                        });
-                        const allConcs = getRuleConclusions(r);
-                        const firstMfId = Object.values(allConcs)[0];
-                        const c = outs[0]
-                            ? outs[0].mfs.findIndex(
-                                  (m) => m.id === firstMfId,
-                              ) + 1
-                            : 1;
-                        f += `${a.join(" ")},${c > 0 ? c : 1}(${Number(r.weight ?? 1).toFixed(2)}):${r.logic === "OR" ? 2 : 1}\n`;
-                    });
-                downloadText(f, `${n}.fis`, "text/plain");
-            }
-            function fisMfType(s) {
+
+            // ── MATLAB (Fuzzy Logic Toolbox) ──
+            function matlabMFType(f) {
                 return (
                     {
                         triangular: "trimf",
@@ -8742,49 +9193,545 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         gaussian: "gaussmf",
                         bell: "gbellmf",
                         sigmoidal: "sigmf",
-                    }[s] || "trimf"
+                        singleton: "trapmf",
+                    }[f.shape] || "trimf"
                 );
             }
-            function fisMfParams(mf) {
-                const p = mf.params;
-                switch (mf.shape) {
+            function matlabMFParams(f) {
+                const p = f.p;
+                switch (f.shape) {
                     case "triangular":
-                        return `${p.a} ${p.b} ${p.c}`;
+                        return `${fmtN(p.a)} ${fmtN(p.b)} ${fmtN(p.c)}`;
                     case "trapezoidal":
-                        return `${p.a} ${p.b} ${p.c} ${p.d}`;
+                        return `${fmtN(p.a)} ${fmtN(p.b)} ${fmtN(p.c)} ${fmtN(p.d)}`;
                     case "gaussian":
-                        return `${p.sigma} ${p.mean}`;
+                        return `${fmtN(p.sigma)} ${fmtN(p.mean)}`;
                     case "bell":
-                        return `${p.a} ${p.b} ${p.c}`;
+                        return `${fmtN(p.a)} ${fmtN(p.b)} ${fmtN(p.c)}`;
                     case "sigmoidal":
-                        return `${p.a} ${p.c}`;
+                        return `${fmtN(p.a)} ${fmtN(p.c)}`;
+                    case "singleton": {
+                        const x = Number(p.x) || 0;
+                        return `${fmtN(x - 0.5)} ${fmtN(x - 0.5)} ${fmtN(x + 0.5)} ${fmtN(x + 0.5)}`;
+                    }
                     default:
-                        return `${(p.x || 50) - 1} ${p.x || 50} ${(p.x || 50) + 1}`;
+                        return "0 0 0";
+                }
+            }
+            // One numeric rule row: [in1..inN out1..outM weight connection]
+            function matlabRuleRows(m) {
+                return m.rules.map((r) => {
+                    const a = m.ins.map((x) => {
+                        const c = r.conds.find((c) => c.v.id === x.id);
+                        return c ? x.mfs.indexOf(c.m) + 1 : 0;
+                    });
+                    const o = m.outs.map((x) => {
+                        const c = r.concs.find((c) => c.v.id === x.id);
+                        return c ? x.mfs.indexOf(c.m) + 1 : 0;
+                    });
+                    return { a, o, w: r.weight, conn: r.logic === "OR" ? 2 : 1, text: r.text };
+                });
+            }
+            function exportMatlabM() {
+                const m = buildExportModel();
+                if (!checkExportable(m)) return;
+                const s = fileBase().replace(/^[^a-zA-Z]+/, "") || "fuzzy_project";
+                const L = [
+                    ...exportHeaderLines("%"),
+                    "% Requires MATLAB Fuzzy Logic Toolbox (R2018b or newer)",
+                    "",
+                    `fis = mamfis('Name', '${s}', ...`,
+                    `    'AndMethod', '${m.andMethod}', 'OrMethod', '${m.orMethod}', ...`,
+                    `    'ImplicationMethod', 'min', 'AggregationMethod', 'max', ...`,
+                    `    'DefuzzificationMethod', '${m.defuzz}');`,
+                    "",
+                ];
+                const addVar = (x, kind) => {
+                    L.push(`% ${kind}: ${oneLine(x.name)}${x.unit ? " (" + oneLine(x.unit) + ")" : ""}`);
+                    L.push(`fis = add${kind}(fis, [${fmtN(x.min)} ${fmtN(x.max)}], 'Name', '${x.ident}');`);
+                    x.mfs.forEach((f) => {
+                        L.push(`fis = addMF(fis, '${x.ident}', '${matlabMFType(f)}', [${matlabMFParams(f)}], 'Name', '${f.ident}');   % ${oneLine(f.label)}`);
+                    });
+                    L.push("");
+                };
+                m.ins.forEach((x) => addVar(x, "Input"));
+                m.outs.forEach((x) => addVar(x, "Output"));
+                const rows = matlabRuleRows(m);
+                L.push("% Rules: [inputs... outputs... weight connection(1=AND, 2=OR)]");
+                L.push("ruleList = [");
+                rows.forEach((r) =>
+                    L.push(`    ${[...r.a, ...r.o, fmtN(r.w), r.conn].join(" ")}   % ${oneLine(r.text)}`),
+                );
+                L.push("];");
+                L.push("fis = addRule(fis, ruleList);");
+                L.push("");
+                L.push("% ---- Try it with example inputs (change these values) ----");
+                L.push(`in = [${m.ins.map((x) => fmtN(m.sample[x.id])).join(" ")}];`);
+                L.push("out = evalfis(fis, in);");
+                m.outs.forEach((x, i) => {
+                    const app = m.appResult[x.id];
+                    L.push(
+                        `fprintf('${x.ident} = %.3f   (website gave: ${app === null || app === undefined ? "no output" : fmtN(+app.toFixed(3))})\\n', out(${i + 1}));`,
+                    );
+                });
+                L.push("");
+                L.push("% ---- Plots ----");
+                L.push("for k = 1:numel(fis.Inputs),  figure; plotmf(fis, 'input', k);  end");
+                L.push("for k = 1:numel(fis.Outputs), figure; plotmf(fis, 'output', k); end");
+                if (m.ins.length >= 2) L.push("figure; gensurf(fis);");
+                L.push("");
+                L.push(`writeFIS(fis, '${s}');`);
+                L.push(`disp('Saved ${s}.fis');`);
+                L.push("");
+                downloadText(L.join("\n"), `${s}.m`, "text/plain");
+            }
+            function exportMatlabFIS() {
+                const m = buildExportModel();
+                if (!checkExportable(m)) return;
+                const n = fileBase();
+                let f = `[System]\nName='${n}'\nType='mamdani'\nVersion=2.0\nNumInputs=${m.ins.length}\nNumOutputs=${m.outs.length}\nNumRules=${m.rules.length}\nAndMethod='${m.andMethod}'\nOrMethod='${m.orMethod}'\nImpMethod='min'\nAggMethod='max'\nDefuzzMethod='${m.defuzz}'\n\n`;
+                const sect = (x, label) => {
+                    f += `[${label}]\nName='${x.ident}'\nRange=[${fmtN(x.min)} ${fmtN(x.max)}]\nNumMFs=${x.mfs.length}\n`;
+                    x.mfs.forEach((mf, j) => {
+                        f += `MF${j + 1}='${mf.ident}':'${matlabMFType(mf)}',[${matlabMFParams(mf)}]\n`;
+                    });
+                    f += "\n";
+                };
+                m.ins.forEach((x, i) => sect(x, "Input" + (i + 1)));
+                m.outs.forEach((x, i) => sect(x, "Output" + (i + 1)));
+                f += `[Rules]\n`;
+                matlabRuleRows(m).forEach((r) => {
+                    f += `${r.a.join(" ")}, ${r.o.join(" ")} (${fmtN(r.w)}) : ${r.conn}\n`;
+                });
+                downloadText(f, `${n}.fis`, "text/plain");
+            }
+
+            // ── C++ for Arduino / ESP32 ──
+            // C++ float literal, e.g. 50 -> 50.0f, -0.6 -> -0.6f
+            function cppF(v) {
+                const t = fmtN(v);
+                return (/[.eE]/.test(t) ? t : t + ".0") + "f";
+            }
+            function cppMFCall(f, xExpr) {
+                const p = f.p,
+                    F = cppF;
+                switch (f.shape) {
+                    case "triangular":
+                        return `trimf(${xExpr}, ${F(p.a)}, ${F(p.b)}, ${F(p.c)})`;
+                    case "trapezoidal":
+                        return `trapmf(${xExpr}, ${F(p.a)}, ${F(p.b)}, ${F(p.c)}, ${F(p.d)})`;
+                    case "gaussian":
+                        return `gaussmf(${xExpr}, ${F(p.mean)}, ${F(p.sigma)})`;
+                    case "bell":
+                        return `gbellmf(${xExpr}, ${F(p.a)}, ${F(p.b)}, ${F(p.c)})`;
+                    case "sigmoidal":
+                        return `sigmf(${xExpr}, ${F(p.a)}, ${F(p.c)})`;
+                    case "singleton":
+                        return `singletonmf(${xExpr}, ${F(p.x)})`;
+                    default:
+                        return "0.0f";
                 }
             }
             function viewESPCode() {
-                if (state.variables.length === 0) {
-                    showToast("Add variables first.");
+                const m = buildExportModel();
+                if (!checkExportable(m)) return;
+                const L = [];
+                exportHeaderLines("//").forEach((l) => L.push(l));
+                L.push(
+                    "//",
+                    "// Complete Mamdani fuzzy controller for Arduino / ESP32.",
+                    "// Call fuzzyCompute(in, out) with your sensor readings.",
+                    `// Settings: AND=${m.andMethod}, OR=${m.orMethod}, implication=min, aggregation=max, defuzz=${m.defuzz}`,
+                    "",
+                    "#include <math.h>",
+                    "",
+                    `#define NUM_INPUTS  ${m.ins.length}`,
+                    `#define NUM_OUTPUTS ${m.outs.length}`,
+                    `#define NUM_RULES   ${m.rules.length}`,
+                    "#define SAMPLES     201   // defuzzification resolution (higher = more accurate, slower)",
+                    "",
+                    "// Input order:",
+                    ...m.ins.map((x, i) => `//   in[${i}]  = ${oneLine(x.name)}  [${fmtN(x.min)} .. ${fmtN(x.max)}] ${oneLine(x.unit)}`),
+                    "// Output order:",
+                    ...m.outs.map((x, i) => `//   out[${i}] = ${oneLine(x.name)}  [${fmtN(x.min)} .. ${fmtN(x.max)}] ${oneLine(x.unit)}`),
+                    "",
+                    "// ---------- Membership function shapes ----------",
+                    "float trimf(float x, float a, float b, float c) {",
+                    "  if (x < a || x > c) return 0.0f;",
+                    "  if (x == b) return 1.0f;",
+                    "  if (x < b) return (x - a) / (b - a);",
+                    "  return (c - x) / (c - b);",
+                    "}",
+                    "float trapmf(float x, float a, float b, float c, float d) {",
+                    "  if (x < a || x > d) return 0.0f;",
+                    "  if (x >= b && x <= c) return 1.0f;",
+                    "  if (x < b) return (x - a) / (b - a);",
+                    "  return (d - x) / (d - c);",
+                    "}",
+                    "float gaussmf(float x, float mean, float sigma) {",
+                    "  float t = (x - mean) / sigma;",
+                    "  return expf(-0.5f * t * t);",
+                    "}",
+                    "float gbellmf(float x, float a, float b, float c) {",
+                    "  return 1.0f / (1.0f + powf(fabsf((x - c) / a), 2.0f * b));",
+                    "}",
+                    "float sigmf(float x, float a, float c) {",
+                    "  return 1.0f / (1.0f + expf(-a * (x - c)));",
+                    "}",
+                    "float singletonmf(float x, float x0) {",
+                    "  return fabsf(x - x0) < 0.5f ? 1.0f : 0.0f;",
+                    "}",
+                    "",
+                    "// ---------- Fuzzy operators ----------",
+                    m.andMethod === "prod"
+                        ? "float fAND(float a, float b) { return a * b; }        // prod"
+                        : "float fAND(float a, float b) { return fminf(a, b); }  // min",
+                    m.orMethod === "probor"
+                        ? "float fOR(float a, float b) { return a + b - a * b; } // probor"
+                        : "float fOR(float a, float b) { return fmaxf(a, b); }   // max",
+                    "",
+                );
+
+                // Aggregated output curve for each output: mu(x) given rule strengths w[]
+                m.outs.forEach((o) => {
+                    L.push(`// ---------- Output: ${oneLine(o.name)} ----------`);
+                    L.push(`float agg_${o.ident}(const float w[], float x) {`);
+                    L.push("  float mu = 0.0f;");
+                    m.rules.forEach((r, ri) => {
+                        r.concs
+                            .filter((c) => c.v.id === o.id)
+                            .forEach((c) => {
+                                L.push(`  mu = fmaxf(mu, fminf(w[${ri}], ${cppMFCall(c.m, "x")}));   // rule ${r.index}: ${oneLine(c.m.label)}`);
+                            });
+                    });
+                    L.push("  return mu;");
+                    L.push("}");
+                    L.push("");
+                });
+
+                // Defuzzifier for the chosen method
+                L.push(`// ---------- Defuzzification: ${m.defuzz} ----------`);
+                L.push("typedef float (*AggFn)(const float w[], float x);");
+                L.push("float defuzzify(AggFn agg, const float w[], float lo, float hi) {");
+                L.push("  const float step = (hi - lo) / (SAMPLES - 1);");
+                if (m.defuzz === "bisector") {
+                    L.push(
+                        "  float total = 0.0f;",
+                        "  for (int i = 0; i < SAMPLES; i++) total += agg(w, lo + i * step) * step;",
+                        "  if (total <= 0.0f) return NAN;   // no rule fired",
+                        "  float acc = 0.0f;",
+                        "  for (int i = 0; i < SAMPLES; i++) {",
+                        "    float x = lo + i * step;",
+                        "    acc += agg(w, x) * step;",
+                        "    if (acc >= total / 2.0f) return x;",
+                        "  }",
+                        "  return hi;",
+                    );
+                } else if (m.defuzz === "mom" || m.defuzz === "som" || m.defuzz === "lom") {
+                    L.push(
+                        "  float maxMu = 0.0f;",
+                        "  for (int i = 0; i < SAMPLES; i++) { float mu = agg(w, lo + i * step); if (mu > maxMu) maxMu = mu; }",
+                        "  if (maxMu <= 0.0f) return NAN;   // no rule fired",
+                        "  float first = NAN, last = NAN, sum = 0.0f; int n = 0;",
+                        "  for (int i = 0; i < SAMPLES; i++) {",
+                        "    float x = lo + i * step;",
+                        "    if (agg(w, x) >= maxMu * 0.999f) { if (isnan(first)) first = x; last = x; sum += x; n++; }",
+                        "  }",
+                        m.defuzz === "som"
+                            ? "  return first;   // smallest of max"
+                            : m.defuzz === "lom"
+                              ? "  return last;    // largest of max"
+                              : "  return sum / n; // mean of max",
+                    );
+                } else {
+                    L.push(
+                        "  float sumXM = 0.0f, sumM = 0.0f;",
+                        "  for (int i = 0; i < SAMPLES; i++) {",
+                        "    float x = lo + i * step;",
+                        "    float mu = agg(w, x);",
+                        "    sumXM += x * mu;",
+                        "    sumM += mu;",
+                        "  }",
+                        "  if (sumM <= 0.0f) return NAN;   // no rule fired",
+                        "  return sumXM / sumM;            // centroid",
+                    );
+                }
+                L.push("}");
+                L.push("");
+
+                // Main compute function
+                L.push("// ---------- Main function ----------");
+                L.push("// Returns NAN for an output when no rule fires (check with isnan()).");
+                L.push("void fuzzyCompute(const float in[NUM_INPUTS], float out[NUM_OUTPUTS]) {");
+                L.push("  float w[NUM_RULES];   // rule firing strengths");
+                m.rules.forEach((r, ri) => {
+                    const fn = r.logic === "OR" ? "fOR" : "fAND";
+                    const terms = r.conds.map((c) => cppMFCall(c.m, `in[${m.ins.indexOf(c.v)}]`));
+                    let expr = terms[0];
+                    for (let k = 1; k < terms.length; k++) expr = `${fn}(${expr}, ${terms[k]})`;
+                    L.push(`  // Rule ${r.index}: ${oneLine(r.text)}`);
+                    L.push(`  w[${ri}] = ${expr}${r.weight !== 1 ? " * " + cppF(r.weight) : ""};`);
+                });
+                m.outs.forEach((o, i) => {
+                    L.push(`  out[${i}] = defuzzify(agg_${o.ident}, w, ${cppF(o.min)}, ${cppF(o.max)});   // ${oneLine(o.name)}`);
+                });
+                L.push("}");
+                L.push("");
+
+                // Example sketch
+                L.push("// ---------- Example sketch (replace inputs with your sensors) ----------");
+                L.push("void setup() {");
+                L.push("  Serial.begin(115200);");
+                L.push("}");
+                L.push("");
+                L.push("void loop() {");
+                L.push(`  float in[NUM_INPUTS] = { ${m.ins.map((x) => cppF(m.sample[x.id])).join(", ")} };`);
+                L.push("  float out[NUM_OUTPUTS];");
+                L.push("  fuzzyCompute(in, out);");
+                m.outs.forEach((o, i) => {
+                    const app = m.appResult[o.id];
+                    L.push(`  Serial.print("${oneLine(o.name).replace(/["\\]/g, "")} = "); Serial.println(out[${i}], 3);   // website gave: ${app === null || app === undefined ? "no output" : fmtN(+app.toFixed(3))}`);
+                });
+                L.push("  delay(1000);");
+                L.push("}");
+                L.push("");
+                downloadText(L.join("\n"), `${fileBase()}_fuzzy.ino`, "text/plain");
+                showToast("C++ (Arduino/ESP32) code downloaded");
+            }
+
+            // ── PDF REPORT (real PDF via jsPDF) ──
+            const JSPDF_URL =
+                "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+            function loadScriptOnce(src) {
+                return new Promise((resolve, reject) => {
+                    const existing = document.querySelector(`script[data-src="${src}"]`);
+                    if (existing && existing.dataset.loaded) return resolve();
+                    const s = existing || document.createElement("script");
+                    s.dataset.src = src;
+                    s.src = src;
+                    s.onload = () => {
+                        s.dataset.loaded = "1";
+                        resolve();
+                    };
+                    s.onerror = () => reject(new Error("Could not load " + src));
+                    if (!existing) document.head.appendChild(s);
+                });
+            }
+            function svgToPng(svg, w, h) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const url = URL.createObjectURL(
+                        new Blob([svg], { type: "image/svg+xml;charset=utf-8" }),
+                    );
+                    img.onload = () => {
+                        const c = document.createElement("canvas");
+                        c.width = w * 2;
+                        c.height = h * 2;
+                        const ctx = c.getContext("2d");
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillRect(0, 0, c.width, c.height);
+                        ctx.drawImage(img, 0, 0, c.width, c.height);
+                        URL.revokeObjectURL(url);
+                        resolve(c.toDataURL("image/jpeg", 0.88));
+                    };
+                    img.onerror = (e) => {
+                        URL.revokeObjectURL(url);
+                        reject(e);
+                    };
+                    img.src = url;
+                });
+            }
+            async function exportPDFReport() {
+                showToast("Building PDF report…");
+                try {
+                    await loadScriptOnce(JSPDF_URL);
+                } catch (e) {
+                    showToast("Could not load the PDF library (check internet).");
                     return;
                 }
-                let c = `// FuzzyLogic Visualizer v2.5\n// ESP32/Arduino C++\n\nfloat trimf(float x,float a,float b,float c){if(x<=a||x>=c)return 0;if(x==b)return 1;if(x>a&&x<b)return(x-a)/(b-a);if(x>b&&x<c)return(c-x)/(c-b);return 0;}\nfloat trapmf(float x,float a,float b,float c,float d){if(x<=a||x>=d)return 0;if(x>=b&&x<=c)return 1;if(x>a&&x<b)return(x-a)/(b-a);if(x>c&&x<d)return(d-x)/(d-c);return 0;}\n\n`;
-                state.variables.forEach((v) => {
-                    c += `// MFs for ${v.name}\n`;
-                    v.mfs.forEach((m) => {
-                        const sn = v.name.replace(/[^a-zA-Z0-9]/g, ""),
-                            sl = m.label.replace(/[^a-zA-Z0-9]/g, "");
-                        if (m.shape === "triangular")
-                            c += `float get_${sn}_${sl}(float v){return trimf(v,${m.params.a},${m.params.b},${m.params.c});}\n`;
-                        else if (m.shape === "trapezoidal")
-                            c += `float get_${sn}_${sl}(float v){return trapmf(v,${m.params.a},${m.params.b},${m.params.c},${m.params.d});}\n`;
-                        else c += `// shape '${m.shape}' not fully supported\n`;
+                syncSettings();
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ unit: "mm", format: "a4" });
+                const PW = 210,
+                    M = 15,
+                    CW = PW - 2 * M;
+                let y = M;
+                const ensure = (h) => {
+                    if (y + h > 297 - M) {
+                        doc.addPage();
+                        y = M;
+                    }
+                };
+                let secNo = 0;
+                const heading = (t0) => {
+                    const t = `${++secNo}. ${t0}`;
+                    ensure(14);
+                    y += 3;
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(13);
+                    doc.setTextColor(0, 91, 187);
+                    doc.text(t, M, y);
+                    y += 2;
+                    doc.setDrawColor(0, 91, 187);
+                    doc.line(M, y, PW - M, y);
+                    y += 6;
+                    doc.setTextColor(20, 30, 50);
+                };
+                const para = (t, size = 10, bold = false) => {
+                    doc.setFont("helvetica", bold ? "bold" : "normal");
+                    doc.setFontSize(size);
+                    const lines = doc.splitTextToSize(String(t), CW);
+                    lines.forEach((ln) => {
+                        ensure(size * 0.45);
+                        doc.text(ln, M, y);
+                        y += size * 0.45;
                     });
-                    c += "\n";
-                });
-                const nw = window.open("", "_blank");
-                nw.document.write(
-                    `<title>C++ Code</title><pre style="background:#0d0f14;color:#10b981;padding:20px;font-family:monospace;font-size:14px;height:100vh;margin:0;overflow-y:auto;">${c}</pre>`,
+                    y += 1.5;
+                };
+                // jsPDF's built-in font has no Greek letters
+                const pdfSafe = (s) => String(s ?? "").replace(/μ/g, "mu").replace(/σ/g, "sigma");
+
+                // Title block
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(20);
+                doc.setTextColor(18, 36, 63);
+                doc.text(pdfSafe(getProjectName()), M, y + 4);
+                y += 11;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(80, 95, 120);
+                doc.text(
+                    pdfSafe(`${state.metadata.author} - ${state.metadata.institution}`),
+                    M,
+                    y,
                 );
+                y += 5;
+                doc.text(
+                    `Fuzzy Inference System report - ${new Date().toLocaleString()}`,
+                    M,
+                    y,
+                );
+                y += 4;
+                doc.setTextColor(20, 30, 50);
+                const desc = document.getElementById("projectDescInput")?.value;
+                if (desc) {
+                    y += 3;
+                    para(pdfSafe(desc), 10);
+                }
+
+                heading("System settings");
+                para(
+                    `Type: Mamdani   |   AND: ${state.andMethod}   |   OR: ${state.orMethod}   |   Implication: min   |   Aggregation: max   |   Defuzzification: ${state.defuzz}`,
+                );
+
+                heading("Variables and membership functions");
+                const paramStr = (mf) =>
+                    Object.entries(mf.params || {})
+                        .map(([k, v]) => `${k}=${fmtN(v)}`)
+                        .join(", ");
+                for (const v of state.variables) {
+                    para(
+                        pdfSafe(`${v.type === "input" ? "Input" : "Output"}: ${v.name}  [${fmtN(v.min)}, ${fmtN(v.max)}] ${v.unit || ""}`),
+                        11,
+                        true,
+                    );
+                    v.mfs.forEach((mf) =>
+                        para(pdfSafe(`   - ${mf.label}: ${mf.shape} (${paramStr(mf)})`), 9),
+                    );
+                    if (v.mfs.length) {
+                        try {
+                            const png = await svgToPng(buildChartSVG(v), 780, 400);
+                            const h = (CW * 400) / 780;
+                            ensure(h + 2);
+                            doc.addImage(png, "JPEG", M, y, CW, h);
+                            y += h + 4;
+                        } catch (e) {}
+                    }
+                }
+
+                heading("Rule base");
+                if (!state.rules.length) para("No rules defined.");
+                state.rules.forEach((r, i) =>
+                    para(
+                        pdfSafe(`${i + 1}. ${ruleText(r)}${r.enabled === false ? "   (disabled)" : ""}${Number(r.weight ?? 1) !== 1 ? `   (weight ${Number(r.weight).toFixed(2)})` : ""}`),
+                        9.5,
+                    ),
+                );
+
+                // Rule-base check (gaps / conflicts)
+                if (typeof analyzeRuleBase === "function") {
+                    const rep = analyzeRuleBase();
+                    heading("Rule-base check");
+                    para(
+                        `Coverage: ${rep.coveredCount} of ${rep.totalCombos} input combinations have a rule (${rep.coveragePct.toFixed(0)}%).`,
+                    );
+                    if (!rep.issues.length) para("No problems found.");
+                    rep.issues.slice(0, 40).forEach((it) => para(pdfSafe("- " + it.text), 9));
+                    if (rep.issues.length > 40) para(`... and ${rep.issues.length - 40} more.`, 9);
+                }
+
+                // Simulation snapshot
+                const ins = state.variables.filter((v) => v.type === "input");
+                if (ins.length && state.rules.length) {
+                    const sample = {};
+                    ins.forEach((v) => {
+                        const sv = Number(simInputValues[v.id]);
+                        sample[v.id] = Number.isFinite(sv) ? sv : (v.min + v.max) / 2;
+                    });
+                    const res = SimulationEngine.run(sample);
+                    if (res && !res.error) {
+                        heading("Example simulation");
+                        ins.forEach((v) => para(pdfSafe(`Input  ${v.name} = ${fmtN(+sample[v.id].toFixed(3))} ${v.unit || ""}`), 10));
+                        Object.values(res.outputs).forEach((o) =>
+                            para(
+                                pdfSafe(`Output ${o.variable.name} = ${o.crispValue === null ? "no rule fired" : fmtN(+o.crispValue.toFixed(3))} ${o.variable.unit || ""}`),
+                                10,
+                                true,
+                            ),
+                        );
+                        const fired = res.ruleResults.filter((r) => r.firingStrength > 0);
+                        para(`Rules fired: ${fired.length} of ${res.ruleResults.length}`, 9.5);
+                        fired.forEach((rr) => {
+                            const idx = state.rules.findIndex((r) => r.id === rr.ruleId);
+                            if (idx >= 0) para(pdfSafe(`   Rule ${idx + 1}: strength ${rr.firingStrength.toFixed(3)}`), 9);
+                        });
+                    }
+                }
+
+                // 3D surface
+                if (typeof renderSurfaceImage === "function" && ins.length >= 2) {
+                    const img = renderSurfaceImage(900, 620, "image/jpeg");
+                    if (img) {
+                        heading("Control surface");
+                        const h = (CW * 620) / 900;
+                        ensure(h);
+                        doc.addImage(img, "JPEG", M, y, CW, h);
+                        y += h + 4;
+                    }
+                }
+
+                // Test tray
+                if (testTray.length) {
+                    heading("Test cases");
+                    const nm = (id) => state.variables.find((v) => v.id === id)?.name || "?";
+                    testTray.forEach((tc, i) => {
+                        const inS = Object.entries(tc.inputs || {}).map(([k, v]) => `${nm(k)}=${fmtN(+Number(v).toFixed(3))}`).join(", ");
+                        const outS = Object.entries(tc.outputs || {}).map(([k, v]) => `${nm(k)}=${v === null ? "-" : fmtN(+Number(v).toFixed(3))}`).join(", ");
+                        para(pdfSafe(`${i + 1}. ${inS}  ->  ${outS}`), 9);
+                    });
+                }
+
+                // Footer with page numbers
+                const pages = doc.getNumberOfPages();
+                for (let i = 1; i <= pages; i++) {
+                    doc.setPage(i);
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.setTextColor(140, 150, 170);
+                    doc.text(`FuzzyLogic Visualizer v2.5 - page ${i} of ${pages}`, PW / 2, 290, { align: "center" });
+                }
+                doc.save(`${fileBase()}_report.pdf`);
+                showToast("PDF report downloaded");
             }
 
             // ── TOAST ──
@@ -9291,6 +10238,16 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     var doc = await db.collection("shared_links").doc(shareId).get();
                     if (doc.exists) {
                         var d = doc.data();
+                        if (
+                            state.variables.length > 0 &&
+                            !confirm(
+                                "Open the shared project? Your current workspace will be replaced.\n\nTip: press Cancel, then Save your work first.",
+                            )
+                        ) {
+                            // Remove ?share= so a refresh doesn't ask again
+                            history.replaceState(null, "", window.location.pathname + window.location.hash);
+                            return;
+                        }
                         clearHistoryStacks();
                         applyWorkspace(d.data);
                         showToast("📎 Shared project loaded");
@@ -9760,7 +10717,9 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 if (!msgs) return;
                 var div = document.createElement("div");
                 div.className = "ai-msg " + role;
-                div.innerHTML = text
+                // Escape first so AI replies can never inject HTML/script
+                div.innerHTML = esc(text)
+                    .replace(/'/g, "&#39;")
                     .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
                     .replace(/`(.*?)`/g, "<code>$1</code>")
                     .replace(/\n/g, "<br>");
@@ -9988,6 +10947,580 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 btn.disabled = false;
                 input.focus();
             }
+
+            // ============================================================
+            //  RULE-BASE CHECKER  (gaps, conflicts, duplicates, unused parts)
+            // ============================================================
+            let lastRuleCheck = null;
+            function analyzeRuleBase() {
+                const ins = state.variables.filter((v) => v.type === "input" && v.mfs.length);
+                const outs = state.variables.filter((v) => v.type === "output" && v.mfs.length);
+                const issues = [];
+                const add = (level, text, extra = {}) => issues.push({ level, text, ...extra });
+                const vById = (id) => state.variables.find((v) => v.id === id);
+                const varName = (id) => vById(id)?.name || "?";
+                const mfName = (vid, mid) => vById(vid)?.mfs.find((m) => m.id === mid)?.label || "?";
+                const exists = ([vid, mid]) => !!vById(vid)?.mfs.some((m) => m.id === mid);
+
+                // 1. Incomplete / disabled rules
+                const valid = [];
+                state.rules.forEach((r, i) => {
+                    const n = i + 1;
+                    const conds = Object.entries(r.conditions || {});
+                    const concs = Object.entries(getRuleConclusions(r));
+                    if (!conds.length || !concs.length || !conds.every(exists) || !concs.every(exists)) {
+                        add("error", `Rule ${n} is incomplete (missing IF/THEN part, or uses a deleted variable or MF).`, { ruleId: r.id });
+                        return;
+                    }
+                    if (r.enabled === false) {
+                        add("info", `Rule ${n} is switched OFF, so it is ignored.`, { ruleId: r.id });
+                        return;
+                    }
+                    if (Number(r.weight ?? 1) === 0)
+                        add("warn", `Rule ${n} has weight 0, so it never has any effect.`, { ruleId: r.id });
+                    valid.push({ r, n, conds: Object.fromEntries(conds), concs: Object.fromEntries(concs) });
+                });
+
+                // 2. Conflicts and duplicates (same IF part)
+                const ifKey = (x) =>
+                    (Object.keys(x.conds).length > 1 ? x.r.logic : "AND") +
+                    "|" +
+                    Object.keys(x.conds).sort().map((k) => k + "=" + x.conds[k]).join("&");
+                const groups = {};
+                valid.forEach((x) => (groups[ifKey(x)] ||= []).push(x));
+                Object.values(groups).forEach((g) => {
+                    for (let a = 0; a < g.length; a++)
+                        for (let b = a + 1; b < g.length; b++) {
+                            const A = g[a], B = g[b];
+                            const shared = Object.keys(A.concs).filter((o) => o in B.concs);
+                            const diff = shared.filter((o) => A.concs[o] !== B.concs[o]);
+                            if (diff.length) {
+                                add(
+                                    "error",
+                                    `Conflict: rules ${A.n} and ${B.n} have the same IF part but different THEN parts (` +
+                                        diff.map((o) => `${varName(o)}: ${mfName(o, A.concs[o])} vs ${mfName(o, B.concs[o])}`).join("; ") +
+                                        ").",
+                                    { ruleId: B.r.id },
+                                );
+                            } else if (
+                                shared.length === Object.keys(A.concs).length &&
+                                shared.length === Object.keys(B.concs).length
+                            ) {
+                                add("warn", `Rules ${A.n} and ${B.n} are duplicates (exactly the same rule).`, { ruleId: B.r.id });
+                            }
+                        }
+                });
+
+                // 3. Coverage of input combinations (gaps)
+                const totalCombos = ins.length ? ins.reduce((p, v) => p * v.mfs.length, 1) : 0;
+                const LIMIT = 20000;
+                let coveredCount = 0;
+                const gaps = [];
+                const tooMany = totalCombos > LIMIT;
+                if (ins.length && !tooMany) {
+                    for (let c = 0; c < totalCombos; c++) {
+                        let t = c;
+                        const combo = {};
+                        for (let k = ins.length - 1; k >= 0; k--) {
+                            const v = ins[k];
+                            combo[v.id] = v.mfs[t % v.mfs.length].id;
+                            t = Math.floor(t / v.mfs.length);
+                        }
+                        const covered = valid.some((x) => {
+                            const e = Object.entries(x.conds);
+                            return x.r.logic === "OR" && e.length > 1
+                                ? e.some(([vid, mid]) => combo[vid] === mid)
+                                : e.every(([vid, mid]) => combo[vid] === mid);
+                        });
+                        if (covered) coveredCount++;
+                        else gaps.push(combo);
+                    }
+                }
+                const comboText = (combo) =>
+                    ins.map((v) => `${v.name} is ${mfName(v.id, combo[v.id])}`).join(" AND ");
+                const SHOW_GAPS = 8;
+                gaps.slice(0, SHOW_GAPS).forEach((combo, gi) =>
+                    add("warn", `Gap: no rule for "${comboText(combo)}".`, { gapIndex: gi }),
+                );
+                if (gaps.length > SHOW_GAPS)
+                    add("warn", `... and ${gaps.length - SHOW_GAPS} more input combinations with no rule.`);
+
+                // 4. Unused variables and MFs
+                const usedIn = new Set(), usedOut = new Set();
+                valid.forEach((x) => {
+                    Object.entries(x.conds).forEach(([v, m]) => { usedIn.add(v); usedIn.add(v + "|" + m); });
+                    Object.entries(x.concs).forEach(([v, m]) => { usedOut.add(v); usedOut.add(v + "|" + m); });
+                });
+                ins.forEach((v) => {
+                    if (!usedIn.has(v.id)) add("warn", `Input "${v.name}" is not used in any rule.`);
+                    else
+                        v.mfs.forEach((m) => {
+                            if (!usedIn.has(v.id + "|" + m.id))
+                                add("info", `"${m.label}" of input "${v.name}" is not used in any rule.`);
+                        });
+                });
+                outs.forEach((v) => {
+                    if (!usedOut.has(v.id))
+                        add("error", `Output "${v.name}" is never set by any rule, so it can never get a value.`);
+                    else
+                        v.mfs.forEach((m) => {
+                            if (!usedOut.has(v.id + "|" + m.id))
+                                add("info", `"${m.label}" of output "${v.name}" is not used in any rule.`);
+                        });
+                });
+
+                // 5. Dead zones: input values that no membership function covers
+                ins.forEach((v) => {
+                    const N = 400, step = (v.max - v.min) / N;
+                    let start = null;
+                    const zones = [];
+                    for (let i = 0; i <= N; i++) {
+                        const x = v.min + i * step;
+                        const mu = Math.max(...v.mfs.map((m) => evalMF(m, x)));
+                        if (mu < 1e-6) { if (start === null) start = x; }
+                        else if (start !== null) { zones.push([start, x - step]); start = null; }
+                    }
+                    if (start !== null) zones.push([start, v.max]);
+                    zones.slice(0, 3).forEach(([a, b]) => {
+                        const r = (n) => +n.toFixed(2);
+                        add(
+                            "warn",
+                            a === b
+                                ? `Input "${v.name}": no membership function covers the value ${r(a)}.`
+                                : `Input "${v.name}": no membership function covers values from ${r(a)} to ${r(b)}. No rule can fire there.`,
+                        );
+                    });
+                });
+
+                const order = { error: 0, warn: 1, info: 2 };
+                issues.sort((a, b) => order[a.level] - order[b.level]);
+                return {
+                    issues,
+                    gaps,
+                    totalCombos,
+                    coveredCount,
+                    tooMany,
+                    coveragePct: totalCombos && !tooMany ? (coveredCount / totalCombos) * 100 : 0,
+                    errors: issues.filter((i) => i.level === "error").length,
+                    warnings: issues.filter((i) => i.level === "warn").length,
+                };
+            }
+
+            let ruleCheckTimer = null;
+            function scheduleRuleCheck() {
+                clearTimeout(ruleCheckTimer);
+                ruleCheckTimer = setTimeout(renderRuleCheck, 150);
+            }
+            function renderRuleCheck() {
+                const el = document.getElementById("ruleCheckContent");
+                const badge = document.getElementById("ruleCheckBadge");
+                if (!el) return;
+                const ins = state.variables.filter((v) => v.type === "input" && v.mfs.length);
+                const outs = state.variables.filter((v) => v.type === "output" && v.mfs.length);
+                if (!ins.length || !outs.length || !state.rules.length) {
+                    lastRuleCheck = null;
+                    el.innerHTML = `<div class="rc-empty">Add inputs, outputs and at least one rule — the checker will then look for gaps and conflicts automatically.</div>`;
+                    if (badge) { badge.textContent = "–"; badge.className = "rc-badge"; }
+                    return;
+                }
+                const rep = analyzeRuleBase();
+                lastRuleCheck = rep;
+                if (badge) {
+                    badge.textContent = rep.errors ? `${rep.errors} error${rep.errors > 1 ? "s" : ""}` : rep.warnings ? `${rep.warnings} warning${rep.warnings > 1 ? "s" : ""}` : "OK";
+                    badge.className = "rc-badge " + (rep.errors ? "rc-badge-err" : rep.warnings ? "rc-badge-warn" : "rc-badge-ok");
+                }
+                const pct = rep.coveragePct;
+                let html = `<div class="rc-summary">`;
+                if (rep.tooMany) {
+                    html += `<div class="rc-cov-text">Too many input combinations (${rep.totalCombos.toLocaleString()}) to check coverage.</div>`;
+                } else {
+                    html += `<div class="rc-cov-text"><b>Coverage:</b> ${rep.coveredCount} of ${rep.totalCombos} input combinations have a rule (${pct.toFixed(0)}%)</div>
+                    <div class="rc-meter"><div style="width:${pct.toFixed(1)}%;background:${pct >= 99.9 ? "var(--success)" : pct >= 60 ? "var(--warn)" : "var(--danger)"}"></div></div>`;
+                }
+                html += `</div>`;
+                if (!rep.issues.length) {
+                    html += `<div class="rc-item rc-ok">✅ No problems found. Every input combination has a rule and there are no conflicts.</div>`;
+                }
+                const icon = { error: "❌", warn: "⚠️", info: "ℹ️" };
+                rep.issues.forEach((it) => {
+                    let btn = "";
+                    if (it.gapIndex !== undefined)
+                        btn = `<button class="btn rc-btn" onclick="prefillRuleFromGap(${it.gapIndex})">＋ Create rule</button>`;
+                    else if (it.ruleId)
+                        btn = `<button class="btn rc-btn" onclick="openRuleForEdit('${it.ruleId}')">Edit</button>`;
+                    html += `<div class="rc-item rc-${it.level}"><span class="rc-icon">${icon[it.level]}</span><span class="rc-text">${esc(it.text)}</span>${btn}</div>`;
+                });
+                if (rep.gaps.length)
+                    html += `<div class="rc-tip">💡 A gap is not always a mistake, but if the inputs fall only in those sets, no rule fires and the output is empty.</div>`;
+                el.innerHTML = html;
+            }
+            function openRulesEditorSection() {
+                const body = document.getElementById("rulesEditorBody");
+                if (body && body.classList.contains("collapsed")) toggleCollapsible("rulesEditor");
+                setTimeout(() => document.getElementById("ruleBuilder")?.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
+                if (typeof switchMobileTab === "function" && window.innerWidth <= 900) {
+                    try { switchMobileTab("rules"); } catch (e) {}
+                }
+            }
+            function prefillRuleFromGap(i) {
+                const combo = lastRuleCheck?.gaps?.[i];
+                if (!combo) return;
+                if (simRunning) {
+                    showToast("Stop the simulation first to add rules.");
+                    return;
+                }
+                editingRuleId = null;
+                updateRuleBuilder();
+                const logicSel = document.getElementById("ruleLogicSelect");
+                if (logicSel) { logicSel.value = "AND"; updateRuleLogicLabels(); }
+                Object.entries(combo).forEach(([vid, mid]) => {
+                    const sel = document.querySelector(`.rule-inp-sel[data-vid="${vid}"]`);
+                    if (sel) sel.value = mid;
+                });
+                openRulesEditorSection();
+                document.querySelectorAll(".rule-out-sel").forEach((s) => {
+                    s.classList.add("rc-highlight");
+                    setTimeout(() => s.classList.remove("rc-highlight"), 2500);
+                });
+                showToast("IF part filled in. Now choose the THEN part and click + Add Rule.");
+            }
+            function openRuleForEdit(id) {
+                openRulesEditorSection();
+                editRule(id);
+            }
+
+            // ============================================================
+            //  CONTROL SURFACE  (3D for 2+ inputs, curve for 1 input)
+            // ============================================================
+            const surfaceView = { az: -0.75, el: 0.55, xId: null, yId: null, zId: null, res: 25 };
+            let surfaceTimer = null;
+            function scheduleSurface() {
+                clearTimeout(surfaceTimer);
+                surfaceTimer = setTimeout(renderSurfacePanel, 200);
+            }
+            function surfaceIsOpen() {
+                const b = document.getElementById("surfaceBody");
+                const modal = document.getElementById("surfaceModal");
+                return (b && !b.classList.contains("collapsed")) || (modal && modal.style.display === "flex");
+            }
+            function surfaceVars() {
+                const ins = state.variables.filter((v) => v.type === "input" && v.mfs.length);
+                const outs = state.variables.filter((v) => v.type === "output" && v.mfs.length);
+                const has = (arr, id) => arr.some((v) => v.id === id);
+                if (!has(ins, surfaceView.xId)) surfaceView.xId = ins[0]?.id || null;
+                if (!has(ins, surfaceView.yId) || surfaceView.yId === surfaceView.xId)
+                    surfaceView.yId = ins.find((v) => v.id !== surfaceView.xId)?.id || null;
+                if (!has(outs, surfaceView.zId)) surfaceView.zId = outs[0]?.id || null;
+                return { ins, outs };
+            }
+            // Evaluate the whole FIS on a grid (other inputs fixed at the simulation slider values)
+            function computeSurface() {
+                const { ins, outs } = surfaceVars();
+                if (!ins.length || !outs.length) return null;
+                if (!state.rules.some((r) => r.enabled !== false)) return null;
+                const X = ins.find((v) => v.id === surfaceView.xId);
+                const Y = ins.find((v) => v.id === surfaceView.yId) || null;
+                const Z = outs.find((v) => v.id === surfaceView.zId);
+                const base = {};
+                ins.forEach((v) => {
+                    const sv = Number(simInputValues[v.id]);
+                    base[v.id] = Number.isFinite(sv) ? sv : (v.min + v.max) / 2;
+                });
+                const N = Y ? surfaceView.res : 120;
+                const xs = Array.from({ length: N }, (_, i) => X.min + ((X.max - X.min) * i) / (N - 1));
+                const ys = Y ? Array.from({ length: N }, (_, i) => Y.min + ((Y.max - Y.min) * i) / (N - 1)) : [null];
+                const z = [];
+                for (let j = 0; j < ys.length; j++) {
+                    const row = [];
+                    for (let i = 0; i < xs.length; i++) {
+                        const inp = { ...base, [X.id]: xs[i] };
+                        if (Y) inp[Y.id] = ys[j];
+                        let val = null;
+                        try {
+                            const res = SimulationEngine.run(inp);
+                            val = res?.outputs?.[Z.id]?.crispValue ?? null;
+                        } catch (e) {}
+                        row.push(val);
+                    }
+                    z.push(row);
+                }
+                return { X, Y, Z, xs, ys, z, base, fixed: ins.filter((v) => v !== X && v !== Y) };
+            }
+            function surfaceColor(t) {
+                // blue -> teal -> yellow (colour-blind friendly, like "viridis")
+                const stops = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+                t = Math.max(0, Math.min(1, t)) * (stops.length - 1);
+                const i = Math.min(stops.length - 2, Math.floor(t)), f = t - i;
+                const c = stops[i].map((a, k) => Math.round(a + (stops[i + 1][k] - a) * f));
+                return c;
+            }
+            function drawSurface(canvas, data, opts = {}) {
+                const ctx = canvas.getContext("2d");
+                const W = canvas.width, H = canvas.height;
+                const dpr = opts.scale || 1;
+                const textCol = opts.textColor || "#12243f";
+                const gridCol = opts.gridColor || "rgba(120,130,150,0.35)";
+                ctx.clearRect(0, 0, W, H);
+                if (opts.background) { ctx.fillStyle = opts.background; ctx.fillRect(0, 0, W, H); }
+                ctx.font = `${11 * dpr}px "DM Sans", sans-serif`;
+                if (!data) {
+                    ctx.fillStyle = textCol;
+                    ctx.textAlign = "center";
+                    ctx.fillText("Add inputs, outputs and rules to see the control surface.", W / 2, H / 2);
+                    return;
+                }
+                const { X, Y, Z, xs, ys, z } = data;
+                const fmt = (n) => (Math.abs(n) >= 100 ? n.toFixed(0) : +n.toFixed(2)).toString();
+
+                // ---- 1 input: 2D control curve ----
+                if (!Y) {
+                    const PL = 55 * dpr, PR = 20 * dpr, PT = 20 * dpr, PB = 45 * dpr;
+                    const cw = W - PL - PR, ch = H - PT - PB;
+                    const tx = (x) => PL + ((x - X.min) / (X.max - X.min)) * cw;
+                    const ty = (v) => PT + (1 - (v - Z.min) / (Z.max - Z.min)) * ch;
+                    ctx.strokeStyle = gridCol; ctx.lineWidth = 1 * dpr;
+                    ctx.fillStyle = textCol; ctx.textAlign = "center";
+                    for (let k = 0; k <= 5; k++) {
+                        const xv = X.min + ((X.max - X.min) * k) / 5, yv = Z.min + ((Z.max - Z.min) * k) / 5;
+                        ctx.beginPath(); ctx.moveTo(tx(xv), PT); ctx.lineTo(tx(xv), PT + ch); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(PL, ty(yv)); ctx.lineTo(PL + cw, ty(yv)); ctx.stroke();
+                        ctx.textAlign = "center"; ctx.fillText(fmt(xv), tx(xv), PT + ch + 14 * dpr);
+                        ctx.textAlign = "right"; ctx.fillText(fmt(yv), PL - 6 * dpr, ty(yv) + 4 * dpr);
+                    }
+                    ctx.strokeStyle = "#0b75e3"; ctx.lineWidth = 2.5 * dpr; ctx.beginPath();
+                    let pen = false;
+                    xs.forEach((x, i) => {
+                        const v = z[0][i];
+                        if (v === null) { pen = false; return; }
+                        if (!pen) ctx.moveTo(tx(x), ty(v)); else ctx.lineTo(tx(x), ty(v));
+                        pen = true;
+                    });
+                    ctx.stroke();
+                    const cur = data.base[X.id];
+                    ctx.strokeStyle = "rgba(217,53,69,0.7)"; ctx.setLineDash([5 * dpr, 4 * dpr]); ctx.lineWidth = 1.5 * dpr;
+                    ctx.beginPath(); ctx.moveTo(tx(cur), PT); ctx.lineTo(tx(cur), PT + ch); ctx.stroke(); ctx.setLineDash([]);
+                    ctx.font = `bold ${12 * dpr}px "DM Sans", sans-serif`; ctx.textAlign = "center";
+                    ctx.fillText(`${X.name}${X.unit ? " (" + X.unit + ")" : ""}`, PL + cw / 2, H - 10 * dpr);
+                    ctx.save(); ctx.translate(14 * dpr, PT + ch / 2); ctx.rotate(-Math.PI / 2);
+                    ctx.fillText(`${Z.name}${Z.unit ? " (" + Z.unit + ")" : ""}`, 0, 0); ctx.restore();
+                    return;
+                }
+
+                // ---- 2 inputs: 3D surface ----
+                const zr = Z.max - Z.min || 1;
+                const nx = (x) => ((x - X.min) / (X.max - X.min)) * 2 - 1;
+                const ny = (y) => ((y - Y.min) / (Y.max - Y.min)) * 2 - 1;
+                const nz = (v) => ((v - Z.min) / zr) * 1.4 - 0.7;
+                const ca = Math.cos(surfaceView.az), sa = Math.sin(surfaceView.az);
+                const ce = Math.cos(surfaceView.el), se = Math.sin(surfaceView.el);
+                const S = Math.min(W, H) * 0.31;
+                const cx = W / 2, cy = H / 2 + H * 0.06;
+                const proj = (x, y, zz) => {
+                    const rx = x * ca - y * sa, ry = x * sa + y * ca;
+                    const depth = ry * ce + zz * se; // larger = closer to the viewer
+                    const sy = -zz * ce + ry * se;
+                    return [cx + rx * S, cy + sy * S, depth];
+                };
+                // Box / floor grid
+                ctx.strokeStyle = gridCol; ctx.lineWidth = 1 * dpr;
+                const line3 = (a, b) => { const p = proj(...a), q = proj(...b); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); };
+                for (let k = 0; k <= 4; k++) {
+                    const t = -1 + k * 0.5;
+                    line3([t, -1, -0.7], [t, 1, -0.7]);
+                    line3([-1, t, -0.7], [1, t, -0.7]);
+                }
+                // Back vertical edges (pick the corner farthest from the viewer)
+                const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+                const far = corners.reduce((best, c) => (proj(c[0], c[1], 0)[2] < proj(best[0], best[1], 0)[2] ? c : best));
+                for (let k = 0; k <= 4; k++) {
+                    const zz = -0.7 + k * 0.35;
+                    line3([far[0], -1, zz], [far[0], 1, zz]);
+                    line3([-1, far[1], zz], [1, far[1], zz]);
+                }
+                line3([far[0], far[1], -0.7], [far[0], far[1], 0.7]);
+
+                // Quads, painter's algorithm (far first)
+                const quads = [];
+                for (let j = 0; j < ys.length - 1; j++)
+                    for (let i = 0; i < xs.length - 1; i++) {
+                        const v = [z[j][i], z[j][i + 1], z[j + 1][i + 1], z[j + 1][i]];
+                        if (v.some((q) => q === null)) continue;
+                        const pts = [
+                            proj(nx(xs[i]), ny(ys[j]), nz(v[0])),
+                            proj(nx(xs[i + 1]), ny(ys[j]), nz(v[1])),
+                            proj(nx(xs[i + 1]), ny(ys[j + 1]), nz(v[2])),
+                            proj(nx(xs[i]), ny(ys[j + 1]), nz(v[3])),
+                        ];
+                        const avg = (v[0] + v[1] + v[2] + v[3]) / 4;
+                        quads.push({ pts, d: (pts[0][2] + pts[1][2] + pts[2][2] + pts[3][2]) / 4, t: (avg - Z.min) / zr });
+                    }
+                quads.sort((a, b) => a.d - b.d); // far first, near last
+                quads.forEach((q) => {
+                    const [r, g, b] = surfaceColor(q.t);
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.strokeStyle = `rgba(0,0,0,0.18)`;
+                    ctx.lineWidth = 0.6 * dpr;
+                    ctx.beginPath();
+                    q.pts.forEach((p, k) => (k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                // Current simulation point
+                const bx = data.base[X.id], by = data.base[Y.id];
+                let bz = null;
+                try { bz = SimulationEngine.run(data.base)?.outputs?.[Z.id]?.crispValue ?? null; } catch (e) {}
+                if (bz !== null) {
+                    const p = proj(nx(bx), ny(by), nz(bz));
+                    ctx.fillStyle = "#d93545"; ctx.strokeStyle = "#fff"; ctx.lineWidth = 2 * dpr;
+                    ctx.beginPath(); ctx.arc(p[0], p[1], 5 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                }
+
+                // Axis labels
+                ctx.fillStyle = textCol;
+                ctx.font = `${10 * dpr}px "DM Mono", monospace`;
+                ctx.textAlign = "center";
+                const lab = (txt, x, y, zz) => { const p = proj(x, y, zz); ctx.fillText(txt, p[0], p[1]); };
+                const nearX = -far[0], nearY = -far[1];
+                lab(fmt(X.min), -1, nearY * 1.18, -0.7); lab(fmt(X.max), 1, nearY * 1.18, -0.7);
+                lab(fmt(Y.min), nearX * 1.18, -1, -0.7); lab(fmt(Y.max), nearX * 1.18, 1, -0.7);
+                lab(fmt(Z.min), far[0], far[1], -0.78); lab(fmt(Z.max), far[0], far[1], 0.76);
+                ctx.font = `bold ${11.5 * dpr}px "DM Sans", sans-serif`;
+                lab(X.name, 0, nearY * 1.38, -0.7);
+                lab(Y.name, nearX * 1.38, 0, -0.7);
+                lab(Z.name, far[0], far[1], 0.9);
+            }
+            function surfaceTextColor() {
+                return getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#12243f";
+            }
+            function renderSurfaceInto(canvas) {
+                if (!canvas) return;
+                const rect = canvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const w = Math.max(200, rect.width), h = Math.max(160, rect.height);
+                canvas.width = Math.round(w * dpr);
+                canvas.height = Math.round(h * dpr);
+                drawSurface(canvas, computeSurface(), { scale: dpr, textColor: surfaceTextColor() });
+            }
+            function renderSurfacePanel() {
+                const ctrls = document.getElementById("surfaceControls");
+                if (!ctrls) return;
+                const { ins, outs } = surfaceVars();
+                const opt = (arr, sel) => arr.map((v) => `<option value="${v.id}" ${v.id === sel ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+                if (!ins.length || !outs.length) {
+                    ctrls.innerHTML = "";
+                } else {
+                    ctrls.innerHTML =
+                        `<label>X <select onchange="surfaceView.xId=this.value; if(surfaceView.yId===this.value) surfaceView.yId=null; renderSurfacePanel()">${opt(ins, surfaceView.xId)}</select></label>` +
+                        (ins.length >= 2 ? `<label>Y <select onchange="surfaceView.yId=this.value; if(surfaceView.xId===this.value) surfaceView.xId=null; renderSurfacePanel()">${opt(ins.filter((v) => v.id !== surfaceView.xId), surfaceView.yId)}</select></label>` : "") +
+                        `<label>Output <select onchange="surfaceView.zId=this.value; renderSurfacePanel()">${opt(outs, surfaceView.zId)}</select></label>`;
+                }
+                const data = computeSurface();
+                const note = document.getElementById("surfaceNote");
+                if (note) {
+                    if (!data) note.textContent = "";
+                    else if (!data.Y) note.textContent = "Only one input: this curve shows the output for every input value. Red line = current simulation input.";
+                    else
+                        note.textContent =
+                            "Drag to rotate. Red dot = current simulation inputs." +
+                            (data.fixed.length ? ` Other inputs fixed at: ${data.fixed.map((v) => `${v.name} = ${+data.base[v.id].toFixed(2)}`).join(", ")} (change with the simulation sliders).` : "") +
+                            " Empty holes = no rule fires there.";
+                }
+                ["surfaceCanvas", "surfaceCanvasLarge"].forEach((id) => {
+                    const c = document.getElementById(id);
+                    if (!c || !c.offsetParent) return;
+                    const rect = c.getBoundingClientRect();
+                    const dpr = window.devicePixelRatio || 1;
+                    c.width = Math.round(Math.max(200, rect.width) * dpr);
+                    c.height = Math.round(Math.max(160, rect.height) * dpr);
+                    drawSurface(c, data, { scale: dpr, textColor: surfaceTextColor() });
+                });
+            }
+            // Image for the PDF report (light background)
+            function renderSurfaceImage(w, h, type = "image/png") {
+                const data = computeSurface();
+                if (!data) return null;
+                const c = document.createElement("canvas");
+                c.width = w;
+                c.height = h;
+                drawSurface(c, data, { scale: 1.5, textColor: "#12243f", background: "#ffffff" });
+                return c.toDataURL(type, 0.9);
+            }
+            function exportSurfacePNG() {
+                const img = renderSurfaceImage(1400, 960);
+                if (!img) { showToast("Nothing to export yet."); return; }
+                const a = document.createElement("a");
+                a.href = img;
+                a.download = `${fileBase()}_surface.png`;
+                document.body.appendChild(a); a.click(); a.remove();
+            }
+            function openSurfaceModal() {
+                const m = document.getElementById("surfaceModal");
+                if (!m) return;
+                m.style.display = "flex";
+                requestAnimationFrame(renderSurfacePanel);
+            }
+            function closeSurfaceModal() {
+                const m = document.getElementById("surfaceModal");
+                if (m) m.style.display = "none";
+            }
+            // Drag to rotate (mouse + touch)
+            function attachSurfaceDrag(canvas) {
+                if (!canvas || canvas.dataset.dragReady) return;
+                canvas.dataset.dragReady = "1";
+                let drag = null;
+                const start = (x, y) => (drag = { x, y, az: surfaceView.az, el: surfaceView.el });
+                const move = (x, y) => {
+                    if (!drag) return;
+                    surfaceView.az = drag.az + (x - drag.x) * 0.01;
+                    surfaceView.el = Math.max(0.05, Math.min(1.45, drag.el + (y - drag.y) * 0.01));
+                    if (!surfaceView._raf)
+                        surfaceView._raf = requestAnimationFrame(() => {
+                            surfaceView._raf = null;
+                            renderSurfacePanel();
+                        });
+                };
+                canvas.addEventListener("mousedown", (e) => start(e.clientX, e.clientY));
+                window.addEventListener("mousemove", (e) => move(e.clientX, e.clientY));
+                window.addEventListener("mouseup", () => (drag = null));
+                canvas.addEventListener("touchstart", (e) => { const t = e.touches[0]; start(t.clientX, t.clientY); }, { passive: true });
+                canvas.addEventListener("touchmove", (e) => { const t = e.touches[0]; move(t.clientX, t.clientY); e.preventDefault(); }, { passive: false });
+                canvas.addEventListener("touchend", () => (drag = null));
+            }
+
+            // Keep the checker and surface up to date whenever the system changes
+            (function hookRefreshes() {
+                const wrap = (name, after) => {
+                    const orig = window[name];
+                    if (typeof orig !== "function") return;
+                    window[name] = function () {
+                        const r = orig.apply(this, arguments);
+                        try { after(); } catch (e) {}
+                        return r;
+                    };
+                };
+                const refresh = () => {
+                    scheduleRuleCheck();
+                    if (surfaceIsOpen()) scheduleSurface();
+                };
+                ["renderRules", "refreshAllCharts", "buildSimulationPanel", "renderVarLists"].forEach((n) => wrap(n, refresh));
+                wrap("updateSimInput", () => { if (surfaceIsOpen()) scheduleSurface(); });
+                wrap("toggleCollapsible", () => {
+                    if (surfaceIsOpen()) scheduleSurface();
+                });
+                window.addEventListener("resize", () => { if (surfaceIsOpen()) scheduleSurface(); });
+                document.addEventListener("DOMContentLoaded", () => {
+                    attachSurfaceDrag(document.getElementById("surfaceCanvas"));
+                    attachSurfaceDrag(document.getElementById("surfaceCanvasLarge"));
+                    scheduleRuleCheck();
+                });
+                if (document.readyState !== "loading") {
+                    attachSurfaceDrag(document.getElementById("surfaceCanvas"));
+                    attachSurfaceDrag(document.getElementById("surfaceCanvasLarge"));
+                    scheduleRuleCheck();
+                }
+            })();
         </script>
         <!-- AI Chat Assistant -->
         <button class="ai-float-btn" id="aiFloatBtn" title="AI Fuzzy Assistant">

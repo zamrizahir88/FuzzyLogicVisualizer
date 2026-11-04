@@ -20,6 +20,9 @@
   * 🐍 **Python** (`skfuzzy` scripts)
   * 📐 **MATLAB** (`.m` scripts & `.fis` files)
   * ⚡ **C++ / Arduino** (For ESP32 and embedded microcontrollers)
+* **✅ Rule-Base Checker:** Automatically finds gaps (input combinations with no rule), conflicting or duplicate rules, unused variables/MFs, and input ranges no membership function covers. One click creates a rule for a gap.
+* **🗻 Control Surface:** Rotatable 3D surface (2+ inputs) or control curve (1 input) showing the output for every input combination.
+* **📄 PDF Report:** One-click report with settings, MF charts, rules, rule check, example simulation and control surface.
 * **🤖 AI Assistant (Dr. Zamri):** An embedded AI tutor powered by Groq (via a secure Cloudflare Worker proxy) to help students design fuzzy systems.
 * **☁️ Hybrid Cloud Saves:** Save files locally as `.fuzzyjson`, or log in with Google (Firebase) to save projects to a personal cloud dashboard.
 

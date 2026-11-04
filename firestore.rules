@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Short-link sharing
+    // - Anyone with a link can open that ONE project (get).
+    // - Nobody can list/browse all shared projects.
+    // - Links can be created (same fields the app writes), but never edited or deleted.
+    match /shared_links/{docId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if request.resource.data.keys().hasOnly(['data', 'createdAt'])
+                    && request.resource.data.data is string
+                    && request.resource.data.data.size() < 900000
+                    && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // 2. Personal cloud saves: each user can only access their own projects.
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // (The old /projects/{projectId} rule was removed - the app never uses it.)
+  }
+}
