@@ -20,10 +20,15 @@
   * 🐍 **Python** (`skfuzzy` scripts)
   * 📐 **MATLAB** (`.m` scripts & `.fis` files)
   * ⚡ **C++ / Arduino** (For ESP32 and embedded microcontrollers)
+* **🧭 Guided Steps:** A progress bar (Variables → MFs → Rules → Check → Simulate → Export) shows students what to do next.
+* **🔴 Live Simulation:** Results update instantly while editing; input sliders sit right above the charts.
+* **✏️ Drag-to-Edit MFs:** Turn on "Edit shape" on a chart and drag the points of a membership function (snapping, undo, Esc to cancel; no accidental edits when off).
+* **▦ Rule Table (FAM):** Edit 2-input rule bases as a grid; gaps and conflicts are highlighted.
+* **📊 Rule Viewer:** Mini charts for every rule in the Inference Trace, like MATLAB's Rule Viewer.
 * **✅ Rule-Base Checker:** Automatically finds gaps (input combinations with no rule), conflicting or duplicate rules, unused variables/MFs, and input ranges no membership function covers. One click creates a rule for a gap.
 * **🗻 Control Surface:** Rotatable 3D surface (2+ inputs) or control curve (1 input) showing the output for every input combination.
 * **📄 PDF Report:** One-click report with settings, MF charts, rules, rule check, example simulation and control surface.
-* **🤖 AI Assistant (Dr. Zamri):** An embedded AI tutor powered by Groq (via a secure Cloudflare Worker proxy) to help students design fuzzy systems.
+* **🤖 AI Assistant (Dr. Zamri):** An embedded AI tutor powered by Groq (via a secure Cloudflare Worker proxy) to help students design fuzzy systems. It only answers questions about fuzzy logic and this website.
 * **☁️ Hybrid Cloud Saves:** Save files locally as `.fuzzyjson`, or log in with Google (Firebase) to save projects to a personal cloud dashboard.
 
 ---
