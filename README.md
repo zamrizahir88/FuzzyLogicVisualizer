@@ -1,4 +1,4 @@
-# 🧠 FuzzyLogic Visualizer v2.5
+# 🧠 FuzzyLogic Visualizer v2.6
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
@@ -7,7 +7,18 @@
 
 **A lightweight, browser-based IDE for designing, simulating, and exporting Mamdani Fuzzy Inference Systems.**
 
-🚀 **[Try the Live Web App Here!](https://zamrizahir.github.io/YOUR_REPO_NAME/)** *(Replace with your actual link)*
+🚀 **[Try the Live Web App Here!](https://zamrizahir88.github.io/FuzzyLogicVisualizer/main.html)**
+
+---
+
+## 🆕 What's new in v2.6
+
+* **More room to work:** one compact top bar, a right panel with tabs (Rules · Check · Simulate · Trace · 3D · Settings), and draggable dividers between the left, centre and right panels (sizes are remembered; File › Reset panel layout restores them).
+* **Clearer charts:** MF names written on the curves, live input markers with μ values, rule-clipped areas with a bold combined outline and the crisp value marked on the output chart, active MFs highlighted, two charts per row on wide screens, and colour-blind-friendly default colours.
+* **Compact live results:** each output on one row with a range bar and its fuzzy meaning (e.g. "Average · μ 0.65").
+* **Quick-add templates:** Low / Med / High, 5 levels, or a Gaussian set in one click.
+* **Engine fixes:** exact singleton outputs on any range, invalid MF parameters reported in Rule Check, and automatic extra sampling for very narrow output MFs.
+* **Consistent look:** one emoji per meaning across the app, and one font role each (DM Sans for text, DM Mono for numbers).
 
 ---
 

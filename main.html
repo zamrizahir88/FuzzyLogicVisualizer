@@ -6,7 +6,7 @@
             name="viewport"
             content="width=device-width, initial-scale=1.0"
         />
-        <title>FuzzyLogic Visualizer v2.5 - UniMAP</title>
+        <title>FuzzyLogic Visualizer v2.6 - UniMAP</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
             href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap"
@@ -2988,79 +2988,329 @@
                 .live-in { min-width: 140px; }
                 .help-tip::after { left: auto; right: -10px; transform: none; }
             }
+            /* ============ v2.6 layout ============ */
+            /* One compact top bar */
+            .topbar {
+                display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+                padding: 6px 14px; min-height: 54px; flex-shrink: 0; position: relative; z-index: 100;
+                background: var(--surface); border-bottom: 1px solid var(--border);
+            }
+            .tb-brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+            .tb-brand .nav-logo-icon { width: 32px; height: 32px; }
+            .tb-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+            .tb-brand .nav-logo-text { font-size: 17px; white-space: nowrap; }
+            .tb-brand .nav-badge { font-size: 10px; padding: 2px 6px; vertical-align: middle; }
+            .tb-author { font-size: 11px; color: var(--text3); white-space: nowrap; }
+            .tb-author a { color: var(--accent); font-weight: 700; text-decoration: none; }
+            .tb-author a:hover { text-decoration: underline; }
+            .tb-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+            .tb-tools .btn { padding: 6px 10px; font-size: 12.5px; }
+            .tb-project { display: flex; align-items: center; gap: 6px; }
+            .tb-project .nav-project-name { width: 190px; height: 34px; }
+            .tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+            .topbar .steps-bar { padding: 0; gap: 4px; flex-wrap: nowrap; }
+            .topbar .step-pill { padding: 3px; border-radius: 50%; gap: 0; }
+            .topbar .step-pill > :not(.step-num) { display: none; }
+            .topbar .step-pill { font-size: 0; }
+            .topbar .step-num { width: 22px; height: 22px; font-size: 11px; }
+            .topbar .step-arrow { font-size: 10px; }
+            .topbar .steps-hint { font-size: 11.5px; white-space: nowrap; margin-left: 4px; }
+            @media (min-width: 1700px) {
+                .topbar .step-pill { font-size: 11.5px; padding: 3px 8px 3px 3px; border-radius: 20px; gap: 5px; }
+            }
+            @media (min-width: 901px) and (max-width: 1499px) {
+                .topbar { flex-wrap: nowrap; gap: 10px; }
+                .tb-btn-text, .topbar .steps-hint, .topbar .step-arrow { display: none; }
+                .tb-project .nav-project-name { width: 150px; }
+                .tb-tools { flex-wrap: nowrap; }
+            }
+            @media (min-width: 901px) and (max-width: 1180px) {
+                .tb-author { display: none; }
+                .tb-project .nav-project-name { width: 120px; }
+                .tb-tools .btn { padding: 6px 8px; }
+            }
+            /* Footer kept, slimmer */
+            .footer { height: 28px; }
+            /* Main area */
+            .main { gap: 0; padding: 8px 10px 8px; }
+            .panel-left, .panel-right { transition: none; }
+            .panel-left { width: 270px; min-width: 0; }
+            .panel-right { width: 380px; min-width: 0; }
+            .panel-center { min-width: 340px; }
+            /* Draggable dividers */
+            .pane-divider {
+                flex: 0 0 12px; position: relative; cursor: col-resize; display: flex; align-items: center; justify-content: center;
+                touch-action: none; outline: none;
+            }
+            .pane-grip { width: 4px; height: 44px; border-radius: 4px; background: var(--border2); transition: background 0.15s, height 0.15s; }
+            .pane-divider:hover .pane-grip, .pane-divider:focus-visible .pane-grip, .pane-divider.dragging .pane-grip { background: var(--accent); height: 80px; }
+            .pane-reopen {
+                display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 18px; height: 54px; border-radius: 6px;
+                border: 1px solid var(--border2); background: var(--surface); color: var(--accent); font-weight: 700; cursor: pointer; padding: 0;
+            }
+            .pane-divider.is-collapsed .pane-grip { display: none; }
+            .pane-divider.is-collapsed .pane-reopen { display: block; }
+            body.pane-resizing, body.pane-resizing * { cursor: col-resize !important; user-select: none !important; }
+            /* Centre toolbar: one row */
+            .chart-toolbar { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 6px 8px; padding: 6px 10px; }
+            .chart-toolbar-row { display: contents; }
+            .chart-toolbar-row > div[style*="flex: 1"] { display: none; }
+            #btnToggleLeft { order: -2; }
+            .chart-toolbar-title { order: -1; font-size: 14px; margin-right: auto; }
+            #btnToggleRight { order: 10; }
+            .chart-toolbar .btn { padding: 5px 10px; font-size: 12px; }
+            /* Right panel tabs */
+            .rp-tabs {
+                display: flex; gap: 2px; padding: 6px 6px 0; border-bottom: 1px solid var(--border); background: var(--surface2);
+                overflow-x: auto; flex-shrink: 0; scrollbar-width: none;
+            }
+            .rp-tabs::-webkit-scrollbar { display: none; }
+            .rp-tab {
+                display: inline-flex; align-items: center; gap: 4px; padding: 7px 9px; border: 1px solid transparent; border-bottom: none;
+                border-radius: 8px 8px 0 0; background: none; color: var(--text2); font: inherit; font-size: 12px; font-weight: 600;
+                cursor: pointer; white-space: nowrap; margin-bottom: -1px;
+            }
+            .rp-tab:hover { color: var(--text); background: var(--surface3); }
+            .rp-tab.active { background: var(--surface); color: var(--accent); border-color: var(--border); }
+            .rp-tab-icon { font-size: 12px; }
+            .rp-tab-badge:empty { display: none; }
+            .rp-tab-badge { font-size: 10px; padding: 0 5px; border-radius: 8px; background: var(--accent-dim); color: var(--accent2); }
+            .rp-tab-badge.ok { background: rgba(18,122,65,0.15); color: var(--success); }
+            .rp-tab-badge.warn { background: rgba(184,116,0,0.15); color: var(--warn); }
+            .rp-tab-badge.err { background: var(--danger-bg); color: var(--danger); }
+            .rp-tab-badge.live { background: none; color: var(--danger); padding: 0; }
+            .panel-right.rp-tabbed .panel-right-scroll { overflow: hidden; }
+            .panel-right.rp-tabbed .panel-right-section { display: none; border-bottom: none; }
+            .panel-right.rp-tabbed .panel-right-section.rp-active { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+            .panel-right.rp-tabbed .panel-right-section > .collapsible-toggle { display: none; }
+            .panel-right.rp-tabbed .panel-right-section > .collapsible-body {
+                max-height: none !important; flex: 1; min-height: 0; overflow-y: auto !important; overflow-x: hidden;
+            }
+            .panel-right.rp-tabbed #surfaceCanvas { height: max(300px, min(48vh, 520px)); }
+            /* Short laptop screens: let the page scroll instead of squashing */
+            @media (min-width: 901px) and (max-height: 700px) {
+                body { height: auto; max-height: none; overflow: auto; }
+                .main { flex: none; height: 640px; }
+            }
+            /* Phones / tablets */
+            @media (max-width: 900px) {
+                .topbar { gap: 8px; padding: 8px 10px; }
+                .tb-brand { flex: 1 1 auto; }
+                .tb-right { margin-left: 0; }
+                .tb-tools { order: 3; flex: 1 1 100%; justify-content: center; }
+                .tb-project { flex: 1 1 100%; }
+                .tb-project .nav-project-name { width: 100%; }
+                .topbar .steps-bar { order: 4; flex: 1 1 100%; justify-content: center; }
+                .tb-btn-text { display: none; }
+                .pane-divider { display: none; }
+                .panel-left, .panel-right { width: 100% !important; }
+                .main { padding: 0; }
+            }
+            /* ============ v2.6 header polish ============ */
+            .topbar { border-top: 3px solid var(--accent); min-height: 58px; gap: 16px; }
+            .ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+            .ic-sm { width: 13px; height: 13px; }
+            .tb-logo {
+                width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+                background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 3px 10px var(--accent-glow); flex-shrink: 0;
+            }
+            .tb-title { font-family: var(--display); font-weight: 800; font-size: 17px; letter-spacing: -0.02em; color: var(--text); white-space: nowrap; }
+            .tb-title > span:first-child { color: var(--accent); }
+            .tb-ver { font-family: var(--mono); font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: var(--accent-dim); color: var(--accent2); vertical-align: 2px; }
+            .tb-author { font-size: 11px; color: var(--text3); white-space: nowrap; }
+            .tb-author a { color: var(--accent); font-weight: 700; text-decoration: none; }
+            .tb-chip {
+                display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 36px; border: 1px solid var(--border2); border-radius: 10px;
+                background: var(--surface2); cursor: text; color: var(--text3); transition: border-color 0.15s;
+            }
+            .tb-chip:hover, .tb-chip:focus-within { border-color: var(--accent); }
+            .tb-chip .nav-project-name { border: none; background: transparent; padding: 0; height: 32px; width: 170px; font-family: var(--sans); font-size: 13.5px; font-weight: 600; color: var(--text); outline: none; }
+            .tb-save { font-size: 10.5px; font-weight: 600; color: var(--success); white-space: nowrap; }
+            .tb-save.dirty { color: var(--warn); }
+            .seg-group { display: inline-flex; border: 1px solid var(--border2); border-radius: 10px; background: var(--surface); }
+            .seg-group > .file-menu { display: flex; }
+            .seg-btn {
+                display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; background: none; border: none;
+                border-right: 1px solid var(--border); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+            }
+            .seg-group > :last-child, .seg-group > :last-child .seg-btn { border-right: none; }
+            .seg-group > :first-child .seg-btn, .seg-group > .seg-btn:first-child { border-radius: 9px 0 0 9px; }
+            .seg-group > .seg-btn:last-child { border-radius: 0 9px 9px 0; }
+            .seg-btn:hover { background: var(--accent-dim); color: var(--accent); }
+            .seg-icon { padding: 0 10px; }
+            #fileMenuBtn { color: var(--accent); }
+            /* stepper */
+            .topbar .steps-bar { gap: 10px; }
+            .stepper { display: flex; align-items: center; }
+            .stepper-dot {
+                width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--border2); background: var(--surface); color: var(--text3);
+                font-size: 11px; font-weight: 700; cursor: pointer; padding: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;
+            }
+            .stepper-dot:hover { border-color: var(--accent); color: var(--accent); }
+            .stepper-dot.done { background: var(--success); border-color: var(--success); color: #fff; }
+            .stepper-dot.current { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 4px var(--accent-dim); }
+            .stepper-line { width: 12px; height: 2px; background: var(--border2); }
+            .stepper-line.done { background: var(--success); }
+            .stepper-text { font-size: 12px; color: var(--text2); white-space: nowrap; }
+            .stepper-text b { color: var(--accent); }
+            /* user menu */
+            .tb-right { gap: 8px; }
+            .tb-login { height: 34px; padding: 0 14px; display: inline-flex; gap: 6px; align-items: center; }
+            .user-menu { position: relative; }
+            .user-chip {
+                display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px 0 3px; border: 1px solid var(--border2);
+                border-radius: 20px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+            }
+            .user-chip:hover { border-color: var(--accent); }
+            .user-chip img, .tb-initials { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+            .tb-initials { display: inline-flex; align-items: center; justify-content: center; background: var(--accent-dim); color: var(--accent2); font-size: 11px; font-weight: 700; }
+            .user-name { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .user-menu-list {
+                display: none; position: absolute; right: 0; top: calc(100% + 6px); z-index: 1300; min-width: 230px; padding: 6px;
+                background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            }
+            .user-menu.open .user-menu-list { display: block; }
+            .user-menu-head { display: flex; flex-direction: column; padding: 6px 10px 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; font-size: 13px; }
+            .user-menu-head span { font-size: 11px; color: var(--text3); }
+            .user-menu-list button { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); font: inherit; font-size: 13px; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+            .user-menu-list button:hover { background: var(--accent-dim); }
+            /* compact results */
+            .sim-pause-row { display: flex; justify-content: flex-end; }
+            .sim-pause-btn { font-size: 11.5px !important; padding: 4px 10px !important; }
+            .sim-results { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+            .res-row { border: 1px solid var(--border2); border-radius: 10px; padding: 7px 10px 5px; background: var(--surface); }
+            .res-row.warn { border-color: rgba(184, 116, 0, 0.45); }
+            .res-row.idle { opacity: 0.75; }
+            .res-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+            .res-name { font-size: 12px; color: var(--text2); font-weight: 600; }
+            .res-value { font-family: var(--mono); font-size: 17px; font-weight: 700; color: var(--accent); }
+            .res-tags { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+            .res-tag { font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 10px; border: 1px solid; white-space: nowrap; }
+            .res-bar { position: relative; height: 6px; border-radius: 3px; background: var(--surface3); margin-top: 6px; }
+            .res-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); transition: width 0.2s; }
+            .res-mark { position: absolute; top: -3px; width: 3px; height: 12px; border-radius: 2px; background: var(--accent); transform: translateX(-50%); transition: left 0.2s; }
+            .res-foot { display: flex; justify-content: space-between; font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+            .res-row.warn .res-foot span:nth-child(2) { color: var(--warn); font-family: var(--sans); font-weight: 600; }
+            /* quick-add templates */
+            .mf-templates { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; font-size: 11px; color: var(--text3); }
+            .mf-templates button {
+                font: inherit; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; cursor: pointer;
+                border: 1px dashed var(--border2); background: transparent; color: var(--text2);
+            }
+            .mf-templates button:hover { border-color: var(--accent); color: var(--accent); border-style: solid; }
+            @media (min-width: 901px) and (max-width: 1499px) {
+                .tb-chip .nav-project-name { width: 140px; }
+                .topbar { gap: 12px; }
+            }
+            @media (min-width: 901px) and (max-width: 1439px) {
+                .stepper-text { display: none; }
+            }
+            @media (min-width: 901px) and (max-width: 1179px) {
+                .seg-btn span:not(.em) { display: none; }
+                .seg-btn { padding: 0 10px; }
+                .tb-chip .nav-project-name { width: 110px; }
+                .tb-save { display: none; }
+            }
+            @media (min-width: 1500px) {
+                .stepper-line { width: 18px; }
+            }
+            @media (max-width: 900px) {
+                .tb-chip { flex: 1 1 100%; }
+                .tb-chip .nav-project-name { width: 100%; }
+                .seg-group { flex: 1 1 100%; justify-content: center; }
+                .seg-btn { flex: 1; justify-content: center; min-width: 0; padding: 0 6px; }
+                .seg-group, .tb-chip, .topbar .steps-bar { min-width: 0; max-width: 100%; }
+                .topbar { overflow-x: hidden; }
+                .stepper-line { width: 8px; }
+                .tb-title { font-size: 15px; }
+                .stepper-text { font-size: 11px; }
+                .user-name { display: none; }
+            }
+            /* ============ v2.6 typography system ============
+               DM Sans  = all interface text
+               Syne     = brand name + big headings only
+               DM Mono  = numbers and code only
+               Sizes    = 11 / 12 / 13 / 14 / 16 / 20 px            */
+            .em { font-size: 15px; line-height: 1; }
+            .mob-em { font-size: 20px; line-height: 1; display: block; margin-bottom: 2px; }
+            .mobile-nav button svg { display: none; }
+            #themeToggle .em { font-size: 16px; }
+            .section-label, .section-header, .collapsible-toggle, .mini-collapsible-toggle,
+            .chart-card-header, .chart-var-name, .chart-var-badge, .chart-live-indicator, .chart-sim-badge,
+            .chart-legend, .legend-pill, .field-label, .field-group, .mf-param-label, .mf-shape-select,
+            .rule-label, .rule-logic-lbl, .rule-select, .rule-chip, .rule-builder-wrap,
+            .settings-grid label, .settings-grid select, .settings-grid .fgrp,
+            .download-grid, .download-grid h4, .modal-body, .footer, .toast, .sim-status-text,
+            .sim-active-mf, .sim-firing-rule, .sim-input-mf-row, .sim-action-row, .nav-project-name,
+            .ai-msg.assistant, .ai-chat-input-row textarea, .trace-muted, .var-name, .var-name-input,
+            .live-bar-title, .rp-tab, .rc-item, .fam-table, .rv-table th, .badge-output, .add-mf-btn {
+                font-family: var(--sans);
+            }
+            .field-input, .mf-param-input, .sim-input-value, .chart-var-range, .res-value, .res-foot,
+            .live-in-val, .sim-firing-strength, .rule-chip-controls input[type="number"], .var-mf-count,
+            .ai-msg.assistant code, .ai-pre, .nav-badge, .tb-ver, .rv-rule {
+                font-family: var(--mono);
+            }
+            /* calmer section titles: sentence case, no wide letter-spacing */
+            .section-label { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 700; color: var(--text2); }
+            .collapsible-toggle, .mini-collapsible-toggle { letter-spacing: 0; font-size: 12px; }
+            .chart-var-name { font-size: 14px; }
+            .toast { font-size: 13px; }
+            .footer { font-size: 11px; letter-spacing: 0; }
+            .field-label, .mf-param-label { font-size: 11px; letter-spacing: 0.02em; }
+            .rule-label, .rule-select, .rule-chip { font-size: 12px; }
+            .legend-pill, .chart-sim-badge, .chart-var-badge { font-size: 11px; }
+            .fam-covered, .rv-table, .res-tag, .res-foot, .rc-badge, .rp-tab-badge { font-size: 11px; }
+            .live-in, .live-bar-title, .mf-templates, .mf-templates button { font-size: 12px; }
+            /* ============ v2.6 charts ============ */
+            .chart-card { container-type: inline-size; }
+            .chart-card .chart-legend, .chart-card .chart-export-row, .chart-card .chart-sim-badge { display: none !important; }
+            .chart-card-header { flex-wrap: nowrap; gap: 8px; padding: 9px 12px; }
+            .chart-var-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+            .chart-var-range { white-space: nowrap; color: var(--text3); font-size: 11px; flex-shrink: 0; margin-right: auto; }
+            .chart-card-header .mf-edit-btn { margin-left: 0 !important; flex-shrink: 0; }
+
+            .chart-more { position: relative; flex-shrink: 0; }
+
+
+            .chart-more-btn { font-size: 15px !important; line-height: 1; padding: 3px 9px !important; }
+            .chart-more-list {
+                display: none; position: absolute; right: 0; top: calc(100% + 4px); z-index: 50; min-width: 180px; padding: 5px;
+                background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+            }
+            .chart-more.open .chart-more-list { display: block; }
+            .chart-more-list button { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); font: inherit; font-size: 12.5px; padding: 7px 9px; border-radius: 6px; cursor: pointer; }
+            .chart-more-list button:hover { background: var(--accent-dim); }
+            @container (max-width: 380px) {
+                .mf-edit-btn .lbl { display: none; }
+                .chart-var-range { display: none; }
+                .chart-var-name { margin-right: auto; }
+            }
+            .chart-area.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+            .chart-area.grid2 > :not(.chart-card) { grid-column: 1 / -1; }
         </style>
     </head>
     <body>
-        <header class="navbar">
-            <div class="nav-left"></div>
-            <div class="nav-center">
-                <div class="nav-logo-group">
-                    <div class="nav-logo-icon">
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                        >
-                            <path
-                                d="M2 11 Q5 5 8 8 Q11 11 14 5"
-                                stroke="white"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                fill="none"
-                            />
-                        </svg>
-                    </div>
-                    <div class="nav-logo-text">
-                        FuzzyLogic <span>Visualizer</span>
-                    </div>
-                    <span class="nav-badge">v2.5</span>
-                </div>
-                <div class="nav-author">
-                    Created by
-                    <a
-                        href="https://zamrizahir88.github.io/cv/main.html"
-                        target="_blank"
-                        >Dr. Zamri</a
-                    >
-                </div>
-            </div>
-            <div class="nav-right">
-                <div id="authContainer"></div>
-                <button class="icon-btn" id="themeToggle" onclick="toggleDarkMode()" title="Toggle dark/light theme">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="darkModeIcon">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        <header class="topbar" id="topbar">
+            <div class="tb-brand">
+                <div class="tb-logo">
+                    <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 11 Q5 5 8 8 Q11 11 14 5" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" />
                     </svg>
-                </button>
+                </div>
+                <div class="tb-brand-text">
+                    <div class="tb-title">FuzzyLogic <span>Visualizer</span> <span class="tb-ver">v2.6</span></div>
+                    <div class="tb-author">UniMAP · by <a href="https://zamrizahir88.github.io/cv/main.html" target="_blank">Dr. Zamri</a></div>
+                </div>
             </div>
-        </header>
-
-        <div class="toolbar-container" id="projectRow">
-            <div class="toolbar-group">
-                <span class="toolbar-group-label">📁 Project Title</span>
-                <div class="toolbar-group-buttons">
-                    <input
-                        class="nav-project-name"
-                        id="projectName"
-                        type="text"
-                        value="Untitled Project"
-                        placeholder="Project name"
-                        oninput="markDirty()"
-                    />
-                    <span
-                        id="dirtyDot"
-                        style="
-                            display: none;
-                            width: 8px;
-                            height: 8px;
-                            background: var(--warn);
-                            border-radius: 50%;
-                            flex-shrink: 0;
-                            margin-left: -4px;
-                        "
-                        title="Unsaved changes"
-                    ></span>
-                    <select
+            <div class="tb-tools" id="projectRow">
+                <label class="tb-chip" title="Project name: click to rename">
+                    <span class="em">✏️</span>
+                    <input class="nav-project-name" id="projectName" type="text" value="Untitled Project" placeholder="Project name" oninput="markDirty()" />
+                    <span id="dirtyDot" style="display:none"></span>
+                    <span class="tb-save" id="tbSaveStatus" title="Your work is auto-saved in this browser. Use File › Save project file to keep a copy.">Saved</span>
+                </label>
+                <select
                         id="recentSelect"
                         onchange="loadRecentProject(this.value)"
                         style="
@@ -3080,15 +3330,9 @@
                     >
                         <option value="">— Recent —</option>
                     </select>
-                </div>
-            </div>
-            <div class="toolbar-group">
-                <span class="toolbar-group-label">🛠️ Workspace</span>
-                <div class="toolbar-group-buttons">
+                <div class="seg-group" role="group" aria-label="Workspace tools">
                     <div class="file-menu" id="fileMenu">
-                        <button class="btn btn-primary" id="fileMenuBtn" onclick="toggleFileMenu(event)" aria-haspopup="true" aria-expanded="false">
-                            📂 File <span class="file-menu-caret">▾</span>
-                        </button>
+                        <button class="seg-btn" id="fileMenuBtn" onclick="toggleFileMenu(event)" aria-haspopup="true" aria-expanded="false"><span class="em">📂</span><span>File</span><span class="file-menu-caret">▾</span></button>
                         <div class="file-menu-list" role="menu">
                             <div class="file-menu-label">This computer</div>
                             <button role="menuitem" onclick="closeFileMenu(); saveProject()">💾 Save project file</button>
@@ -3100,6 +3344,7 @@
                             <button role="menuitem" onclick="closeFileMenu(); openShareModal()">🔗 Share link</button>
                             <button role="menuitem" onclick="closeFileMenu(); openDownloadCenter()">⬇️ Export / Download…</button>
                             <div class="file-menu-sep"></div>
+                            <button role="menuitem" onclick="closeFileMenu(); resetPaneLayout()">↔️ Reset panel layout</button>
                             <button role="menuitem" class="file-menu-danger" onclick="closeFileMenu(); resetWorkspace()">🗑️ New / reset workspace</button>
                         </div>
                         <input
@@ -3110,13 +3355,17 @@
                             onchange="loadProject(event)"
                         />
                     </div>
-                    <button class="btn btn-outline" onclick="openExamplePicker()" style="color: var(--accent)">💡 Examples</button>
-                    <button type="button" class="btn btn-outline" id="btnUndo" onclick="undoWorkspace()" title="Undo (Ctrl+Z)" style="padding: 6px 12px">↶ Undo</button>
-                    <button type="button" class="btn btn-outline" id="btnRedo" onclick="redoWorkspace()" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" style="padding: 6px 12px">↷ Redo</button>
+                    <button class="seg-btn" onclick="openExamplePicker()"><span class="em">💡</span><span>Examples</span></button>
+                    <button type="button" class="seg-btn seg-icon" id="btnUndo" onclick="undoWorkspace()" title="Undo (Ctrl+Z)" aria-label="Undo"><span class="em">↩️</span></button>
+                    <button type="button" class="seg-btn seg-icon" id="btnRedo" onclick="redoWorkspace()" title="Redo (Ctrl+Y / Ctrl+Shift+Z)" aria-label="Redo"><span class="em">↪️</span></button>
                 </div>
             </div>
-        </div>
-        <div class="steps-bar" id="stepsBar" aria-label="Design progress"></div>
+            <div class="steps-bar" id="stepsBar" aria-label="Design progress"></div>
+            <div class="tb-right">
+                <button class="icon-btn" id="themeToggle" onclick="toggleDarkMode()" title="Toggle dark/light theme"><span class="em" id="themeEmoji">🌙</span></button>
+                <div id="authContainer"></div>
+            </div>
+        </header>
         <div class="main">
             <div class="panel-left mobile-active" id="panelLeft">
                 <div class="panel-left-scroll">
@@ -3127,16 +3376,7 @@
                                 class="icon-btn"
                                 onclick="addVariable('input')"
                                 title="Add input variable"
-                            >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2.5"
-                                >
-                                    <line x1="12" y1="5" x2="12" y2="19" />
-                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
+                            ><span class="em">➕</span>
                             </button>
                         </div>
                         <div class="var-list" id="inputVarList"></div>
@@ -3149,16 +3389,7 @@
                                 class="icon-btn"
                                 onclick="addVariable('output')"
                                 title="Add output variable"
-                            >
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2.5"
-                                >
-                                    <line x1="12" y1="5" x2="12" y2="19" />
-                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
+                            ><span class="em">➕</span>
                             </button>
                         </div>
                         <div class="var-list" id="outputVarList"></div>
@@ -3526,7 +3757,7 @@
                                 <canvas id="surfaceCanvas" class="surface-canvas"></canvas>
                                 <div class="surface-note" id="surfaceNote"></div>
                                 <div class="surface-actions">
-                                    <button class="btn btn-outline" onclick="openSurfaceModal()">⤢ Enlarge</button>
+                                    <button class="btn btn-outline" onclick="openSurfaceModal()">🔍 Enlarge</button>
                                     <button class="btn btn-outline" onclick="exportSurfacePNG()">PNG</button>
                                 </div>
                             </div>
@@ -4196,43 +4427,18 @@
                 id="tabVars"
                 class="active"
                 onclick="switchMobileTab('vars')"
-            >
-                <svg viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                    <line x1="3" y1="9" x2="21" y2="9" />
-                    <line x1="9" y1="21" x2="9" y2="9" />
-                </svg>
-                Vars
+            ><span class="mob-em">🎛️</span>Vars
             </button>
-            <button id="tabGraphs" onclick="switchMobileTab('graphs')">
-                <svg viewBox="0 0 24 24">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="14" />
-                </svg>
-                Graphs
+            <button id="tabGraphs" onclick="switchMobileTab('graphs')"><span class="mob-em">📊</span>Graphs
             </button>
-            <button id="tabRules" onclick="switchMobileTab('rules')">
-                <svg viewBox="0 0 24 24">
-                    <line x1="8" y1="6" x2="21" y2="6" />
-                    <line x1="8" y1="12" x2="21" y2="12" />
-                    <line x1="8" y1="18" x2="21" y2="18" />
-                    <line x1="3" y1="6" x2="3.01" y2="6" />
-                    <line x1="3" y1="12" x2="3.01" y2="12" />
-                    <line x1="3" y1="18" x2="3.01" y2="18" />
-                </svg>
-                Rules
+            <button id="tabRules" onclick="switchMobileTab('rules')"><span class="mob-em">📋</span>Rules
             </button>
-            <button id="tabSim" onclick="switchMobileTab('sim')">
-                <svg viewBox="0 0 24 24">
-                    <polygon points="6 4 20 12 6 20 6 4" />
-                </svg>
-                Simulate
+            <button id="tabSim" onclick="switchMobileTab('sim')"><span class="mob-em">🔬</span>Simulate
             </button>
         </div>
 
         <footer class="footer">
-            &copy; 2026 FuzzyLogic Visualizer v2.5. Developed by Zamm Studio.
+            &copy; 2026 FuzzyLogic Visualizer v2.6. Developed by Zamm Studio.
             All Rights Reserved.
         </footer>
 
@@ -6088,7 +6294,7 @@
                                   const mfCardsHTML = v.mfs
                                       .map((mf) => mfCardHTML(v, mf))
                                       .join("");
-                                  const mfAddHTML = `<button class="add-mf-btn" onclick="addMF('${v.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Membership Function</button>`;
+                                  const mfAddHTML = `<button class="add-mf-btn" onclick="addMF('${v.id}')">➕ Add Membership Function</button><div class="mf-templates"><span>Quick add:</span><button type="button" onclick="applyMFTemplate('${v.id}','lmh')" title="3 triangles: Low, Medium, High">Low / Med / High</button><button type="button" onclick="applyMFTemplate('${v.id}','five')" title="5 triangles from Very Low to Very High">5 levels</button><button type="button" onclick="applyMFTemplate('${v.id}','gauss')" title="3 smooth Gaussian curves">Gaussian set</button></div>`;
                                   return `
       <div class="var-item ${isExpanded ? "active" : ""}" style="flex-direction:column;align-items:stretch;cursor:pointer;" onclick="selectVarInline('${v.id}')">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -7076,82 +7282,24 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
       </div>`;
                 });
 
-                // Run/Stop button
+                // Pause / resume (small)
                 html += `
-    <div style="text-align:center;">
-      <button class="${liveSimEnabled ? "btn-sim-stop" : "btn-sim-run"}" onclick="toggleSimulation()" style="width:100%;">
+    <div class="sim-pause-row">
+      <button class="btn btn-outline sim-pause-btn" onclick="toggleSimulation()">
         ${liveSimEnabled ? "⏸️ Pause live results" : "▶️ Resume live results"}
       </button>
     </div>`;
 
-                // Results section - ALWAYS VISIBLE
-                html += `<div style="margin-top:8px;">`;
-                outputVars.forEach((outVar) => {
-                    const hasResult =
-                        simResults &&
-                        simResults.outputs &&
-                        simResults.outputs[outVar.id];
-                    const crispValue = hasResult
-                        ? simResults.outputs[outVar.id].crispValue
-                        : null;
-                    const hasFiring =
-                        crispValue !== null && crispValue !== undefined;
-                    const hasAnyRule =
-                        state.rules.filter((r) => r.enabled !== false).length >
-                        0;
-
-                    let statusMessage = "",
-                        valueClass = "",
-                        displayValue = "",
-                        metaText = "",
-                        boxClass = "";
-
-                    if (!hasAnyRule) {
-                        statusMessage = "No active rules";
-                        valueClass = "inactive";
-                        displayValue = "—";
-                        metaText = "Define rules to simulate";
-                        boxClass = "paused";
-                    } else if (!simRunning && !hasFiring) {
-                        statusMessage = "Click RUN to start";
-                        valueClass = "inactive";
-                        displayValue = "—";
-                        metaText = "";
-                        boxClass = "paused";
-                    } else if (!hasFiring) {
-                        statusMessage = "No rules firing";
-                        valueClass = "inactive";
-                        displayValue = "—";
-                        metaText = "Adjust inputs to activate rules";
-                        boxClass = "paused";
-                    } else if (!simRunning) {
-                        valueClass = "active";
-                        displayValue = crispValue.toFixed(2);
-                        metaText =
-                            (simResults.defuzzMethod || "centroid") +
-                            " · PAUSED";
-                        boxClass = "paused";
-                    } else {
-                        valueClass = "active";
-                        displayValue = crispValue.toFixed(2);
-                        metaText = simResults.defuzzMethod || "centroid";
-                        boxClass = "active";
-                    }
-
-                    html += `
-      <div class="sim-result-box ${boxClass}" style="margin-bottom:8px;">
-        <div class="sim-result-label">${esc(outVar.name)}</div>
-        <div class="sim-result-value ${valueClass === "inactive" ? "inactive" : ""}">${displayValue}</div>
-        <div class="sim-result-unit">${esc(outVar.unit)}</div>
-        <div class="sim-result-meta">${metaText}</div>
-      </div>`;
-                });
+                // Results section - compact rows (value, range bar, fuzzy meaning)
+                html += `<div class="sim-results">`;
+                outputVars.forEach((outVar) => (html += resultRowHTML(outVar)));
+                html += `</div>`;
 
                 // Action buttons
                 html += `
     <div class="sim-action-row">
       <button class="btn-sim-tray" id="btnAddTray" onclick="addToTray()">➕ Add to Tray</button>
-      ${testTray.length > 0 ? `<span class="sim-tray-badge" onclick="trayExpanded=!trayExpanded;buildSimulationPanel();" title="Toggle test case tray">📋 ${testTray.length} case${testTray.length !== 1 ? "s" : ""}</span>` : ""}
+      ${testTray.length > 0 ? `<span class="sim-tray-badge" onclick="trayExpanded=!trayExpanded;buildSimulationPanel();" title="Toggle test case tray">🧪 ${testTray.length} case${testTray.length !== 1 ? "s" : ""}</span>` : ""}
     </div>`;
 
                 // Common mistakes warnings
@@ -7170,7 +7318,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
       <div class="tray-section" style="margin-top:6px;">
         <button class="mini-collapsible-toggle ${trayExpanded ? "" : "collapsed"}" onclick="trayExpanded=!trayExpanded;buildSimulationPanel();">
           <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 4 6 8 10 4"/></svg>
-          Test Case Tray (${testTray.length})
+          🧪 Test Case Tray (${testTray.length})
         </button>
         <div class="mini-collapsible-body ${trayExpanded ? "" : "collapsed"}" id="traySectionBody">
           ${testTray
@@ -8246,7 +8394,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     wmCtx.textAlign = "center";
                     wmCtx.textBaseline = "middle";
                     wmCtx.fillText(
-                        "FuzzyLogic Visualizer v2.5 — Zamm Studio",
+                        "FuzzyLogic Visualizer v2.6 — Zamm Studio",
                         0,
                         0,
                     );
@@ -8372,7 +8520,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 // Diagonal watermark
                 const wmX = PL + cW / 2,
                     wmY = PT + cH / 2;
-                const watermarkSvg = `<text x="${wmX.toFixed(1)}" y="${wmY.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="#999" font-family="sans-serif" font-size="22" font-weight="600" opacity="0.07" transform="rotate(-22,${wmX.toFixed(1)},${wmY.toFixed(1)})">FuzzyLogic Visualizer v2.5 — Zamm Studio</text>`;
+                const watermarkSvg = `<text x="${wmX.toFixed(1)}" y="${wmY.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="#999" font-family="sans-serif" font-size="22" font-weight="600" opacity="0.07" transform="rotate(-22,${wmX.toFixed(1)},${wmY.toFixed(1)})">FuzzyLogic Visualizer v2.6 — Zamm Studio</text>`;
                 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="background:#ffffff;font-family:sans-serif;"><rect width="${W}" height="${H}" fill="#ffffff" rx="0"/><text x="${W / 2}" y="20" text-anchor="middle" fill="#1A1D2E" font-family="'Syne',sans-serif" font-size="16" font-weight="bold">${esc(v.name)} — Membership Functions</text>${xTicksHTML}${yTicksHTML}${paths}${watermarkSvg}<text x="${W / 2}" y="${PT + cH + 40}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold">${esc(v.name)}${v.unit ? ` (${esc(v.unit)})` : ""}</text><text x="14" y="${PT + cH / 2}" text-anchor="middle" fill="#1A1D2E" font-family="sans-serif" font-size="13" font-weight="bold" transform="rotate(-90,14,${PT + cH / 2})">μ(x)</text><line x1="${PL}" y1="${PT}" x2="${PL}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/><line x1="${PL}" y1="${PT + cH}" x2="${PL + cW}" y2="${PT + cH}" stroke="#1A1D2E" stroke-width="2"/>${legendItems}</svg>`;
                 return svg;
             }
@@ -8438,7 +8586,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                             .join("");
                     html += `<select class="rule-select rule-out-sel" data-vid="${out.id}">${outOpts}</select>`;
                 });
-                html += `<button class="btn btn-primary" id="ruleSubmitBtn" onclick="saveRuleFromBuilder()" style="padding:4px 12px; font-size:11px; margin-left:auto;">+ Add Rule</button>`;
+                html += `<button class="btn btn-primary" id="ruleSubmitBtn" onclick="saveRuleFromBuilder()" style="padding:4px 12px; font-size:11px; margin-left:auto;">➕ Add Rule</button>`;
                 html += `<button class="btn" id="ruleCancelBtn" onclick="cancelRuleEdit()" style="padding:4px 10px; font-size:11px; display:none;">Cancel</button></div>`;
                 el.innerHTML = html;
                 if (editingRuleId) {
@@ -8504,7 +8652,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 }
                 const btn = document.getElementById("ruleSubmitBtn"),
                     cancelBtn = document.getElementById("ruleCancelBtn");
-                if (btn) btn.textContent = "+ Add Rule";
+                if (btn) btn.textContent = "➕ Add Rule";
                 if (cancelBtn) cancelBtn.style.display = "none";
                 updateRuleBuilder();
                 renderRules();
@@ -8690,7 +8838,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                             author: state.metadata.author,
                             institution: state.metadata.institution,
                             created: new Date().toISOString(),
-                            version: "2.5",
+                            version: "2.6",
                         },
                         variables: state.variables,
                         rules: state.rules,
@@ -8992,7 +9140,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             }
             function exportHeaderLines(prefix) {
                 return [
-                    `${prefix} Generated by FuzzyLogic Visualizer v2.5`,
+                    `${prefix} Generated by FuzzyLogic Visualizer v2.6`,
                     `${prefix} Project: ${oneLine(getProjectName())}`,
                     `${prefix} Author: ${oneLine(state.metadata.author)} (${oneLine(state.metadata.institution)})`,
                     `${prefix} Date: ${new Date().toISOString().slice(0, 10)}`,
@@ -9002,7 +9150,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             // ── Rule exports ──
             function exportRulesTXT() {
                 const lines = [
-                    `FuzzyLogic Visualizer v2.5`,
+                    `FuzzyLogic Visualizer v2.6`,
                     `System: ${getProjectName()}`,
                     `Author: ${state.metadata.author}`,
                     `Institution: ${state.metadata.institution}`,
@@ -9053,7 +9201,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     };
                 };
                 const data = {
-                    generator: "FuzzyLogic Visualizer v2.5",
+                    generator: "FuzzyLogic Visualizer v2.6",
                     project: getProjectName(),
                     exported: new Date().toISOString(),
                     settings: {
@@ -9122,7 +9270,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         // skfuzzy.sigmf(x, center, slope)
                         return `fuzz.sigmf(${uni}, ${fmtN(p.c)}, ${fmtN(p.a)})`;
                     case "singleton":
-                        return `np.where(np.abs(${uni} - ${fmtN(p.x)}) < 0.5, 1.0, 0.0)`;
+                        return `np.where(np.abs(${uni} - ${fmtN(p.x)}) <= (${uni}[1] - ${uni}[0]) / 2, 1.0, 0.0)`;
                     default:
                         return `np.zeros_like(${uni})`;
                 }
@@ -9136,6 +9284,14 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     "# Install once:  pip install scikit-fuzzy numpy matplotlib networkx scipy",
                     "# Run:           python " + fileBase() + "_fuzzy.py",
                     "",
+                    ...(m.vars.some((x) => x.type === "output" && x.mfs.some((f) => f.shape === "singleton"))
+                        ? [
+                              "# NOTE: scikit-fuzzy has no true singleton output. Singletons are approximated by a",
+                              "# very thin spike, so results can differ from the website, which uses the exact",
+                              "# weighted average of the singleton positions (the standard textbook result).",
+                              "",
+                          ]
+                        : []),
                     "import numpy as np",
                     "import skfuzzy as fuzz",
                     "from skfuzzy import control as ctrl",
@@ -9238,7 +9394,8 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                         return `${fmtN(p.a)} ${fmtN(p.c)}`;
                     case "singleton": {
                         const x = Number(p.x) || 0;
-                        return `${fmtN(x - 0.5)} ${fmtN(x - 0.5)} ${fmtN(x + 0.5)} ${fmtN(x + 0.5)}`;
+                        const t = f.tol || 0.5;
+                        return `${fmtN(x - t)} ${fmtN(x - t)} ${fmtN(x + t)} ${fmtN(x + t)}`;
                     }
                     default:
                         return "0 0 0";
@@ -9353,7 +9510,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     case "sigmoidal":
                         return `sigmf(${xExpr}, ${F(p.a)}, ${F(p.c)})`;
                     case "singleton":
-                        return `singletonmf(${xExpr}, ${F(p.x)})`;
+                        return `singletonmf(${xExpr}, ${F(p.x)}, ${F(f.tol || 0.5)})`;
                     default:
                         return "0.0f";
                 }
@@ -9404,8 +9561,8 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     "float sigmf(float x, float a, float c) {",
                     "  return 1.0f / (1.0f + expf(-a * (x - c)));",
                     "}",
-                    "float singletonmf(float x, float x0) {",
-                    "  return fabsf(x - x0) < 0.5f ? 1.0f : 0.0f;",
+                    "float singletonmf(float x, float x0, float tol) {",
+                    "  return fabsf(x - x0) <= tol ? 1.0f : 0.0f;",
                     "}",
                     "",
                     "// ---------- Fuzzy operators ----------",
@@ -9754,7 +9911,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(8);
                     doc.setTextColor(140, 150, 170);
-                    doc.text(`FuzzyLogic Visualizer v2.5 - page ${i} of ${pages}`, PW / 2, 290, { align: "center" });
+                    doc.text(`FuzzyLogic Visualizer v2.6 - page ${i} of ${pages}`, PW / 2, 290, { align: "center" });
                 }
                 doc.save(`${fileBase()}_report.pdf`);
                 showToast("PDF report downloaded");
@@ -9985,21 +10142,10 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 const c = document.getElementById("authContainer");
                 if (!c) return;
                 if (user) {
-                    const photo = user.photoURL
-                        ? '<img src="' +
-                          user.photoURL +
-                          '" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--accent)" referrerpolicy="no-referrer" />'
-                        : "";
-                    const firstName = (user.displayName || "User").split(" ")[0];
-                    c.innerHTML =
-                        photo +
-                        '<span style="font-size:13px;color:var(--text);font-weight:500">👋 Hello, ' +
-                        firstName +
-                        '</span>' +
-                        '<button class="btn btn-outline" onclick="logout()" style="font-size:11px">Sign Out</button>';
+                    c.innerHTML = renderUserMenu(user);
                 } else {
                     c.innerHTML =
-                        '<button class="btn btn-primary" onclick="loginWithGoogle()">👤 Log In</button>';
+                        '<button class="btn btn-primary tb-login" onclick="loginWithGoogle()">👤 Log in</button>';
                 }
             });
 
@@ -11310,7 +11456,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 rep.issues.forEach((it) => {
                     let btn = "";
                     if (it.gapIndex !== undefined)
-                        btn = `<button class="btn rc-btn" onclick="prefillRuleFromGap(${it.gapIndex})">＋ Create rule</button>`;
+                        btn = `<button class="btn rc-btn" onclick="prefillRuleFromGap(${it.gapIndex})">➕ Create rule</button>`;
                     else if (it.ruleId)
                         btn = `<button class="btn rc-btn" onclick="openRuleForEdit('${it.ruleId}')">Edit</button>`;
                     html += `<div class="rc-item rc-${it.level}"><span class="rc-icon">${icon[it.level]}</span><span class="rc-text">${esc(it.text)}</span>${btn}</div>`;
@@ -11330,10 +11476,6 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
             function prefillRuleFromGap(i) {
                 const combo = lastRuleCheck?.gaps?.[i];
                 if (!combo) return;
-                if (simRunning) {
-                    showToast("Stop the simulation first to add rules.");
-                    return;
-                }
                 editingRuleId = null;
                 updateRuleBuilder();
                 const logicSel = document.getElementById("ruleLogicSelect");
@@ -11347,7 +11489,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                     s.classList.add("rc-highlight");
                     setTimeout(() => s.classList.remove("rc-highlight"), 2500);
                 });
-                showToast("IF part filled in. Now choose the THEN part and click + Add Rule.");
+                showToast("IF part filled in. Now choose the THEN part and click ➕ Add Rule.");
             }
             function openRuleForEdit(id) {
                 openRulesEditorSection();
@@ -11806,7 +11948,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 if (sig !== liveBarSig) {
                     liveBarSig = sig;
                     bar.innerHTML =
-                        `<span class="live-bar-title">${liveSimEnabled ? "🔴 LIVE" : "⏸ PAUSED"}</span>` +
+                        `<span class="live-bar-title">${liveSimEnabled ? "🔴 LIVE" : "⏸️ PAUSED"}</span>` +
                         ins
                             .map((v) => {
                                 const val = Number(simInputValues[v.id] ?? (v.min + v.max) / 2);
@@ -11870,7 +12012,7 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                                 `${i ? '<span class="step-arrow">›</span>' : ""}<button class="step-pill ${s.done ? "done" : ""} ${next && next.n === s.n ? "next" : ""}" onclick="goToStep(${s.n})" title="${esc(s.hint)}"><span class="step-num">${s.done ? "✓" : s.n}</span>${s.label}</button>`,
                         )
                         .join("") +
-                    `<span class="steps-hint">${next ? "Next: " + esc(next.hint) : "🎉 All steps done — great work!"}</span>`;
+                    `<span class="steps-hint" title="${next ? esc(next.hint) : ""}">${next ? "Next: " + esc(next.label) : "🎉 All done"}</span>`;
             }
             function openSection(id) {
                 const body = document.getElementById(id + "Body");
@@ -12465,6 +12607,967 @@ ${mini(3, "Step 4: Defuzzification", step4)}`;
                 };
                 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
                 else setTimeout(init, 0);
+            })();
+
+            // ============================================================
+            //  v2.6 LAYOUT: right-panel tabs + draggable pane dividers
+            // ============================================================
+            const RP_TABS = [
+                { id: "rulesEditor", label: "Rules", icon: "📋" },
+                { id: "ruleCheck", label: "Check", icon: "✅" },
+                { id: "simulation", label: "Simulate", icon: "🔬" },
+                { id: "inferenceTrace", label: "Trace", icon: "🧮" },
+                { id: "surface", label: "3D", icon: "🗻" },
+                { id: "fisSettings", label: "Settings", icon: "⚙️" },
+            ];
+            let rpActive = localStorage.getItem("flv_rp_tab") || "rulesEditor";
+            if (!RP_TABS.some((t) => t.id === rpActive)) rpActive = "rulesEditor";
+
+            function buildRightTabs() {
+                const panel = document.getElementById("panelRight");
+                if (!panel || document.getElementById("rpTabs")) return;
+                const bar = document.createElement("div");
+                bar.className = "rp-tabs";
+                bar.id = "rpTabs";
+                bar.setAttribute("role", "tablist");
+                bar.innerHTML = RP_TABS.map(
+                    (t) =>
+                        `<button role="tab" class="rp-tab" id="rpTab_${t.id}" onclick="setRightTab('${t.id}')"><span class="rp-tab-icon">${t.icon}</span><span class="rp-tab-label">${t.label}</span><span class="rp-tab-badge" id="rpBadge_${t.id}"></span></button>`,
+                ).join("");
+                panel.insertBefore(bar, panel.firstChild);
+                panel.classList.add("rp-tabbed");
+                setRightTab(rpActive, true);
+            }
+            function setRightTab(id, silent) {
+                rpActive = id;
+                try { localStorage.setItem("flv_rp_tab", id); } catch (e) {}
+                RP_TABS.forEach((t) => {
+                    const body = document.getElementById(t.id + "Body");
+                    const sec = body?.parentElement;
+                    const tab = document.getElementById("rpTab_" + t.id);
+                    const on = t.id === id;
+                    if (sec) sec.classList.toggle("rp-active", on);
+                    if (tab) {
+                        tab.classList.toggle("active", on);
+                        tab.setAttribute("aria-selected", on ? "true" : "false");
+                    }
+                    if (body) {
+                        // every section is "open" inside its tab; only the active one is shown
+                        body.classList.remove("collapsed");
+                        body.previousElementSibling?.classList.remove("collapsed");
+                        body.style.maxHeight = "";
+                    }
+                });
+                if (id === "simulation") buildSimulationPanel();
+                if (id === "inferenceTrace") buildInferenceTracePanel();
+                if (id === "ruleCheck") renderRuleCheck();
+                if (id === "surface") setTimeout(renderSurfacePanel, 30);
+                updateRightTabBadges();
+            }
+            function updateRightTabBadges() {
+                const set = (id, txt, cls) => {
+                    const b = document.getElementById("rpBadge_" + id);
+                    if (!b) return;
+                    b.textContent = txt || "";
+                    b.className = "rp-tab-badge" + (cls ? " " + cls : "");
+                };
+                set("rulesEditor", state.rules.length ? String(state.rules.length) : "");
+                const rc = typeof lastRuleCheck !== "undefined" ? lastRuleCheck : null;
+                if (rc) set("ruleCheck", rc.errors ? String(rc.errors) : rc.warnings ? String(rc.warnings) : "✓", rc.errors ? "err" : rc.warnings ? "warn" : "ok");
+                else set("ruleCheck", "");
+                set("simulation", simRunning ? "●" : "", simRunning ? "live" : "");
+            }
+
+            // ── Draggable dividers between left / centre / right panels ──
+            const LAYOUT_KEY = "flv_layout_v26";
+            function isDesktopLayout() {
+                return window.innerWidth > 900;
+            }
+            function loadPaneLayout() {
+                try {
+                    return JSON.parse(localStorage.getItem(LAYOUT_KEY) || "{}");
+                } catch (e) {
+                    return {};
+                }
+            }
+            function savePaneLayout(l) {
+                try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(l)); } catch (e) {}
+            }
+            function applyPaneLayout() {
+                const L = document.getElementById("panelLeft"),
+                    R = document.getElementById("panelRight");
+                if (!L || !R) return;
+                if (!isDesktopLayout()) {
+                    L.style.width = R.style.width = "";
+                    return;
+                }
+                const l = loadPaneLayout();
+                L.style.width = l.left ? l.left + "px" : "";
+                R.style.width = l.right ? l.right + "px" : "";
+                L.classList.toggle("collapsed", !!l.leftCollapsed);
+                R.classList.toggle("collapsed", !!l.rightCollapsed);
+                document.querySelectorAll(".pane-divider").forEach((d) => {
+                    const side = d.dataset.side;
+                    d.classList.toggle("is-collapsed", side === "left" ? !!l.leftCollapsed : !!l.rightCollapsed);
+                });
+                afterPaneResize();
+            }
+            let paneResizeRaf = null;
+            function afterPaneResize() {
+                if (paneResizeRaf) cancelAnimationFrame(paneResizeRaf);
+                paneResizeRaf = requestAnimationFrame(() => {
+                    Object.values(chartInstances).forEach((c) => {
+                        try { c.resize(); } catch (e) {}
+                    });
+                    if (typeof surfaceIsOpen === "function" && surfaceIsOpen()) scheduleSurface();
+                });
+            }
+            function setupPaneDividers() {
+                const main = document.querySelector(".main");
+                const L = document.getElementById("panelLeft"),
+                    C = document.getElementById("panelCenter"),
+                    R = document.getElementById("panelRight");
+                if (!main || !L || !C || !R || document.querySelector(".pane-divider")) return;
+                const mk = (side) => {
+                    const d = document.createElement("div");
+                    d.className = "pane-divider";
+                    d.dataset.side = side;
+                    d.setAttribute("role", "separator");
+                    d.setAttribute("aria-orientation", "vertical");
+                    d.tabIndex = 0;
+                    d.title = "Drag to resize · double-click to reset";
+                    d.innerHTML = `<span class="pane-grip"></span><button class="pane-reopen" type="button" title="Show panel">${side === "left" ? "›" : "‹"}</button>`;
+                    return d;
+                };
+                const dl = mk("left"),
+                    dr = mk("right");
+                main.insertBefore(dl, C);
+                main.insertBefore(dr, R);
+                const MIN_SIDE = 240,
+                    MIN_CENTER = 360,
+                    SNAP = 120;
+                [dl, dr].forEach((d) => {
+                    const side = d.dataset.side;
+                    const panel = side === "left" ? L : R;
+                    d.querySelector(".pane-reopen").addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const l = loadPaneLayout();
+                        if (side === "left") l.leftCollapsed = false;
+                        else l.rightCollapsed = false;
+                        savePaneLayout(l);
+                        applyPaneLayout();
+                    });
+                    d.addEventListener("dblclick", () => {
+                        const l = loadPaneLayout();
+                        if (side === "left") { delete l.left; l.leftCollapsed = false; }
+                        else { delete l.right; l.rightCollapsed = false; }
+                        savePaneLayout(l);
+                        applyPaneLayout();
+                    });
+                    d.addEventListener("keydown", (e) => {
+                        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+                        e.preventDefault();
+                        const l = loadPaneLayout();
+                        const cur = panel.getBoundingClientRect().width;
+                        const delta = (e.key === "ArrowRight" ? 20 : -20) * (side === "left" ? 1 : -1);
+                        const w = Math.max(MIN_SIDE, cur + delta);
+                        if (side === "left") l.left = Math.round(w); else l.right = Math.round(w);
+                        savePaneLayout(l);
+                        applyPaneLayout();
+                    });
+                    d.addEventListener("pointerdown", (e) => {
+                        if (!isDesktopLayout() || e.target.closest(".pane-reopen")) return;
+                        e.preventDefault();
+                        try { d.setPointerCapture(e.pointerId); } catch (err) {}
+                        const mainRect = main.getBoundingClientRect();
+                        const otherW = (side === "left" ? R : L).classList.contains("collapsed") ? 0 : (side === "left" ? R : L).getBoundingClientRect().width;
+                        const maxW = mainRect.width - otherW - MIN_CENTER - 40;
+                        d.classList.add("dragging");
+                        document.body.classList.add("pane-resizing");
+                        const move = (ev) => {
+                            let w = side === "left" ? ev.clientX - mainRect.left - 12 : mainRect.right - ev.clientX - 12;
+                            const l = loadPaneLayout();
+                            if (w < SNAP) {
+                                if (side === "left") l.leftCollapsed = true; else l.rightCollapsed = true;
+                            } else {
+                                w = Math.max(MIN_SIDE, Math.min(maxW, w));
+                                if (side === "left") { l.left = Math.round(w); l.leftCollapsed = false; }
+                                else { l.right = Math.round(w); l.rightCollapsed = false; }
+                            }
+                            savePaneLayout(l);
+                            applyPaneLayout();
+                        };
+                        const up = () => {
+                            d.classList.remove("dragging");
+                            document.body.classList.remove("pane-resizing");
+                            d.removeEventListener("pointermove", move);
+                            d.removeEventListener("pointerup", up);
+                            d.removeEventListener("pointercancel", up);
+                            afterPaneResize();
+                        };
+                        d.addEventListener("pointermove", move);
+                        d.addEventListener("pointerup", up);
+                        d.addEventListener("pointercancel", up);
+                    });
+                });
+                applyPaneLayout();
+            }
+            function resetPaneLayout() {
+                try { localStorage.removeItem(LAYOUT_KEY); } catch (e) {}
+                applyPaneLayout();
+                showToast("Layout reset");
+            }
+
+            (function wireV26() {
+                const wrap = (name, after) => {
+                    const orig = window[name];
+                    if (typeof orig !== "function") return;
+                    window[name] = function () {
+                        const r = orig.apply(this, arguments);
+                        try { after.apply(this, arguments); } catch (e) {}
+                        return r;
+                    };
+                };
+                // Old accordion calls now just switch tabs (never collapse)
+                const origToggle = window.toggleCollapsible;
+                window.toggleCollapsible = function (id) {
+                    if (document.getElementById("rpTabs") && RP_TABS.some((t) => t.id === id)) {
+                        setRightTab(id);
+                        return;
+                    }
+                    return origToggle.apply(this, arguments);
+                };
+                // Helpers from earlier features that "open" a section now switch tabs
+                window.openSection = function (id) {
+                    if (document.getElementById("rpTabs") && RP_TABS.some((t) => t.id === id)) setRightTab(id);
+                    else {
+                        const body = document.getElementById(id + "Body");
+                        if (body && body.classList.contains("collapsed")) origToggle(id);
+                    }
+                };
+                window.openRulesEditorSection = function () {
+                    setRightTab("rulesEditor");
+                    if (window.innerWidth <= 900) {
+                        try { switchMobileTab("rules"); } catch (e) {}
+                    }
+                    setTimeout(() => document.getElementById("ruleBuilder")?.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
+                };
+                // Surface only renders when its tab is visible
+                window.surfaceIsOpen = function () {
+                    const modal = document.getElementById("surfaceModal");
+                    if (modal && modal.style.display === "flex") return true;
+                    if (document.getElementById("rpTabs")) return rpActive === "surface" && !!document.getElementById("panelRight")?.offsetParent;
+                    const b = document.getElementById("surfaceBody");
+                    return !!(b && !b.classList.contains("collapsed"));
+                };
+                // Toolbar panel toggles also remember their state
+                ["toggleLeft", "toggleRight"].forEach((fn) =>
+                    wrap(fn, () => {
+                        const l = loadPaneLayout();
+                        l.leftCollapsed = document.getElementById("panelLeft").classList.contains("collapsed");
+                        l.rightCollapsed = document.getElementById("panelRight").classList.contains("collapsed");
+                        savePaneLayout(l);
+                        applyPaneLayout();
+                    }),
+                );
+                wrap("switchMobileTab", (tab) => {
+                    if (tab === "sim") setRightTab("simulation");
+                    else if (tab === "rules" && rpActive === "simulation") setRightTab("rulesEditor");
+                });
+                ["renderRules", "renderRuleCheck", "buildSimulationPanel"].forEach((n) => wrap(n, updateRightTabBadges));
+                let wasDesktop = isDesktopLayout();
+                window.addEventListener("resize", () => {
+                    const now = isDesktopLayout();
+                    if (now !== wasDesktop) {
+                        wasDesktop = now;
+                        applyPaneLayout();
+                    }
+                });
+                const init = () => {
+                    buildRightTabs();
+                    setupPaneDividers();
+                };
+                if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+                else init();
+            })();
+
+            // ============================================================
+            //  v2.6 header helpers, compact results, MF templates
+            // ============================================================
+            function renderUserMenu(user) {
+                const name = user.displayName || "User";
+                const first = name.split(" ")[0];
+                const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "U";
+                const photo = user.photoURL && /^https:\/\//.test(user.photoURL)
+                    ? `<img src="${esc(user.photoURL)}" alt="" referrerpolicy="no-referrer">`
+                    : `<span class="tb-initials">${esc(initials)}</span>`;
+                return `<div class="user-menu" id="userMenu">
+                    <button class="user-chip" onclick="toggleUserMenu(event)" aria-haspopup="true" aria-expanded="false">${photo}<span class="user-name">${esc(first)}</span><span class="file-menu-caret">▾</span></button>
+                    <div class="user-menu-list" role="menu">
+                        <div class="user-menu-head"><b>${esc(name)}</b><span>${esc(user.email || "")}</span></div>
+                        <button role="menuitem" onclick="closeUserMenu(); openCloudProjects()">☁️ My cloud projects</button>
+                        <button role="menuitem" onclick="closeUserMenu(); saveToCloud()">☁️ Save to cloud</button>
+                        <div class="file-menu-sep"></div>
+                        <button role="menuitem" onclick="closeUserMenu(); logout()">🚪 Sign out</button>
+                    </div>
+                </div>`;
+            }
+            function toggleUserMenu(e) {
+                e && e.stopPropagation();
+                const m = document.getElementById("userMenu");
+                if (!m) return;
+                const open = !m.classList.contains("open");
+                m.classList.toggle("open", open);
+                m.querySelector(".user-chip")?.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            function closeUserMenu() {
+                document.getElementById("userMenu")?.classList.remove("open");
+            }
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest || !e.target.closest("#userMenu")) closeUserMenu();
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeUserMenu();
+            });
+
+            // Save status in the project chip
+            function updateSaveStatus() {
+                const el = document.getElementById("tbSaveStatus");
+                if (!el) return;
+                el.textContent = isDirty ? "Unsaved…" : "Saved";
+                el.classList.toggle("dirty", !!isDirty);
+            }
+
+            // Connected step circles: "Step 3 of 6: Rules"
+            window.renderStepsBar = function () {
+                const bar = document.getElementById("stepsBar");
+                if (!bar) return;
+                const steps = computeSteps();
+                const next = steps.find((s) => !s.done);
+                const cur = next ? next.n : steps.length;
+                bar.innerHTML =
+                    `<div class="stepper">` +
+                    steps
+                        .map(
+                            (s, i) =>
+                                (i ? `<span class="stepper-line ${steps[i - 1].done ? "done" : ""}"></span>` : "") +
+                                `<button class="stepper-dot ${s.done ? "done" : ""} ${next && next.n === s.n ? "current" : ""}" onclick="goToStep(${s.n})" title="${s.n}. ${esc(s.label)}: ${esc(s.hint)}" aria-label="Step ${s.n}: ${esc(s.label)}${s.done ? " (done)" : ""}">${s.done ? "✓" : s.n}</button>`,
+                        )
+                        .join("") +
+                    `</div><span class="stepper-text" title="${next ? esc(next.hint) : ""}">${next ? `Step ${cur} of 6: <b>${esc(next.label)}</b>` : "All 6 steps done 🎉"}</span>`;
+            };
+
+            // Compact result row: value + range bar + fuzzy meaning (μ)
+            function resultRowHTML(outVar) {
+                const o = simResults && simResults.outputs ? simResults.outputs[outVar.id] : null;
+                const crisp = o ? o.crispValue : null;
+                const hasRules = state.rules.some((r) => r.enabled !== false);
+                const unit = outVar.unit ? " " + esc(outVar.unit) : "";
+                let value, tags = "", note = "", pct = null, cls = "";
+                if (!hasRules) {
+                    value = "—";
+                    note = "Add rules to see a result";
+                    cls = "idle";
+                } else if (!liveSimEnabled && (crisp === null || crisp === undefined)) {
+                    value = "—";
+                    note = "Paused";
+                    cls = "idle";
+                } else if (crisp === null || crisp === undefined) {
+                    value = "—";
+                    note = "No rule fired: adjust the inputs";
+                    cls = "warn";
+                } else {
+                    value = (+crisp.toFixed(2)).toString() + unit;
+                    pct = Math.max(0, Math.min(100, ((crisp - outVar.min) / (outVar.max - outVar.min || 1)) * 100));
+                    const mus = outVar.mfs
+                        .map((m) => ({ m, mu: evalMF(m, crisp) }))
+                        .filter((x) => x.mu > 0.005)
+                        .sort((a, b) => b.mu - a.mu);
+                    const shown = mus.length > 1 && mus[1].mu >= 0.25 ? mus.slice(0, 2) : mus.slice(0, 1);
+                    tags = shown
+                        .map((x) => `<span class="res-tag" style="background:${hexAlpha(x.m.color, 0.16)};color:${x.m.color};border-color:${hexAlpha(x.m.color, 0.45)}" title="Membership of ${esc(String(+crisp.toFixed(2)))} in '${esc(x.m.label)}' = ${x.mu.toFixed(2)}">${esc(x.m.label)} · μ ${x.mu.toFixed(2)}</span>`)
+                        .join("");
+                    note = (simResults.defuzzMethod || "centroid") + (liveSimEnabled ? "" : " · paused");
+                }
+                return `<div class="res-row ${cls}">
+                    <div class="res-top"><span class="res-name">${esc(outVar.name)}</span><span class="res-value">${value}</span><span class="res-tags">${tags}</span></div>
+                    <div class="res-bar">${pct === null ? "" : `<div class="res-fill" style="width:${pct.toFixed(1)}%"></div><div class="res-mark" style="left:${pct.toFixed(1)}%"></div>`}</div>
+                    <div class="res-foot"><span>${fmtN(outVar.min)}</span><span>${esc(note)}</span><span>${fmtN(outVar.max)}</span></div>
+                </div>`;
+            }
+
+            // Quick-add MF templates
+            function applyMFTemplate(vid, kind) {
+                const v = state.variables.find((x) => x.id === vid);
+                if (!v) return;
+                if (v.mfs.length && !confirm(`Replace the ${v.mfs.length} existing membership function(s) of "${v.name}"? Rules that use them will also be removed. (You can Undo.)`)) return;
+                recordBeforeChange();
+                const lo = Number(v.min), hi = Number(v.max), R = hi - lo;
+                const r = (x) => +(Math.round(x * 1000) / 1000).toFixed(3);
+                let defs = [];
+                if (kind === "lmh") {
+                    const m = lo + R / 2;
+                    defs = [
+                        ["Low", "triangular", { a: r(lo), b: r(lo), c: r(m) }],
+                        ["Medium", "triangular", { a: r(lo), b: r(m), c: r(hi) }],
+                        ["High", "triangular", { a: r(m), b: r(hi), c: r(hi) }],
+                    ];
+                } else if (kind === "five") {
+                    const names = ["Very Low", "Low", "Medium", "High", "Very High"];
+                    const st = R / 4;
+                    defs = names.map((n, i) => {
+                        const c = lo + i * st;
+                        return [n, "triangular", { a: r(Math.max(lo, c - st)), b: r(c), c: r(Math.min(hi, c + st)) }];
+                    });
+                } else {
+                    const sg = r(R / 5);
+                    defs = [
+                        ["Low", "gaussian", { mean: r(lo), sigma: sg }],
+                        ["Medium", "gaussian", { mean: r(lo + R / 2), sigma: sg }],
+                        ["High", "gaussian", { mean: r(hi), sigma: sg }],
+                    ];
+                }
+                const oldIds = new Set(v.mfs.map((m) => m.id));
+                v.mfs = defs.map(([label, shape, params], i) => ({ id: uid("mf"), label, shape, color: COLORS[i % COLORS.length], params }));
+                // remove rules that referenced the old MFs of this variable
+                const before = state.rules.length;
+                state.rules = state.rules.filter((rule) => {
+                    const c = (rule.conditions || {})[vid];
+                    const t = getRuleConclusions(rule)[vid];
+                    return !(oldIds.has(c) || oldIds.has(t));
+                });
+                const removed = before - state.rules.length;
+                activeVarId = vid;
+                markDirty();
+                renderVarLists();
+                refreshAllCharts();
+                updateRuleBuilder();
+                renderRules();
+                buildSimulationPanel();
+                showToast(`Added ${defs.length} membership functions to "${v.name}"` + (removed ? ` (${removed} old rule${removed > 1 ? "s" : ""} removed)` : ""));
+            }
+
+            (function wireV26b() {
+                const orig = window.updateDirtyIndicator;
+                window.updateDirtyIndicator = function () {
+                    const r = orig.apply(this, arguments);
+                    updateSaveStatus();
+                    return r;
+                };
+                const init = () => {
+                    updateSaveStatus();
+                    renderStepsBar();
+                };
+                if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+                else init();
+            })();
+
+            // Theme toggle shows 🌙 in light mode and ☀️ in dark mode
+            function syncThemeEmoji() {
+                const e = document.getElementById("themeEmoji");
+                if (e) e.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "☀️" : "🌙";
+            }
+            (function () {
+                const orig = window.toggleDarkMode;
+                window.toggleDarkMode = function () {
+                    const r = orig.apply(this, arguments);
+                    syncThemeEmoji();
+                    return r;
+                };
+                if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", syncThemeEmoji);
+                else syncThemeEmoji();
+                setTimeout(syncThemeEmoji, 300);
+            })();
+
+            // ============================================================
+            //  v2.6 ENGINE FIXES + CHART UPGRADE
+            // ============================================================
+
+            // ── Colour-blind-friendly default palette (Okabe–Ito) ──
+            COLORS.splice(0, COLORS.length, "#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7", "#56B4E9", "#8C6D31", "#7F7F7F");
+
+            // ── Engine: safe MF evaluation + singletons sized to the sample grid ──
+            const singletonTol = new WeakMap(); // mf -> half a sample step
+            const _evalMF_orig = window.evalMF;
+            function mfIsValid(mf) {
+                const p = mf.params || {};
+                const n = (k) => Number(p[k]);
+                switch (mf.shape) {
+                    case "triangular":
+                        return [n("a"), n("b"), n("c")].every(Number.isFinite) && n("a") <= n("b") && n("b") <= n("c");
+                    case "trapezoidal":
+                        return [n("a"), n("b"), n("c"), n("d")].every(Number.isFinite) && n("a") <= n("b") && n("b") <= n("c") && n("c") <= n("d");
+                    case "gaussian":
+                        return Number.isFinite(n("mean")) && n("sigma") > 0;
+                    case "bell":
+                        return Number.isFinite(n("c")) && Math.abs(n("a")) > 0 && n("b") > 0;
+                    case "sigmoidal":
+                        return Number.isFinite(n("a")) && Number.isFinite(n("c"));
+                    case "singleton":
+                        return Number.isFinite(n("x"));
+                    default:
+                        return false;
+                }
+            }
+            window.evalMF = function (mf, x) {
+                if (!mfIsValid(mf)) return 0; // invalid shapes are ignored (Rule Check explains why)
+                if (mf.shape === "singleton") {
+                    const tol = singletonTol.get(mf) ?? 0.5;
+                    return Math.abs(x - mf.params.x) <= tol ? 1 : 0;
+                }
+                return _evalMF_orig(mf, x);
+            };
+            function mfSupportWidth(mf) {
+                const p = mf.params || {};
+                switch (mf.shape) {
+                    case "triangular": return p.c - p.a;
+                    case "trapezoidal": return p.d - p.a;
+                    case "gaussian": return 6 * p.sigma;
+                    case "bell": return 4 * Math.abs(p.a);
+                    default: return Infinity;
+                }
+            }
+            // More samples when an output has very narrow MFs (keeps defuzzification accurate)
+            function adaptiveSamples(v) {
+                const range = v.max - v.min || 1;
+                const minW = Math.min(...v.mfs.filter(mfIsValid).map(mfSupportWidth).filter((w) => w > 0));
+                if (!Number.isFinite(minW)) return 501;
+                return Math.max(501, Math.min(4001, Math.ceil((20 * range) / minW) + 1));
+            }
+            function setSingletonTol(v, samples) {
+                const step = (v.max - v.min) / (samples - 1 || 1);
+                v.mfs.forEach((m) => {
+                    if (m.shape === "singleton") singletonTol.set(m, (step / 2) * 1.000001);
+                });
+            }
+            // Input singletons: half of the slider/chart step
+            function refreshInputSingletons() {
+                state.variables.filter((v) => v.type === "input").forEach((v) => setSingletonTol(v, 500));
+            }
+            const _ddOrig = SimulationEngine.defuzzifyDetailed;
+            SimulationEngine.defuzzifyDetailed = function (agg, method, samples) {
+                const v = agg.variable;
+                const N = adaptiveSamples(v);
+                setSingletonTol(v, N);
+                const d = _ddOrig.call(this, agg, method, N);
+                // Only singleton outputs: use the exact (standard) formulas
+                const clips = (agg.clips || []).filter((c) => c.firingStrength > 0);
+                if (clips.length && clips.every((c) => c.mf.shape === "singleton")) {
+                    const byMf = new Map();
+                    clips.forEach((c) => byMf.set(c.mf, Math.max(byMf.get(c.mf) || 0, c.firingStrength)));
+                    const pts = [...byMf].map(([mf, w]) => ({ x: Number(mf.params.x), w })).sort((a, b) => a.x - b.x);
+                    const sw = pts.reduce((s, p) => s + p.w, 0);
+                    const maxW = Math.max(...pts.map((p) => p.w));
+                    const top = pts.filter((p) => p.w >= maxW * 0.999);
+                    let crisp = null;
+                    if (sw > 0) {
+                        if (d.method === "centroid") {
+                            const sx = pts.reduce((s, p) => s + p.x * p.w, 0);
+                            crisp = sx / sw;
+                            d.details = { kind: "centroid", sumXM: sx, sumMu: sw };
+                        } else if (d.method === "bisector") {
+                            let acc = 0;
+                            crisp = pts[pts.length - 1].x;
+                            for (const p of pts) {
+                                acc += p.w;
+                                if (acc >= sw / 2) { crisp = p.x; break; }
+                            }
+                        } else if (d.method === "mom") crisp = top.reduce((s, p) => s + p.x, 0) / top.length;
+                        else if (d.method === "som") crisp = top[0].x;
+                        else crisp = top[top.length - 1].x;
+                    }
+                    d.crispValue = crisp;
+                    if (d.details && d.method !== "centroid") d.details.pickedX = crisp;
+                }
+                return d;
+            };
+            const _runOrig = SimulationEngine.run;
+            SimulationEngine.run = function () {
+                refreshInputSingletons();
+                return _runOrig.apply(this, arguments);
+            };
+
+            // Rule Check: report invalid MFs
+            const _arbOrig = window.analyzeRuleBase;
+            window.analyzeRuleBase = function () {
+                const rep = _arbOrig.apply(this, arguments);
+                const extra = [];
+                state.variables.forEach((v) =>
+                    v.mfs.forEach((m) => {
+                        if (!mfIsValid(m)) {
+                            const why = {
+                                triangular: "needs a ≤ b ≤ c",
+                                trapezoidal: "needs a ≤ b ≤ c ≤ d",
+                                gaussian: "needs sigma > 0",
+                                bell: "needs a ≠ 0 and b > 0",
+                            }[m.shape] || "has missing values";
+                            extra.push({ level: "error", text: `"${m.label}" of "${v.name}" has invalid parameters (${m.shape} ${why}), so it is ignored until fixed.` });
+                        }
+                    }),
+                );
+                if (extra.length) {
+                    rep.issues = [...extra, ...rep.issues];
+                    rep.errors += extra.length;
+                }
+                return rep;
+            };
+
+            // SOM / LOM: explain the textbook definition
+            if (DEFUZZ_TRACE_INFO.som) DEFUZZ_TRACE_INFO.som.desc += " (Textbook definition. MATLAB uses the smallest absolute value; the two differ only when the output range includes negative numbers.)";
+            if (DEFUZZ_TRACE_INFO.lom) DEFUZZ_TRACE_INFO.lom.desc += " (Textbook definition. MATLAB uses the largest absolute value; the two differ only when the output range includes negative numbers.)";
+
+            // Exports: singleton width follows the range
+            const _bemOrig = window.buildExportModel;
+            window.buildExportModel = function () {
+                const m = _bemOrig.apply(this, arguments);
+                m.vars.forEach((x) => x.mfs.forEach((f) => (f.tol = (x.max - x.min) / 1000)));
+                return m;
+            };
+
+            // ============================================================
+            //  CHARTS
+            // ============================================================
+            // Readable label colour: lighter on dark theme, darker on light theme
+            function labelColor(hex) {
+                const m = /^#([0-9a-f]{6})$/i.exec(hex || "");
+                if (!m) return hex;
+                const n = parseInt(m[1], 16);
+                let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+                const dark = document.documentElement.getAttribute("data-theme") === "dark";
+                const t = dark ? 0.45 : 0.25, to = dark ? 255 : 0;
+                r = Math.round(r + (to - r) * t); g = Math.round(g + (to - g) * t); b = Math.round(b + (to - b) * t);
+                return `rgb(${r},${g},${b})`;
+            }
+            function fmtTick(v) {
+                const r = +(+v).toFixed(6);
+                return Number.isInteger(r) ? String(r) : String(+r.toFixed(2));
+            }
+            // 1) Labels written on each curve (replaces the legend row)
+            const mfCurveLabelsPlugin = {
+                id: "mfCurveLabels",
+                afterDatasetsDraw(chart) {
+                    const vid = chartVarIdFromChart(chart);
+                    const v = vid && state.variables.find((x) => x.id === vid);
+                    if (!v || !v.mfs.length) return;
+                    const { ctx, scales, chartArea: ca } = chart;
+                    const items = v.mfs
+                        .map((mf, i) => {
+                            const data = chart.data.datasets[i]?.data || [];
+                            let best = 0, bi = 0;
+                            data.forEach((d, k) => { if (d > best + 1e-9) { best = d; bi = k; } });
+                            if (best <= 0) return null;
+                            // centre of the plateau (e.g. trapezoid top)
+                            let bj = bi;
+                            while (bj + 1 < data.length && data[bj + 1] >= best - 1e-9) bj++;
+                            const xv = chart.data.labels[Math.round((bi + bj) / 2)];
+                            return { mf, px: scales.x.getPixelForValue(xv), py: scales.y.getPixelForValue(best) };
+                        })
+                        .filter(Boolean)
+                        .sort((a, b) => a.px - b.px);
+                    ctx.save();
+                    ctx.font = "700 11px 'DM Sans', sans-serif";
+                    ctx.textBaseline = "bottom";
+                    const placed = [];
+                    items.forEach((it) => {
+                        const w = ctx.measureText(it.mf.label).width;
+                        let x = Math.min(Math.max(it.px - w / 2, ca.left + 2), ca.right - w - 2);
+                        let y = Math.max(ca.top + 13, it.py - 5);
+                        // avoid overlapping a label already placed
+                        for (let tries = 0; tries < 4; tries++) {
+                            const hit = placed.find((p) => x < p.x + p.w + 4 && x + w + 4 > p.x && Math.abs(y - p.y) < 13);
+                            if (!hit) break;
+                            y = hit.y + 13;
+                        }
+                        placed.push({ x, y, w });
+                        ctx.lineWidth = 3;
+                        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--surface").trim() || "#fff";
+                        ctx.strokeText(it.mf.label, x, y);
+                        ctx.fillStyle = labelColor(it.mf.color);
+                        ctx.fillText(it.mf.label, x, y);
+                    });
+                    ctx.restore();
+                },
+            };
+            try { Chart.register(mfCurveLabelsPlugin); } catch (e) {}
+
+            function surfaceText() {
+                return getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#12243f";
+            }
+            function pill(ctx, x, y, text, bg, fg, ca) {
+                ctx.font = "700 11.5px 'DM Mono', monospace";
+                const w = ctx.measureText(text).width + 14;
+                const px = Math.min(Math.max(x - w / 2, ca.left + 2), ca.right - w - 2);
+                ctx.fillStyle = bg;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(px, y, w, 20, 5); else ctx.rect(px, y, w, 20);
+                ctx.fill();
+                ctx.fillStyle = fg;
+                ctx.textBaseline = "middle";
+                ctx.fillText(text, px + 7, y + 10);
+            }
+            // 2) + 3) New live overlay for input and output charts
+            simulationOverlayPlugin.afterDraw = function (chart) {
+                const o = chart.config._simOverlay;
+                if (!o) return;
+                const { ctx, chartArea: ca } = chart;
+                const X = chart.scales.x, Y = chart.scales.y;
+                const vid = chartVarIdFromChart(chart);
+                const v = vid && state.variables.find((x) => x.id === vid);
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(ca.left, ca.top - 30, ca.right - ca.left, ca.bottom - ca.top + 30);
+                ctx.clip();
+                const PURPLE = "#6d28d9";
+                // ---- OUTPUT: clipped rule areas, combined outline, crisp marker ----
+                if (o.clips && v) {
+                    const cols = [];
+                    for (let px = ca.left; px <= ca.right; px += 1.5) cols.push(px);
+                    const xs = cols.map((px) => X.getValueForPixel(px));
+                    const byMf = new Map();
+                    o.clips.forEach((c) => byMf.set(c.mf, Math.max(byMf.get(c.mf) || 0, c.firingStrength)));
+                    const comb = xs.map(() => 0);
+                    byMf.forEach((w, mf) => {
+                        if (mf.shape === "singleton") {
+                            const px = X.getPixelForValue(mf.params.x);
+                            ctx.fillStyle = hexAlpha(mf.color, 0.55);
+                            ctx.fillRect(px - 2, Y.getPixelForValue(w), 4, Y.getPixelForValue(0) - Y.getPixelForValue(w));
+                            return;
+                        }
+                        ctx.beginPath();
+                        ctx.moveTo(cols[0], Y.getPixelForValue(0));
+                        xs.forEach((x, i) => {
+                            const mu = Math.min(evalMF(mf, x), w);
+                            if (mu > comb[i]) comb[i] = mu;
+                            ctx.lineTo(cols[i], Y.getPixelForValue(mu));
+                        });
+                        ctx.lineTo(cols[cols.length - 1], Y.getPixelForValue(0));
+                        ctx.closePath();
+                        ctx.fillStyle = hexAlpha(mf.color, 0.24);
+                        ctx.fill();
+                    });
+                    // combined (aggregated) outline
+                    ctx.beginPath();
+                    xs.forEach((x, i) => (i ? ctx.lineTo(cols[i], Y.getPixelForValue(comb[i])) : ctx.moveTo(cols[i], Y.getPixelForValue(comb[i]))));
+                    ctx.strokeStyle = PURPLE;
+                    ctx.lineWidth = 2.5;
+                    ctx.lineJoin = "round";
+                    ctx.stroke();
+                    if (o.defuzzValue !== null && o.defuzzValue !== undefined) {
+                        const dx = X.getPixelForValue(o.defuzzValue);
+                        ctx.beginPath();
+                        ctx.moveTo(dx, ca.top);
+                        ctx.lineTo(dx, ca.bottom);
+                        ctx.strokeStyle = PURPLE;
+                        ctx.lineWidth = 1.5;
+                        ctx.setLineDash([5, 3]);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        // ▲ marker on the x-axis
+                        ctx.fillStyle = PURPLE;
+                        ctx.beginPath();
+                        ctx.moveTo(dx, ca.bottom - 9);
+                        ctx.lineTo(dx - 6, ca.bottom + 1);
+                        ctx.lineTo(dx + 6, ca.bottom + 1);
+                        ctx.closePath();
+                        ctx.fill();
+                        // value pill just above the ▲ marker (keeps the curve labels at the top readable)
+                        pill(ctx, dx, ca.bottom - 34, `${fmtTick(+o.defuzzValue.toFixed(2))}${v.unit ? " " + v.unit : ""}`, PURPLE, "#ffffff", ca);
+                    }
+                }
+                // ---- INPUT: value line, coloured dots, one info box ----
+                if (o.inputValue !== null && o.inputValue !== undefined && v) {
+                    const ix = X.getPixelForValue(o.inputValue);
+                    ctx.beginPath();
+                    ctx.moveTo(ix, ca.top);
+                    ctx.lineTo(ix, ca.bottom);
+                    ctx.strokeStyle = hexAlpha(surfaceText().startsWith("#") ? surfaceText() : "#12243f", 0.55);
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([5, 3]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    const pts = (o.inputIntersections || []).slice().sort((a, b) => b.y - a.y);
+                    pts.forEach((pt) => {
+                        const py = Y.getPixelForValue(pt.y);
+                        ctx.fillStyle = pt.color;
+                        ctx.beginPath();
+                        ctx.arc(ix, py, 5.5, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = "#fff";
+                        ctx.beginPath();
+                        ctx.arc(ix, py, 2.3, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    if (pts.length && showSimAnnotationLabels) {
+                        ctx.font = "700 11px 'DM Sans', sans-serif";
+                        const lines = pts.map((p) => ({ t: p.label, n: " " + p.y.toFixed(2), c: p.color }));
+                        ctx.font = "700 11px 'DM Sans', sans-serif";
+                        const w = Math.max(...lines.map((l) => ctx.measureText(l.t).width + ctx.measureText(l.n).width)) + 16;
+                        const h = lines.length * 15 + 8;
+                        let bx = ix + 10;
+                        if (bx + w > ca.right - 2) bx = ix - 10 - w;
+                        let by = Math.max(ca.top + 2, Math.min(ca.bottom - h - 2, Y.getPixelForValue(pts[0].y) - h / 2));
+                        const dark = document.documentElement.getAttribute("data-theme") === "dark";
+                        ctx.fillStyle = dark ? "rgba(20,24,36,0.92)" : "rgba(255,255,255,0.95)";
+                        ctx.strokeStyle = dark ? "rgba(255,255,255,0.15)" : "rgba(15,23,42,0.18)";
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        if (ctx.roundRect) ctx.roundRect(bx, by, w, h, 6); else ctx.rect(bx, by, w, h);
+                        ctx.fill();
+                        ctx.stroke();
+                        ctx.textBaseline = "middle";
+                        lines.forEach((l, i) => {
+                            const yy = by + 11 + i * 15;
+                            ctx.font = "700 11px 'DM Sans', sans-serif";
+                            ctx.fillStyle = labelColor(l.c);
+                            ctx.fillText(l.t, bx + 8, yy);
+                            const tw = ctx.measureText(l.t).width;
+                            ctx.font = "600 11px 'DM Mono', monospace";
+                            ctx.fillStyle = dark ? "#e8eaf0" : "#12243f";
+                            ctx.fillText(l.n, bx + 8 + tw, yy);
+                        });
+                    }
+                }
+                ctx.restore();
+            };
+
+            // 6) Highlight MFs that are active in the live simulation
+            function styleDatasets(chart, v, activeSet) {
+                v.mfs.forEach((mf, i) => {
+                    const ds = chart.data.datasets[i];
+                    if (!ds) return;
+                    const on = !activeSet || activeSet.has(mf.id);
+                    ds.borderColor = on ? mf.color : hexAlpha(mf.color, 0.35);
+                    ds.backgroundColor = hexAlpha(mf.color, activeSet ? (on ? 0.14 : 0.04) : 0.16);
+                    ds.borderWidth = activeSet ? (on ? 3 : 1.5) : 2.5;
+                });
+                chart.update("none");
+            }
+            const _uacoOrig = window.updateAllChartOverlays;
+            window.updateAllChartOverlays = function () {
+                const r = _uacoOrig.apply(this, arguments);
+                state.variables.forEach((v) => {
+                    const chart = chartInstances[v.id];
+                    if (!chart) return;
+                    const live = simRunning && simResults && simResults.outputs;
+                    if (!live) return styleDatasets(chart, v, null);
+                    if (v.type === "output") {
+                        const out = simResults.outputs[v.id];
+                        const clips = out?.aggregation?.clips?.filter((c) => c.firingStrength > 0) || [];
+                        if (chart.config._simOverlay) chart.config._simOverlay.clips = clips;
+                        styleDatasets(chart, v, new Set(clips.map((c) => c.mf.id)));
+                    } else {
+                        const x = simInputValues[v.id];
+                        styleDatasets(chart, v, new Set(v.mfs.filter((m) => evalMF(m, x) > 0.001).map((m) => m.id)));
+                    }
+                });
+                return r;
+            };
+            const _caoOrig = window.clearAllChartOverlays;
+            window.clearAllChartOverlays = function () {
+                const r = _caoOrig.apply(this, arguments);
+                state.variables.forEach((v) => chartInstances[v.id] && styleDatasets(chartInstances[v.id], v, null));
+                return r;
+            };
+
+            // 4) + 5) Compact card header with one ⋯ menu, clean axis numbers, taller plot
+            function chartCardUpgrade(v) {
+                const card = document.getElementById("chartcard_" + v.id);
+                const chart = chartInstances[v.id];
+                if (!card || !chart) return;
+                const range = card.querySelector(".chart-var-range");
+                if (range) range.textContent = `${fmtTick(v.min)}–${fmtTick(v.max)}${v.unit ? " " + v.unit : ""}`;
+                const wrap = card.querySelector(".chart-canvas-wrap");
+                if (wrap) wrap.style.height = "290px";
+                const header = card.querySelector(".chart-card-header");
+                if (header && !header.querySelector(".chart-more")) {
+                    const m = document.createElement("div");
+                    m.className = "chart-more";
+                    m.innerHTML = `<button type="button" class="btn btn-outline chart-more-btn" title="More: download, annotate" aria-haspopup="true">⋯</button>
+                        <div class="chart-more-list" role="menu">
+                            <button role="menuitem" type="button" data-act="png">⬇️ Download PNG</button>
+                            <button role="menuitem" type="button" data-act="svg">⬇️ Download SVG</button>
+                            <button role="menuitem" type="button" data-act="ann">📍 How to annotate</button>
+                        </div>`;
+                    m.querySelector(".chart-more-btn").onclick = (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll(".chart-more.open").forEach((x) => x !== m && x.classList.remove("open"));
+                        m.classList.toggle("open");
+                    };
+                    m.querySelectorAll("[data-act]").forEach((b) =>
+                        (b.onclick = (e) => {
+                            e.stopPropagation();
+                            m.classList.remove("open");
+                            const act = b.dataset.act;
+                            if (act === "png") exportChartPNG(v.id);
+                            else if (act === "svg") exportChartSVG(v.id);
+                            else showToast("Hold Shift and click on the graph to drop an annotation point.");
+                        }),
+                    );
+                    header.appendChild(m);
+                }
+                const eb = header?.querySelector(".mf-edit-btn");
+                if (eb) eb.innerHTML = mfEditVars.has(v.id) ? '✔️<span class="lbl"> Done</span>' : '✏️<span class="lbl"> Edit shape</span>';
+                // clean x-axis numbers
+                chart.options.scales.x.ticks.callback = (val) => fmtTick(val);
+                // singleton MFs: show a visible spike on the chart grid
+                v.mfs.forEach((mf, i) => {
+                    if (mf.shape !== "singleton" || !chart.data.datasets[i]) return;
+                    const labels = chart.data.labels;
+                    let k = 0, best = Infinity;
+                    labels.forEach((x, j) => { const d = Math.abs(x - mf.params.x); if (d < best) { best = d; k = j; } });
+                    chart.data.datasets[i].data = labels.map((_, j) => (j === k ? 1 : 0));
+                });
+                chart.update("none");
+                if (simRunning) updateAllChartOverlays();
+            }
+            document.addEventListener("click", () => document.querySelectorAll(".chart-more.open").forEach((x) => x.classList.remove("open")));
+
+            // 7) Two charts per row when the centre panel is wide ("Show All" only)
+            function updateChartGrid() {
+                const area = document.getElementById("chartArea");
+                if (!area) return;
+                const on = currentViewMode === "all" && area.clientWidth >= 900 && area.querySelectorAll(".chart-card").length > 1;
+                if (area.classList.contains("grid2") !== on) {
+                    area.classList.toggle("grid2", on);
+                    Object.values(chartInstances).forEach((c) => { try { c.resize(); } catch (e) {} });
+                }
+            }
+
+            // Recolour the built-in examples with the new palette
+            function recolorAllMFs() {
+                state.variables.forEach((v) => v.mfs.forEach((m, i) => (m.color = COLORS[i % COLORS.length])));
+            }
+
+            (function wireV26d() {
+                const wrap = (name, after) => {
+                    const orig = window[name];
+                    if (typeof orig !== "function") return;
+                    window[name] = function () {
+                        const r = orig.apply(this, arguments);
+                        try { after.apply(this, arguments); } catch (e) { console.warn(name, e); }
+                        return r;
+                    };
+                };
+                wrap("buildChartCard", (v) => chartCardUpgrade(v));
+                wrap("renderCharts", updateChartGrid);
+                wrap("setViewMode", updateChartGrid);
+                wrap("toggleMFEdit", (vid) => {
+                    const eb = document.querySelector(`#chartcard_${vid} .mf-edit-btn`);
+                    if (eb) eb.innerHTML = mfEditVars.has(vid) ? '✔️<span class="lbl"> Done</span>' : '✏️<span class="lbl"> Edit shape</span>';
+                });
+                ["loadExample", "loadExample1", "loadExample2", "loadExample3", "loadExample4", "loadExample5", "loadExampleFromData"].forEach((n) =>
+                    wrap(n, () => {
+                        recolorAllMFs();
+                        renderVarLists();
+                        refreshAllCharts();
+                        buildSimulationPanel();
+                    }),
+                );
+                try {
+                    const ro = new ResizeObserver(() => updateChartGrid());
+                    const area = document.getElementById("chartArea");
+                    if (area) ro.observe(area);
+                } catch (e) {}
             })();
         </script>
         <!-- AI Chat Assistant -->
