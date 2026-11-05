@@ -3315,6 +3315,36 @@
             @container (max-width: 299px) {
                 .rp-tab-icon, .rp-tab-badge { display: none; }
             }
+            /* ── Right panel: nothing may stick out past the edge ── */
+            .panel-right .collapsible-body { overflow-x: hidden; }
+            /* Simulate: slider rows */
+            .sim-input-row { min-width: 0; }
+            .sim-input-row > div:first-child { flex-wrap: wrap; min-width: 0; }
+            .sim-input-slider { min-width: 0 !important; flex: 1 1 80px; }
+            .sim-input-value { flex-shrink: 0; width: 60px !important; }
+            .sim-input-unit { flex-shrink: 0; min-width: 0 !important; }
+            .sim-input-label { min-width: 0; overflow-wrap: anywhere; }
+            @container (max-width: 459px) {
+                .sim-input-row .sim-input-label { flex: 1 1 100%; }
+            }
+            /* Rules: rule cards and builder */
+            .rule-chip { max-width: 100%; min-width: 0; }
+            .rule-chip > span { min-width: 0; overflow-wrap: anywhere; flex: 1 1 100%; }
+            .rule-chip-controls { flex-wrap: wrap; min-width: 0; max-width: 100%; row-gap: 4px; }
+            .rule-select { max-width: 100%; min-width: 0; }
+            #ruleLogicSelect { flex: 1 1 auto; }
+            .rule-builder-wrap { min-width: 0; max-width: 100%; }
+            .rule-builder-wrap .rule-select { max-width: 160px; }
+            /* Test Case Tray rows: text wraps, delete button stays inside */
+            .tray-item { flex-wrap: wrap; min-width: 0; }
+            .tray-item-desc, .tray-item-result { min-width: 0; overflow-wrap: anywhere; }
+            .tray-item-desc { flex: 1 1 120px; }
+            .tray-item-del { flex-shrink: 0; margin-left: auto; }
+            /* Settings: single column when the panel is narrow */
+            .settings-grid .fgrp, .settings-grid select { min-width: 0; max-width: 100%; }
+            @container (max-width: 319px) {
+                .settings-grid { grid-template-columns: minmax(0, 1fr) !important; }
+            }
         </style>
     </head>
     <body>
